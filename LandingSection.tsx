@@ -1034,12 +1034,12 @@ export default function LandingSection() {
           </motion.h2>
 
           <div className="mt-24 grid grid-cols-1 gap-12 md:grid-cols-12 md:gap-8 items-start">
-            {/* Left Column: Cozy Shared Student Residence */}
+            {/* Left Column: Generated Dark Luxury Residence Interior */}
             <div className="md:col-span-6 lg:col-span-5">
               <ParallaxPicture
-                src="/cozy-student-living.jpg"
-                alt="Cozy Shared Student Residence Living in Almaty"
-                badge="COZY STUDENT RESIDENCE • ALMATY"
+                src="/manifesto-interior.jpg"
+                alt="Dark Luxury Student Apartment Interior in Almaty"
+                badge="MODERN RESIDENCE • BOSTANDYK"
                 speed={15}
                 className="aspect-[3.8/4.6] w-full rounded-[6px]"
               />
@@ -1054,7 +1054,7 @@ export default function LandingSection() {
               </motion.p>
             </div>
 
-            {/* Right Column: Verified Apartment Walkthrough */}
+            {/* Right Column: Generated Campus Study Library */}
             <div className="md:col-span-6 lg:col-span-5 lg:col-start-8 flex flex-col justify-between space-y-16 md:pt-8">
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
@@ -1068,9 +1068,9 @@ export default function LandingSection() {
 
               <div className="w-full max-w-[340px] self-end">
                 <ParallaxPicture
-                  src="/apartment-viewing-tour.jpg"
-                  alt="Verified Apartment Walkthrough with Landlord"
-                  badge="APARTMENT TOUR • BOSTANDYK"
+                  src="/manifesto-study.jpg"
+                  alt="Narxoz Study Library and Academic Life"
+                  badge="NARXOZ STUDY • CAMPUS NOIR"
                   speed={20}
                   className="aspect-[4/5] w-full rounded-[6px]"
                 />
@@ -1104,21 +1104,21 @@ export default function LandingSection() {
             </p>
           </div>
 
-          {/* Featured Field Observation Photo Card */}
+          {/* Featured Field Observation Photo Card (Unique empirical research still) */}
           <div className="mb-14 overflow-hidden rounded-2xl border border-white/10 bg-[#161917]/75 backdrop-blur-md grid grid-cols-1 md:grid-cols-12 items-center">
             <div className="md:col-span-5 h-72 sm:h-80 md:h-96 relative overflow-hidden">
               <img
-                src="/student-arrival-struggle.jpg"
-                alt="Student arriving in Almaty with heavy baggage"
-                className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-700"
+                src="/chapter2-interviews.jpg"
+                alt="Empirical field research notes and student interviews documentation"
+                className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-700"
               />
-              <div className="absolute top-4 left-4 bg-black/75 backdrop-blur-md text-[10px] font-mono-tag px-3 py-1 text-[#B5472B] rounded-full border border-white/15">
-                ALMATY ARRIVAL • 8–9 REJECTIONS
+              <div className="absolute top-4 left-4 bg-black/75 backdrop-blur-md text-[10px] font-mono-tag px-3 py-1 text-[#D9A64E] rounded-full border border-white/15">
+                EMPIRICAL TRANSCRIPTS • NARXOZ COHORT
               </div>
             </div>
             <div className="md:col-span-7 p-6 sm:p-10 lg:p-12 flex flex-col justify-center">
               <span className="font-mono-tag text-[10px] tracking-widest text-[#D9A64E] uppercase font-semibold">
-                FIELD RESEARCH CASE #01 • ARRIVAL CRISIS
+                FIELD RESEARCH DOSSIER • 12 QUALITATIVE SESSIONS
               </span>
               <h3 className="font-editorial text-2xl sm:text-3xl md:text-4xl font-light text-white mt-3 mb-4 leading-snug">
                 “I was sitting on my suitcase at 7 PM with three bags and nowhere to sleep.”
