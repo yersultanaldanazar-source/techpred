@@ -538,49 +538,83 @@ function FaqItem({
 // ============================================================================
 // 5. CORE STORYTELLING CHAPTERS (3 Fullscreen Overlapping Chapters)
 // ============================================================================
-const PROJECT_CHAPTERS = [
+interface ChapterItem {
+  id: string;
+  tag: string;
+  titleLine1: string;
+  titleLine2: string;
+  titleLine3?: string;
+  bgClass: string;
+  textClass: string;
+  mutedClass: string;
+  lightBtn: boolean;
+  image: string;
+  badge: string;
+  aspectClass?: string;
+  description: string;
+}
+
+const PROJECT_CHAPTERS: ChapterItem[] = [
   {
     id: "01",
-    tag: "( VERIFICATION & CALL — CHAPTER 01 )",
-    titleLine1: "Direct phone call",
-    titleLine2: "to the landlord",
+    tag: "( 01 / THE ARRIVAL CRISIS )",
+    titleLine1: "Arriving alone",
+    titleLine2: "with heavy luggage",
     bgClass: "bg-[#FBF9F5]",
     textClass: "text-[#141414]",
     mutedClass: "text-zinc-600",
     lightBtn: false,
-    image: "/chapter1-building.jpg",
-    badge: "ZHANDOSOV ST • NEAR NARXOZ CAMPUS",
+    image: "/student-arrival-struggle.jpg",
+    badge: "ALMATY ARRIVAL • 8–9 REJECTIONS",
+    aspectClass: "max-w-[360px] md:max-w-[400px] aspect-[3/4.2]",
     description:
-      "Almaty landlords routinely fear noise, missed rent, and property damage, rejecting 75% of incoming calls with an instant “no students” rule. Our voucher places a focused 42-second phone call on your behalf as an established Narxoz peer, confirms your credibility, and secures a private viewing slot.",
+      "Almaty landlords routinely fear noise, missed rent, and property damage, rejecting 75% of incoming calls with an instant “no students” rule. Freshmen arrive at stations with heavy suitcases, facing predatory broker fees and 300,000 ₸ seasonal rental gouging while searching alone in panic.",
   },
   {
     id: "02",
-    tag: "( 12 FIELD INTERVIEWS — CHAPTER 02 )",
-    titleLine1: "Unfiltered truth",
-    titleLine2: "about student rentals",
+    tag: "( 02 / THE DIRECT CALL )",
+    titleLine1: "From refusal",
+    titleLine2: "to private walkthrough",
     bgClass: "bg-[#121214]",
     textClass: "text-[#D8D4CC]",
     mutedClass: "text-zinc-400",
     lightBtn: true,
-    image: "/chapter2-interviews.jpg",
-    badge: "12 IN-DEPTH STUDENT INTERVIEWS",
+    image: "/apartment-viewing-tour.jpg",
+    badge: "IN-PERSON APARTMENT TOUR • SECURED",
+    aspectClass: "max-w-[360px] md:max-w-[400px] aspect-[3/4.2]",
     description:
-      "“Turned away 8–9 times the moment I said I was a student”, “Brokers charged 30–50% upfront and vanished”, “300,000 ₸ for a rundown studio”. We conducted 12 empirical interviews with arriving and senior Narxoz students: our service was built directly from these exact pain points.",
+      "Our established Narxoz voucher places a focused 42-second phone call on your behalf. Hearing a calm, mature peer vouch for your character dissolves suspicions, turns an automatic rejection into a warm conversation, and books you a private in-person walkthrough.",
   },
   {
     id: "03",
-    tag: "( TRUST PROTOCOL — CHAPTER 03 )",
+    tag: "( 03 / SIGNED LEASE & TRUST )",
     titleLine1: "Protection from scams",
-    titleLine2: "& predatory fees",
+    titleLine2: "& keys in hand",
     titleLine3: "0 ₸ commission",
     bgClass: "bg-[#9A968E]",
     textClass: "text-[#141414]",
     mutedClass: "text-zinc-900/80",
     lightBtn: false,
-    image: "/chapter3-keys.jpg",
-    badge: "SIGNED LEASE • 0 ₸ COMMISSION",
+    image: "/lease-handover-keys.jpg",
+    badge: "SIGNED LEASE • KEYS IN HAND",
+    aspectClass: "max-w-[440px] md:max-w-[500px] aspect-[4/3]",
     description:
-      "Our golden rule: zero Kaspi transfers before physically viewing the apartment and verifying official title documents. Your voucher serves as a reliable local co-signer guide, screens Krisha.kz listings, and warns you against deceptive broker syndicates.",
+      "Our golden rule: zero Kaspi transfers before physically viewing the apartment and verifying official title documents. We guide you through verifying ownership, inspecting meters, signing a legitimate bilateral contract, and receiving your keys without paying 30–50% broker commissions.",
+  },
+  {
+    id: "04",
+    tag: "( 04 / THE SANCTUARY )",
+    titleLine1: "Peace of mind",
+    titleLine2: "in your new home",
+    bgClass: "bg-[#EAE6DF]",
+    textClass: "text-[#141414]",
+    mutedClass: "text-zinc-700",
+    lightBtn: false,
+    image: "/cozy-student-living.jpg",
+    badge: "WARM RESIDENCE • FOCUSED ON STUDIES",
+    aspectClass: "max-w-[360px] md:max-w-[400px] aspect-[3/4.2]",
+    description:
+      "Once settled in honest, secure housing, real university life begins. Cook meals with roommates, study peacefully without fear of eviction or sudden rent hikes, and focus entirely on what truly matters: your education and academic future at Narxoz University.",
   },
 ];
 
@@ -589,7 +623,7 @@ function ShowcaseChapter({
   index,
   onOpenModal,
 }: {
-  chapter: (typeof PROJECT_CHAPTERS)[0];
+  chapter: ChapterItem;
   index: number;
   onOpenModal: () => void;
 }) {
@@ -647,7 +681,9 @@ function ShowcaseChapter({
 
         <motion.div
           style={{ y: imageY, rotate: imageRotate }}
-          className="relative z-20 -mt-6 sm:-mt-12 md:-mt-16 w-[78vw] max-w-[360px] md:max-w-[400px] aspect-[3/4.2]"
+          className={`relative z-20 -mt-6 sm:-mt-12 md:-mt-16 w-[78vw] ${
+            chapter.aspectClass || "max-w-[360px] md:max-w-[400px] aspect-[3/4.2]"
+          }`}
         >
           <ParallaxPicture
             src={chapter.image}
@@ -998,12 +1034,12 @@ export default function LandingSection() {
           </motion.h2>
 
           <div className="mt-24 grid grid-cols-1 gap-12 md:grid-cols-12 md:gap-8 items-start">
-            {/* Left Column: Real Cozy Student Flat Interior */}
+            {/* Left Column: Cozy Shared Student Residence */}
             <div className="md:col-span-6 lg:col-span-5">
               <ParallaxPicture
-                src="/manifesto-interior.jpg"
-                alt="Student Apartment Living in Almaty"
-                badge="ALMATY • BOSTANDYK DISTRICT"
+                src="/cozy-student-living.jpg"
+                alt="Cozy Shared Student Residence Living in Almaty"
+                badge="COZY STUDENT RESIDENCE • ALMATY"
                 speed={15}
                 className="aspect-[3.8/4.6] w-full rounded-[6px]"
               />
@@ -1018,7 +1054,7 @@ export default function LandingSection() {
               </motion.p>
             </div>
 
-            {/* Right Column: Students Collaborating on Campus */}
+            {/* Right Column: Verified Apartment Walkthrough */}
             <div className="md:col-span-6 lg:col-span-5 lg:col-start-8 flex flex-col justify-between space-y-16 md:pt-8">
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
@@ -1030,11 +1066,11 @@ export default function LandingSection() {
                 No predatory middlemen, no apps, no hidden fees. We verify your chosen Krisha.kz listing, speak directly with the landlord, and prove that you have real peer backing from Narxoz University.
               </motion.p>
 
-              <div className="w-full max-w-[320px] self-end">
+              <div className="w-full max-w-[340px] self-end">
                 <ParallaxPicture
-                  src="/manifesto-study.jpg"
-                  alt="Narxoz Library Study Session"
-                  badge="NARXOZ STUDY • ALMATY"
+                  src="/apartment-viewing-tour.jpg"
+                  alt="Verified Apartment Walkthrough with Landlord"
+                  badge="APARTMENT TOUR • BOSTANDYK"
                   speed={20}
                   className="aspect-[4/5] w-full rounded-[6px]"
                 />
@@ -1066,6 +1102,38 @@ export default function LandingSection() {
             <p className="mt-4 text-xs sm:text-sm text-zinc-400 max-w-xl mx-auto leading-relaxed">
               We conducted qualitative field research with freshmen arriving at Narxoz University in Almaty. 75% described losing money, time, or housing before even attending their first university lecture.
             </p>
+          </div>
+
+          {/* Featured Field Observation Photo Card */}
+          <div className="mb-14 overflow-hidden rounded-2xl border border-white/10 bg-[#161917]/75 backdrop-blur-md grid grid-cols-1 md:grid-cols-12 items-center">
+            <div className="md:col-span-5 h-72 sm:h-80 md:h-96 relative overflow-hidden">
+              <img
+                src="/student-arrival-struggle.jpg"
+                alt="Student arriving in Almaty with heavy baggage"
+                className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-700"
+              />
+              <div className="absolute top-4 left-4 bg-black/75 backdrop-blur-md text-[10px] font-mono-tag px-3 py-1 text-[#B5472B] rounded-full border border-white/15">
+                ALMATY ARRIVAL • 8–9 REJECTIONS
+              </div>
+            </div>
+            <div className="md:col-span-7 p-6 sm:p-10 lg:p-12 flex flex-col justify-center">
+              <span className="font-mono-tag text-[10px] tracking-widest text-[#D9A64E] uppercase font-semibold">
+                FIELD RESEARCH CASE #01 • ARRIVAL CRISIS
+              </span>
+              <h3 className="font-editorial text-2xl sm:text-3xl md:text-4xl font-light text-white mt-3 mb-4 leading-snug">
+                “I was sitting on my suitcase at 7 PM with three bags and nowhere to sleep.”
+              </h3>
+              <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed max-w-xl mb-4">
+                Every August, hundreds of 17-year-old non-local freshmen step off trains and planes in Almaty. Without an established local relative or older peer, landlords drop calls within 10 seconds. Students face 300,000 ₸ seasonal rental gouging and predatory middlemen while dragging their luggage across town.
+              </p>
+              <div className="flex flex-wrap items-center gap-4 text-[11px] font-mono-tag text-zinc-400 pt-3 border-t border-white/10">
+                <span className="flex items-center gap-1.5 text-emerald-400">
+                  <Check className="h-3.5 w-3.5" /> 12 Documented Interviews
+                </span>
+                <span>•</span>
+                <span className="text-zinc-300">Narxoz University Freshmen Cohort</span>
+              </div>
+            </div>
           </div>
 
           {/* 3 Metric Badges */}
