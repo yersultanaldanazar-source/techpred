@@ -49,6 +49,7 @@ import {
   trackSectionView,
   trackScrollDepth,
   detectTrafficSource,
+  initAutoClickTracker,
 } from "./src/lib/analytics";
 import { AdminDashboardModal } from "./src/components/AdminDashboardModal";
 
@@ -312,9 +313,9 @@ const PROJECT_CHAPTERS: ChapterItem[] = [
     textClass: "text-[#141414]",
     mutedClass: "text-zinc-600",
     lightBtn: false,
-    image: "/student-arrival-struggle.jpg",
-    badge: "ALMATY ARRIVAL • 8–9 REJECTIONS",
-    aspectClass: "max-w-[360px] md:max-w-[400px] aspect-[3/4.2]",
+    image: "/chapter1-building.jpg",
+    badge: "ALMATY RESIDENTIAL DISTRICTS • 90% REFUSALS",
+    aspectClass: "max-w-[360px] md:max-w-[420px] aspect-[3/4.2]",
     description:
       "Almaty landlords routinely fear noise, missed rent, and property damage, rejecting 90% of incoming calls with an instant “no students, no guys” rule. Newcomers arrive at stations with heavy suitcases, facing predatory broker fees and 300,000 ₸ seasonal rental gouging while searching alone in panic.",
   },
@@ -327,9 +328,9 @@ const PROJECT_CHAPTERS: ChapterItem[] = [
     textClass: "text-[#D8D4CC]",
     mutedClass: "text-zinc-400",
     lightBtn: true,
-    image: "/apartment-viewing-tour.jpg",
-    badge: "IN-PERSON APARTMENT TOUR • SECURED",
-    aspectClass: "max-w-[360px] md:max-w-[400px] aspect-[3/4.2]",
+    image: "/real-apartment-warm.jpg",
+    badge: "VERIFIED APARTMENT TOUR • SECURED",
+    aspectClass: "max-w-[380px] md:max-w-[440px] aspect-[4/3]",
     description:
       "Our established local voucher places a focused 42-second phone call on your behalf. Hearing a calm, mature peer vouch for your character dissolves suspicions, turns an automatic rejection into a warm conversation, and books you a private in-person walkthrough.",
   },
@@ -343,9 +344,9 @@ const PROJECT_CHAPTERS: ChapterItem[] = [
     textClass: "text-[#141414]",
     mutedClass: "text-zinc-900/80",
     lightBtn: false,
-    image: "/lease-handover-keys.jpg",
+    image: "/chapter3-keys.jpg",
     badge: "SIGNED LEASE • KEYS IN HAND",
-    aspectClass: "max-w-[440px] md:max-w-[500px] aspect-[4/3]",
+    aspectClass: "max-w-[380px] md:max-w-[440px] aspect-[3/4]",
     description:
       "Our golden rule: zero Kaspi transfers before physically viewing the apartment and verifying official eGov title documents. We guide you through verifying ownership, inspecting meters, signing a legitimate bilateral contract, and receiving your keys without paying 30–50% broker commissions.",
   },
@@ -360,7 +361,7 @@ const PROJECT_CHAPTERS: ChapterItem[] = [
     lightBtn: false,
     image: "/cozy-student-living.jpg",
     badge: "WARM RESIDENCE • FOCUSED ON LIVING",
-    aspectClass: "max-w-[360px] md:max-w-[400px] aspect-[3/4.2]",
+    aspectClass: "max-w-[360px] md:max-w-[420px] aspect-[3/4.2]",
     description:
       "Once settled in honest, secure housing, real life in Almaty begins. Cook meals together, live peacefully without fear of sudden eviction or unannounced landlord visits, and focus entirely on what truly matters: your career, family, and studies.",
   },
@@ -750,12 +751,12 @@ function ShowcaseChapter({
     mass: 0.4,
   });
 
-  const titleY = useTransform(smooth, [0, 1], [-60, 70]);
-  const imageY = useTransform(smooth, [0, 1], [90, -80]);
+  const titleY = useTransform(smooth, [0, 1], [-20, 20]);
+  const imageY = useTransform(smooth, [0, 1], [25, -15]);
   const imageRotate = useTransform(
     smooth,
     [0, 0.5, 1],
-    [index % 2 === 0 ? -2.0 : 2.0, 0, index % 2 === 0 ? 1.5 : -1.5]
+    [index % 2 === 0 ? -1.0 : 1.0, 0, index % 2 === 0 ? 0.8 : -0.8]
   );
 
   return (
@@ -775,13 +776,13 @@ function ShowcaseChapter({
         </span>
       </div>
 
-      {/* Central composition: Giant Title + Overlapping Picture */}
-      <div className="relative mx-auto my-auto flex w-full max-w-[1440px] flex-col items-center justify-center px-4 pt-6">
+      {/* Central composition: Editorial Headline + Image with clean breathing room (NO OVERLAPPING) */}
+      <div className="relative mx-auto my-auto flex w-full max-w-[1440px] flex-col items-center justify-center px-4 pt-6 pb-2">
         <motion.div
           style={{ y: titleY }}
-          className="relative z-10 text-center pointer-events-none select-none"
+          className="relative z-20 text-center select-none"
         >
-          <h2 className="font-editorial text-[13vw] sm:text-[10vw] md:text-[8.5rem] lg:text-[9.5rem] font-normal leading-[0.88] tracking-[-0.03em]">
+          <h2 className="font-editorial text-4xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-normal leading-[1.0] tracking-[-0.02em]">
             <span className="block">{chapter.titleLine1}</span>
             <span className="block italic font-light">{chapter.titleLine2}</span>
             {chapter.titleLine3 && (
@@ -792,16 +793,16 @@ function ShowcaseChapter({
 
         <motion.div
           style={{ y: imageY, rotate: imageRotate }}
-          className={`relative z-20 -mt-6 sm:-mt-12 md:-mt-16 w-[78vw] ${
-            chapter.aspectClass || "max-w-[360px] md:max-w-[400px] aspect-[3/4.2]"
+          className={`relative z-10 mt-8 sm:mt-12 md:mt-14 w-[85vw] ${
+            chapter.aspectClass || "max-w-[360px] md:max-w-[420px] aspect-[4/3]"
           }`}
         >
           <ParallaxPicture
             src={chapter.image}
             alt={chapter.titleLine1}
             badge={chapter.badge}
-            speed={16}
-            className="h-full w-full rounded-[6px]"
+            speed={10}
+            className="h-full w-full rounded-xl shadow-2xl"
           />
         </motion.div>
       </div>
@@ -870,6 +871,7 @@ export default function LandingSection() {
   useEffect(() => {
     initGA4();
     trackPageView("Local Guarantor — Almaty Housing Verification & Backing");
+    const cleanupClickTracker = initAutoClickTracker();
 
     // Section-level engagement tracking (Dwell time threshold > 1.5s)
     const sectionIds = [
@@ -944,6 +946,7 @@ export default function LandingSection() {
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
+      cleanupClickTracker?.();
       observers.forEach((o) => o.disconnect());
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("keydown", handleKeyDown);
@@ -1114,11 +1117,11 @@ export default function LandingSection() {
           className="pointer-events-none absolute inset-0 z-0"
         >
           <img
-            src="/hero-suburban.jpg"
-            alt="Aesthetic modern neighborhood street at twilight"
-            className="h-full w-full object-cover object-center brightness-[0.52] contrast-[1.08]"
+            src="/hero-almaty-euronews.jpg"
+            alt="Almaty city panorama with Hotel Kazakhstan and Tian Shan mountain peaks"
+            className="h-full w-full object-cover object-center brightness-[0.55] contrast-[1.05]"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/40 to-black/90" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/45 to-[#0A0C0B]" />
         </motion.div>
 
         {/* Central Hero Grid */}

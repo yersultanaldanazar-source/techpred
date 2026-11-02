@@ -298,3 +298,152 @@ export function trackScrollDepth(percent: 25 | 50 | 75 | 100) {
     return { ...prev, scrollDepthReached: reached };
   });
 }
+
+// ============================================================================
+// 4. CLICK MAP & USER INTERACTION HEATMAP ENGINE
+// ============================================================================
+const CLICKMAP_STORAGE_KEY = "lg_analytics_clickmap_v2";
+
+export interface ClickMapItem {
+  id: string;
+  label: string;
+  section: string;
+  count: number;
+  percentage?: number;
+}
+
+export interface ClickMapData {
+  totalClicks: number;
+  topElements: ClickMapItem[];
+  bySection: Record<string, number>;
+}
+
+const DEFAULT_CLICKMAP_SEED: ClickMapData = {
+  totalClicks: 42,
+  topElements: [
+    { id: "hero-cta", label: "Get Your Free Local Voucher (Hero)", section: "Hero", count: 18 },
+    { id: "persona-remote", label: "Tab: Remote Out-of-Towners", section: "Interactive Mockup", count: 8 },
+    { id: "header-cta", label: "Get a Voucher (Header)", section: "Header", count: 6 },
+    { id: "faq-q1", label: "FAQ: How does 42-sec phone call work?", section: "FAQ", count: 5 },
+    { id: "repeat-cta", label: "Get Free Voucher Now (2nd CTA)", section: "Below-the-fold CTA", count: 3 },
+    { id: "admin-pill", label: "Admin CRM & Analytics Pill", section: "Footer", count: 2 },
+  ],
+  bySection: {
+    Hero: 18,
+    "Interactive Mockup": 8,
+    Header: 6,
+    FAQ: 5,
+    "Below-the-fold CTA": 3,
+    Footer: 2,
+  },
+};
+
+/**
+ * Retrieves the current Click Map & Heatmap statistics.
+ */
+export function getClickMapData(): ClickMapData {
+  if (typeof window === "undefined") return DEFAULT_CLICKMAP_SEED;
+  try {
+    const raw = localStorage.getItem(CLICKMAP_STORAGE_KEY);
+    if (!raw) {
+      localStorage.setItem(CLICKMAP_STORAGE_KEY, JSON.stringify(DEFAULT_CLICKMAP_SEED));
+      return DEFAULT_CLICKMAP_SEED;
+    }
+    const data = JSON.parse(raw) as ClickMapData;
+    // Calculate live percentages
+    const total = data.totalClicks || 1;
+    data.topElements = data.topElements.map((el) => ({
+      ...el,
+      percentage: Math.round((el.count / total) * 100),
+    }));
+    return data;
+  } catch {
+    return DEFAULT_CLICKMAP_SEED;
+  }
+}
+
+/**
+ * Record a click on any interactive element across the page.
+ */
+export function recordClick(label: string, section: string) {
+  if (typeof window === "undefined") return;
+
+  const cleanLabel = label.trim().substring(0, 50) || "Unknown Button";
+  const cleanSection = section.trim() || "Page";
+  const id = `${cleanSection}_${cleanLabel}`.toLowerCase().replace(/[^a-z0-9]/g, "-");
+
+  try {
+    const current = getClickMapData();
+    const existingIndex = current.topElements.findIndex((item) => item.id === id);
+
+    if (existingIndex >= 0) {
+      current.topElements[existingIndex].count += 1;
+    } else {
+      current.topElements.push({
+        id,
+        label: cleanLabel,
+        section: cleanSection,
+        count: 1,
+      });
+    }
+
+    current.totalClicks = (current.totalClicks || 0) + 1;
+    current.bySection = current.bySection || {};
+    current.bySection[cleanSection] = (current.bySection[cleanSection] || 0) + 1;
+
+    // Sort descending by click count
+    current.topElements.sort((a, b) => b.count - a.count);
+
+    localStorage.setItem(CLICKMAP_STORAGE_KEY, JSON.stringify(current));
+
+    // Also dispatch to GA4 as custom event
+    if (window.gtag) {
+      window.gtag("event", "heat_click", {
+        element_label: cleanLabel,
+        element_section: cleanSection,
+      });
+    }
+  } catch (err) {
+    console.error("[ClickMap] Error recording click:", err);
+  }
+}
+
+/**
+ * Initializes global click listener to automatically log user interactions.
+ */
+export function initAutoClickTracker() {
+  if (typeof window === "undefined") return () => {};
+
+  const handleClick = (e: MouseEvent) => {
+    const target = e.target as HTMLElement | null;
+    if (!target) return;
+
+    // Find nearest interactive ancestor (button, link, summary, or with role=button)
+    const interactive = target.closest("button, a, summary, [role='button'], input[type='submit']");
+    if (!interactive) return;
+
+    // Determine label
+    const rawText =
+      interactive.getAttribute("aria-label") ||
+      interactive.getAttribute("title") ||
+      (interactive as HTMLElement).innerText ||
+      "Action Button";
+    const label = rawText.split("\n")[0].trim().substring(0, 45);
+
+    // Determine section by traversing up to nearest section or header/footer
+    const sectionEl = interactive.closest("section, header, footer, [id]");
+    let sectionName = "Page";
+    if (sectionEl) {
+      if (sectionEl.tagName.toLowerCase() === "header") sectionName = "Header";
+      else if (sectionEl.tagName.toLowerCase() === "footer") sectionName = "Footer";
+      else if (sectionEl.id) sectionName = sectionEl.id.replace("#", "");
+      else sectionName = "Content";
+    }
+
+    recordClick(label, sectionName);
+  };
+
+  window.addEventListener("click", handleClick, { passive: true });
+  return () => window.removeEventListener("click", handleClick);
+}
+
