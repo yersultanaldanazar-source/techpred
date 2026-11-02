@@ -164,20 +164,22 @@ export function initGA4() {
     }
   }
 
-  // Initialize Yandex Metrica if ID is provided via env, window or localStorage
+  // Initialize Yandex Metrica counter (114019628)
   const ymId =
     import.meta.env.VITE_YANDEX_METRICA_ID ||
     (window as any).VITE_YANDEX_METRICA_ID ||
-    (typeof localStorage !== "undefined" ? localStorage.getItem("lg_ym_id") : null);
+    (typeof localStorage !== "undefined" ? localStorage.getItem("lg_ym_id") : null) ||
+    "114019628";
+
+  (window as any)._ym_counter_id = ymId;
 
   if (ymId && !(window as any).ym) {
-    (window as any)._ym_counter_id = ymId;
     (function(m: any, e: any, t: any, r: any, i: any, k?: any, a?: any){
       m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
       m[i].l=1*new Date().getTime();
       for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
       k=e.createElement(t);a=e.getElementsByTagName(t)[0];k.async=1;k.src=r;a.parentNode.insertBefore(k,a)
-    })(window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+    })(window, document, "script", `https://mc.yandex.ru/metrika/tag.js?id=${ymId}`, "ym");
 
     (window as any).ym(Number(ymId) || ymId, "init", {
       clickmap: true,
@@ -228,6 +230,17 @@ export function trackPageView(pageTitle = "Local Guarantor Landing") {
       traffic_source: source,
       visitor_id: visitorId,
     });
+  }
+
+  // Yandex Metrica SPA hit tracking
+  if (typeof window !== "undefined" && (window as any).ym) {
+    const ymId = (window as any)._ym_counter_id || 114019628;
+    try {
+      (window as any).ym(Number(ymId) || ymId, "hit", window.location.href, {
+        title: pageTitle,
+        referrer: document.referrer,
+      });
+    } catch (e) {}
   }
 
   updateMetrics((prev) => ({
