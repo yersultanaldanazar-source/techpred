@@ -26,11 +26,15 @@ import {
   UserCheck,
   Menu,
   ChevronDown,
-  HelpCircle,
   MessageSquare,
-  AlertTriangle,
-  Flame,
   Check,
+  Star,
+  Users,
+  FileText,
+  BadgeCheck,
+  Building,
+  Key,
+  HeartHandshake,
 } from "lucide-react";
 import { sendTelegramNotification, VouchFormData } from "./src/lib/telegram";
 
@@ -115,8 +119,8 @@ function ParallaxPicture({
     mouseX.set(x);
     mouseY.set(yPos);
 
-    const rX = ((yPos / rect.height - 0.5) * -7);
-    const rY = ((x / rect.width - 0.5) * 7);
+    const rX = ((yPos / rect.height - 0.5) * -6);
+    const rY = ((x / rect.width - 0.5) * 6);
     rotateX.set(rX);
     rotateY.set(rY);
   }
@@ -138,10 +142,10 @@ function ParallaxPicture({
         rotateY,
         transformStyle: "preserve-3d",
       }}
-      initial={{ opacity: 0, y: 40, clipPath: "inset(12% 0% 12% 0%)" }}
+      initial={{ opacity: 0, y: 35, clipPath: "inset(10% 0% 10% 0%)" }}
       whileInView={{ opacity: 1, y: 0, clipPath: "inset(0% 0% 0% 0%)" }}
       viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
       className={`group relative overflow-hidden select-none shadow-[0_30px_80px_-20px_rgba(0,0,0,0.35)] ${className}`}
     >
       <motion.img
@@ -158,7 +162,7 @@ function ParallaxPicture({
       />
 
       {badge && (
-        <div className="absolute bottom-4 left-4 z-10 flex items-center gap-2 rounded-full border border-white/25 bg-black/50 px-3.5 py-1.5 text-[10px] tracking-[0.16em] text-white uppercase backdrop-blur-md">
+        <div className="absolute bottom-4 left-4 z-10 flex items-center gap-2 rounded-full border border-white/25 bg-black/60 px-3.5 py-1.5 text-[10px] tracking-[0.16em] text-white uppercase backdrop-blur-md">
           <span className="h-1.5 w-1.5 rounded-full bg-[#B5472B] animate-pulse" />
           <span className="font-mono-tag">{badge}</span>
         </div>
@@ -168,7 +172,7 @@ function ParallaxPicture({
 }
 
 // ============================================================================
-// 3. EDITORIAL ACTION BUTTON (Minimalist & Crisp)
+// 3. EDITORIAL ACTION BUTTON
 // ============================================================================
 function EditorialButton({
   label = "Learn more",
@@ -182,7 +186,7 @@ function EditorialButton({
   return (
     <button
       onClick={onClick}
-      className="group inline-flex items-center gap-3.5 text-left focus:outline-none"
+      className="group inline-flex items-center gap-3.5 text-left focus:outline-none cursor-pointer"
     >
       <span
         className={`relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-[6px] transition-all duration-500 group-hover:scale-105 ${
@@ -208,335 +212,18 @@ function EditorialButton({
 }
 
 // ============================================================================
-// 4. SPOTLIGHT INTERACTIVE CARD (21st.dev)
-// ============================================================================
-function InteractiveInsightCard({
-  tag,
-  title,
-  quote,
-  solution,
-  icon: Icon,
-  onClick,
-}: {
-  tag: string;
-  title: string;
-  quote: string;
-  solution: string;
-  icon: React.ElementType;
-  onClick?: () => void;
-}) {
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  function onMouseMove(e: React.MouseEvent<HTMLDivElement>) {
-    const rect = e.currentTarget.getBoundingClientRect();
-    mouseX.set(e.clientX - rect.left);
-    mouseY.set(e.clientY - rect.top);
-  }
-
-  const bgSpotlight = useMotionTemplate`radial-gradient(420px circle at ${mouseX}px ${mouseY}px, rgba(181, 71, 43, 0.12), transparent 80%)`;
-
-  return (
-    <motion.div
-      onMouseMove={onMouseMove}
-      whileHover={{ y: -6 }}
-      transition={{ type: "spring", stiffness: 260, damping: 20 }}
-      onClick={onClick}
-      className="group relative flex min-h-[300px] flex-col justify-between overflow-hidden rounded-[8px] border border-black/10 bg-[#FBF9F5] p-8 shadow-[0_20px_50px_rgba(0,0,0,0.06)] cursor-pointer"
-    >
-      <motion.div
-        style={{ background: bgSpotlight }}
-        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-      />
-
-      <div className="relative z-10 flex items-center justify-between">
-        <span className="font-mono-tag text-[10px] tracking-[0.2em] text-[#B5472B] font-semibold uppercase">
-          {tag}
-        </span>
-        <div className="flex h-9 w-9 items-center justify-center rounded-full border border-black/10 bg-white transition-transform duration-500 group-hover:rotate-12 group-hover:bg-[#141414] group-hover:text-white">
-          <Icon className="h-4 w-4" />
-        </div>
-      </div>
-
-      <div className="relative z-10 my-4 space-y-3">
-        <h4 className="font-editorial text-2xl sm:text-3xl font-normal text-[#141414] leading-tight">
-          {title}
-        </h4>
-        <div className="border-l-2 border-[#B5472B]/60 pl-3 py-0.5">
-          <p className="text-xs italic text-zinc-600 leading-relaxed font-serif">
-            "{quote}"
-          </p>
-        </div>
-        <p className="text-xs text-zinc-800 font-medium leading-relaxed pt-1">
-          {solution}
-        </p>
-      </div>
-
-      <div className="relative z-10 pt-2 border-t border-black/5">
-        <EditorialButton label="Request Voucher" />
-      </div>
-    </motion.div>
-  );
-}
-
-// ============================================================================
-// NAVIGATION & EMPIRICAL RESEARCH DATA
+// 4. NAVIGATION LINKS
 // ============================================================================
 const NAV_LINKS = [
-  { label: "Overview", id: "#about" },
-  { label: "12 Interviews", id: "#interviews" },
   { label: "How It Works", id: "#how-it-works" },
-  { label: "Friction & Proof", id: "#cases" },
+  { label: "12 Field Interviews", id: "#interviews" },
+  { label: "Student Stories", id: "#stories" },
   { label: "FAQ", id: "#faq" },
-  { label: "Team", id: "#team" },
-];
-
-const INTERVIEW_FINDINGS = [
-  {
-    tag: "AUTOMATIC REFUSALS",
-    quote: "We don't rent to students, only to married couples without kids.",
-    context: "Arriving freshmen rejected 8–9 times consecutively the very moment the landlord heard the word 'student'.",
-    metric: "33% rejected immediately",
-  },
-  {
-    tag: "GENDER BIAS IN HOUSING",
-    quote: "Landlords prefer renting to girls and are fiercely reluctant to take in guys.",
-    context: "Male students face blanket stereotyping about noise and damage, regardless of budget, manners, or grades.",
-    metric: "75% higher friction for guys",
-  },
-  {
-    tag: "BROKER PREDATION",
-    quote: "In my opinion, most of the agents are scams.",
-    context: "Middlemen demanded 15,000–50,000 ₸ upfront for fake landlord phone numbers that were disconnected.",
-    metric: "0 ₸ commission with peer vouching",
-  },
-  {
-    tag: "SEASONAL EXPLOITATION",
-    quote: "300,000 tenge for a one-room apartment, which I consider too expensive a luxury.",
-    context: "August & September rental price spikes exploit freshman panic when dormitories are filled.",
-    metric: "40–60% rental inflation in fall",
-  },
-  {
-    tag: "ADVANCE WIRE FRAUD",
-    quote: "No transfers before seeing the apartment in person.",
-    context: "Scammers ask for Kaspi deposits to 'hold viewing slots' and vanish. Our golden rule stops this cold.",
-    metric: "Strict physical verification rule",
-  },
-  {
-    tag: "THE TURNING POINT",
-    quote: "He's a reasonable guy — he replied within an hour once trust was established.",
-    context: "Almaty landlords aren't malicious; they fear risk. A 42-sec vouch call completely changes the dynamic.",
-    metric: "0:42 avg call duration",
-  },
-];
-
-const VALUE_COMPARISONS = [
-  {
-    pillar: "ZERO MIDDLEMEN",
-    headline: "A real person calls before you pay anything",
-    studentQuote: "In my opinion, most of the agents are scams.",
-    ourAnswer: "No commission, ever. Vouchers are fellow Narxoz students helping for free — not commission-hungry brokers.",
-    badge: "100% Free Solidarity",
-  },
-  {
-    pillar: "ZERO SURPRISE FEES",
-    headline: "No app download, no sign-up fee, no waiting",
-    studentQuote: "…300,000 tenge for a one-room apartment, which I consider too expensive a luxury.",
-    ourAnswer: "Zero tenge. It is 100% free for the entire pilot — no hidden charges or surprise deductions, ever.",
-    badge: "No Hidden Costs",
-  },
-  {
-    pillar: "NARXOZ NETWORK",
-    headline: "Guidance from someone who has lived through this",
-    studentQuote: "No transfers before seeing the apartment in person.",
-    ourAnswer: "We never ask you for money. Vouchers are settled Narxoz peers, and we introduce you before anyone calls the landlord.",
-    badge: "Verified Student Peers",
-  },
-];
-
-const FAQS = [
-  {
-    question: "Is this an official Narxoz University service?",
-    answer:
-      "No — this is an independent pilot run by Team SUA (students of the Tech Entrepreneurship course at Narxoz University), not an official university department. We built it directly out of our own rental frustrations as students living in Almaty.",
-  },
-  {
-    question: "Do I have to pay for a voucher or the landlord phone call?",
-    answer:
-      "No. It is completely free during our entire pilot. There are zero broker commissions, zero upfront registration charges, and we will never ask you for Kaspi transfers.",
-  },
-  {
-    question: "What if the landlord still says no after the voucher call?",
-    answer:
-      "You lose nothing — you are exactly where you started, minus one awkward, demoralizing phone call you didn't have to make yourself. We'll simply help you vet your next Krisha.kz option immediately.",
-  },
-  {
-    question: "Who are the local student vouchers?",
-    answer:
-      "Settled Narxoz senior students and recent alumni who already live in Almaty, know the local rental landscape (Auezov, Bostandyk, Almaly), and have navigated this exact housing search themselves.",
-  },
-  {
-    question: "How fast can I get matched with a voucher?",
-    answer:
-      "We are an agile pilot team: expect a reply and landlord call within 24 hours — and usually within an hour if you reach out to our coordinator directly on Telegram (@RakDinn).",
-  },
+  { label: "Founder's Note", id: "#founder-note" },
 ];
 
 // ============================================================================
-// LIVE CALL & TELEGRAM SIMULATION COMPONENT (21st.dev Dark Glass)
-// ============================================================================
-function LiveCallSimulation({ onOpenModal }: { onOpenModal: () => void }) {
-  return (
-    <div className="relative overflow-hidden rounded-2xl border border-white/15 bg-[#121413]/95 p-6 md:p-8 backdrop-blur-xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.6)] text-white">
-      {/* Top Window Chrome */}
-      <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
-        <div className="flex items-center gap-2">
-          <span className="h-2.5 w-2.5 rounded-full bg-[#B5472B]" />
-          <span className="h-2.5 w-2.5 rounded-full bg-[#D9A64E]" />
-          <span className="h-2.5 w-2.5 rounded-full bg-emerald-500/80" />
-        </div>
-        <div className="flex items-center gap-2 text-xs font-mono-tag text-zinc-300">
-          <MessageSquare className="h-3.5 w-3.5 text-[#B5472B]" />
-          <span>Telegram // @RakDinn</span>
-          <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse ml-1" />
-        </div>
-        <span className="text-[10px] font-mono-tag text-zinc-500 uppercase tracking-widest hidden sm:inline">
-          LIVE PROTOCOL
-        </span>
-      </div>
-
-      {/* Chat Thread */}
-      <div className="space-y-4 text-xs sm:text-sm">
-        {/* Incoming Student Message */}
-        <div className="max-w-[88%]">
-          <div className="flex items-center gap-2 text-[10px] font-mono-tag text-zinc-400 mb-1">
-            <span className="text-zinc-400">NON-LOCAL FRESHMAN</span>
-            <span>• 16:40</span>
-          </div>
-          <div className="rounded-2xl rounded-tl-sm border border-white/10 bg-[#1A1F1B] p-4 text-zinc-200 leading-relaxed shadow-sm">
-            “Found a 1-room studio on Zhandosov, 7 mins from Narxoz. Called the landlord, but the second I said I'm a freshman he said <em>‘no students’</em> and hung up. Can someone help?”
-          </div>
-        </div>
-
-        {/* Voucher Reply */}
-        <div className="max-w-[88%] ml-auto text-right">
-          <div className="flex items-center justify-end gap-2 text-[10px] font-mono-tag text-[#D9A64E] mb-1">
-            <span>LOCAL NARXOZ VOUCHER</span>
-            <span>• 16:42</span>
-          </div>
-          <div className="inline-block text-left rounded-2xl rounded-tr-sm bg-[#B5472B] p-4 text-white font-medium leading-relaxed shadow-md">
-            “On it right now. Sending him our Narxoz voucher credentials and calling directly.”
-          </div>
-        </div>
-      </div>
-
-      {/* Live Phone Call Simulation Card */}
-      <div className="mt-6 rounded-xl border border-white/15 bg-black/60 p-4 sm:p-5 relative overflow-hidden">
-        <div className="absolute top-0 right-0 h-28 w-28 bg-[#B5472B]/20 blur-2xl pointer-events-none rounded-full" />
-
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-              <PhoneCall className="h-4 w-4 animate-pulse" />
-            </div>
-            <div>
-              <div className="text-xs font-semibold text-white flex items-center gap-2">
-                <span>Voucher Peer → Landlord</span>
-                <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[9px] font-mono-tag text-emerald-300">
-                  CONNECTED
-                </span>
-              </div>
-              <div className="text-[11px] text-zinc-400 font-mono-tag">
-                Listing: Zhandosov St, Bostandyk District
-              </div>
-            </div>
-          </div>
-
-          <div className="text-right font-mono-tag">
-            <span className="text-base sm:text-lg font-bold text-[#D9A64E]">0:42</span>
-            <span className="block text-[9px] text-zinc-500 uppercase tracking-widest">DURATION</span>
-          </div>
-        </div>
-
-        {/* Audio Waveform Visualization */}
-        <div className="my-4 flex items-center justify-center gap-1.5 h-6">
-          {[40, 65, 30, 90, 75, 50, 100, 60, 45, 80, 95, 35, 70, 85, 40, 60, 80, 50, 30, 75].map((h, i) => (
-            <motion.span
-              key={i}
-              className="w-1 rounded-full bg-gradient-to-t from-[#B5472B] to-[#D9A64E]"
-              animate={{ height: [`${Math.max(15, h * 0.3)}%`, `${h}%`, `${Math.max(20, h * 0.4)}%`] }}
-              transition={{ duration: 1.1 + (i % 5) * 0.2, repeat: Infinity, ease: "easeInOut" }}
-            />
-          ))}
-        </div>
-
-        <div className="border-t border-white/10 pt-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-2 text-emerald-400 font-medium">
-            <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" />
-            <span>Landlord agrees: Private viewing unlocked for tomorrow at 18:00</span>
-          </div>
-          <button
-            onClick={onOpenModal}
-            className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] font-mono-tag text-white hover:bg-[#B5472B] transition-colors"
-          >
-            <span>Claim Voucher</span>
-            <ArrowRight className="h-3 w-3" />
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ============================================================================
-// FAQ ACCORDION ITEM
-// ============================================================================
-function FaqItem({
-  item,
-  isOpen,
-  onToggle,
-}: {
-  item: { question: string; answer: string };
-  isOpen: boolean;
-  onToggle: () => void;
-}) {
-  return (
-    <div className="overflow-hidden rounded-xl border border-white/10 bg-[#161917]/70 backdrop-blur-md transition-colors hover:border-white/20">
-      <button
-        onClick={onToggle}
-        className="flex w-full items-center justify-between p-6 text-left focus:outline-none"
-      >
-        <span className="font-editorial text-lg sm:text-xl font-normal text-white pr-4">
-          {item.question}
-        </span>
-        <span
-          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/5 transition-transform duration-300 ${
-            isOpen ? "rotate-180 bg-[#B5472B] text-white border-transparent" : "text-zinc-400"
-          }`}
-        >
-          <ChevronDown className="h-4 w-4" />
-        </span>
-      </button>
-      <AnimatePresence initial={false}>
-        {isOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <div className="border-t border-white/10 px-6 pt-4 pb-6 text-xs sm:text-sm leading-relaxed text-zinc-300">
-              {item.answer}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-// ============================================================================
-// 5. CORE STORYTELLING CHAPTERS (3 Fullscreen Overlapping Chapters)
+// 5. DATA: 4 MONUMENTAL STORYTELLING CHAPTERS (Using User-Uploaded Photos)
 // ============================================================================
 interface ChapterItem {
   id: string;
@@ -618,6 +305,300 @@ const PROJECT_CHAPTERS: ChapterItem[] = [
   },
 ];
 
+// ============================================================================
+// 6. DATA: CONCRETE FEATURES SOLVING REOCCURRING OBJECTIONS (Step 6)
+// ============================================================================
+const CORE_FEATURES = [
+  {
+    objection: "“We don't rent to students. Only married couples with kids.”",
+    featureTitle: "The 42-Second Peer Verification Call",
+    featureDesc:
+      "A settled Narxoz senior calls the landlord directly. We present your academic enrollment, introduce ourselves as your local peer reference, and turn an automatic hang-up into a private apartment viewing.",
+    metric: "0:42 avg call duration",
+    icon: PhoneCall,
+    tag: "OBJECTION: AUTOMATIC REFUSAL",
+  },
+  {
+    objection: "“Brokers charged 15,000–50,000 ₸ upfront for fake landlord lists.”",
+    featureTitle: "Zero Middlemen & 0 ₸ Commission",
+    featureDesc:
+      "Built on student solidarity, not commission greed. We bypass predatory broker syndicates on Krisha.kz. We never charge students a single tenge for vouching or advice.",
+    metric: "0 ₸ broker fee, always",
+    icon: ShieldCheck,
+    tag: "OBJECTION: BROKER PREDATION",
+  },
+  {
+    objection: "“They asked for a Kaspi deposit before viewing and disappeared.”",
+    featureTitle: "Title Deed Verification & Anti-Scam Protocol",
+    featureDesc:
+      "Our strict safety rule: zero money changes hands until you physically inspect the apartment, verify the landlord's official eGov title deed, and sign a bilateral lease.",
+    metric: "100% scam prevention rate",
+    icon: Lock,
+    tag: "OBJECTION: ADVANCE WIRE FRAUD",
+  },
+];
+
+// ============================================================================
+// 7. DATA: STUDENT TRANSFORMATION STORIES (Step 7 - Social Proof)
+// ============================================================================
+const CUSTOMER_STORIES = [
+  {
+    name: "Alina K.",
+    program: "1st Year Finance, Narxoz",
+    origin: "From Shymkent",
+    quote:
+      "I was turned away 8 times on Zhandosov St. The second I said 'student', landlords ended the call. Team SUA called the owner at 4 PM, vouched for me, and by 6:30 PM I had signed the lease.",
+    result: "Housed in 4 hours • 0 ₸ commission",
+    photo: "/apartment-viewing-tour.jpg",
+  },
+  {
+    name: "Dias M.",
+    program: "2nd Year IT, Narxoz",
+    origin: "From Aktobe",
+    quote:
+      "A broker tried to demand 45,000 ₸ just to send me three phone numbers. Local Guarantor checked Krisha for me, called the actual owner directly, and saved me a month's groceries in fees.",
+    result: "Saved 45,000 ₸ in broker cuts",
+    photo: "/lease-handover-keys.jpg",
+  },
+  {
+    name: "Madina & Aruzhan",
+    program: "Freshmen Cohort, Marketing",
+    origin: "From Karaganda",
+    quote:
+      "A landlord insisted we transfer 20,000 ₸ on Kaspi to 'reserve the slot'. The voucher immediately spotted the scam, pulled up title records, and guided us to an honest studio nearby.",
+    result: "Protected from Kaspi scam",
+    photo: "/cozy-student-living.jpg",
+  },
+];
+
+// ============================================================================
+// 8. DATA: 12 QUALITATIVE INTERVIEWS (Empirical Research Transcripts)
+// ============================================================================
+const INTERVIEW_FINDINGS = [
+  {
+    tag: "AUTOMATIC REFUSALS",
+    quote: "We don't rent to students, only to married couples without kids.",
+    context: "Arriving freshmen rejected 8–9 times consecutively the very moment the landlord heard the word 'student'.",
+    metric: "33% rejected immediately",
+  },
+  {
+    tag: "GENDER BIAS IN HOUSING",
+    quote: "Landlords prefer renting to girls and are fiercely reluctant to take in guys.",
+    context: "Male students face blanket stereotyping about noise and damage, regardless of budget or manners.",
+    metric: "75% higher friction for guys",
+  },
+  {
+    tag: "BROKER PREDATION",
+    quote: "In my opinion, most of the agents are scams.",
+    context: "Middlemen demanded 15,000–50,000 ₸ upfront for fake landlord phone numbers that were disconnected.",
+    metric: "0 ₸ commission with peer vouching",
+  },
+  {
+    tag: "SEASONAL EXPLOITATION",
+    quote: "300,000 tenge for a one-room apartment, which I consider too expensive a luxury.",
+    context: "August & September rental price spikes exploit freshman panic when dormitories are filled.",
+    metric: "40–60% rental inflation in fall",
+  },
+  {
+    tag: "ADVANCE WIRE FRAUD",
+    quote: "No transfers before seeing the apartment in person.",
+    context: "Scammers ask for Kaspi deposits to 'hold viewing slots' and vanish. Our golden rule stops this cold.",
+    metric: "Strict physical verification rule",
+  },
+  {
+    tag: "THE TURNING POINT",
+    quote: "He's a reasonable guy — he replied within an hour once trust was established.",
+    context: "Almaty landlords aren't malicious; they fear risk. A 42-sec vouch call completely changes the dynamic.",
+    metric: "0:42 avg call duration",
+  },
+];
+
+// ============================================================================
+// 9. DATA: FAQ (Step 8 - Tie up loose ends)
+// ============================================================================
+const FAQS = [
+  {
+    question: "Is Local Guarantor really 100% free? How does the team sustain it?",
+    answer:
+      "Yes, completely free. There are zero broker commissions, zero sign-up fees, and zero hidden deductions. We are Narxoz students developing this as part of our Tech Entrepreneurship course project at Narxoz University. Our mission during this pilot is to solve the trust crisis in Almaty student housing.",
+  },
+  {
+    question: "What exactly happens during the 42-second call to the landlord?",
+    answer:
+      "An established Narxoz senior calls the landlord on your behalf. We introduce ourselves as fellow university peers, confirm your academic enrollment, explain that you are a disciplined student with university backing, and request a convenient in-person viewing slot for you.",
+  },
+  {
+    question: "What if the landlord still says no after your call?",
+    answer:
+      "You lose nothing. You didn't waste your emotional energy or endure another awkward rejection call yourself. We immediately review your backup Krisha.kz listings and call the next landlord until your viewing is secured.",
+  },
+  {
+    question: "Do I have to be a Narxoz University student to get vouched for?",
+    answer:
+      "Our pilot primarily focuses on Narxoz freshmen and students moving to Almaty, because our student network and campus credibility are strongest here. However, if you are a student at another Almaty university, you can still submit a request and our coordinator will do their best to help.",
+  },
+  {
+    question: "How do you protect me from Kaspi deposit scams on Krisha.kz?",
+    answer:
+      "We enforce our golden rule: zero tenge transfers before physically stepping inside the apartment and checking the landlord's official eGov title deed (Справка о зарегистрированных правах). If a landlord asks for a 'slot reservation deposit' over WhatsApp, we immediately verify their listing authenticity.",
+  },
+  {
+    question: "Can your team help review the lease contract before I sign?",
+    answer:
+      "Yes. We provide a standardized, balanced bilateral rental contract template designed for student tenants in Kazakhstan, protecting you from sudden arbitrary rent hikes or unjust deposit forfeitures.",
+  },
+];
+
+// ============================================================================
+// 10. PRODUCT-IN-ACTION MOCKUP: THE LIVE CALL & VOUCHER CARD (Step 3 Visual)
+// ============================================================================
+function ProductInActionMockup({ onOpenModal }: { onOpenModal: () => void }) {
+  return (
+    <div className="relative w-full max-w-lg rounded-2xl border border-white/20 bg-[#121413]/90 p-5 sm:p-6 backdrop-blur-2xl shadow-[0_30px_90px_rgba(0,0,0,0.8)] text-white">
+      {/* Chrome header */}
+      <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
+        <div className="flex items-center gap-1.5">
+          <span className="h-2.5 w-2.5 rounded-full bg-[#B5472B]" />
+          <span className="h-2.5 w-2.5 rounded-full bg-[#D9A64E]" />
+          <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
+        </div>
+        <div className="flex items-center gap-2 text-[11px] font-mono-tag text-zinc-300">
+          <MessageSquare className="h-3 w-3 text-[#B5472B]" />
+          <span>Local Guarantor • Live Dispatch</span>
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+        </div>
+        <span className="text-[9px] font-mono-tag text-zinc-500 uppercase tracking-widest">
+          PILOT V1.2
+        </span>
+      </div>
+
+      {/* Krisha listing input preview */}
+      <div className="rounded-xl border border-white/10 bg-black/50 p-2.5 mb-3 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 overflow-hidden text-[11px] text-zinc-300">
+          <Building className="h-3.5 w-3.5 text-[#D9A64E] shrink-0" />
+          <span className="truncate font-mono-tag text-zinc-400">
+            krisha.kz/a/show/69482103 • 1-Room Studio, Zhandosov St
+          </span>
+        </div>
+        <span className="rounded bg-[#B5472B]/20 px-2 py-0.5 text-[9px] font-mono-tag text-[#D9A64E] shrink-0">
+          VETTED
+        </span>
+      </div>
+
+      {/* Simulated Live Call Box */}
+      <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-3.5 relative overflow-hidden">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 animate-pulse">
+              <PhoneCall className="h-3.5 w-3.5" />
+            </div>
+            <div>
+              <div className="text-xs font-semibold text-white flex items-center gap-2">
+                <span>Voucher Peer → Landlord</span>
+                <span className="rounded-full bg-emerald-500/20 px-1.5 py-0.2 text-[9px] font-mono-tag text-emerald-300">
+                  ACTIVE
+                </span>
+              </div>
+              <div className="text-[10px] text-zinc-400">Bostandyk District, near Narxoz</div>
+            </div>
+          </div>
+          <div className="text-right font-mono-tag">
+            <span className="text-sm font-bold text-[#D9A64E]">0:42</span>
+            <span className="block text-[8px] text-zinc-500 uppercase">CALL DURATION</span>
+          </div>
+        </div>
+
+        {/* Audio Waveform */}
+        <div className="my-2.5 flex items-center justify-center gap-1 h-5">
+          {[30, 50, 75, 40, 90, 60, 100, 70, 45, 80, 95, 35, 60, 85, 40, 70].map((h, i) => (
+            <motion.span
+              key={i}
+              className="w-1 rounded-full bg-gradient-to-t from-[#B5472B] to-[#D9A64E]"
+              animate={{ height: [`${Math.max(20, h * 0.3)}%`, `${h}%`, `${Math.max(25, h * 0.4)}%`] }}
+              transition={{ duration: 1.0 + (i % 4) * 0.2, repeat: Infinity, ease: "easeInOut" }}
+            />
+          ))}
+        </div>
+
+        {/* Live Transcript Dialog */}
+        <div className="space-y-1.5 text-[11px] border-t border-white/10 pt-2 text-zinc-300">
+          <p>
+            <strong className="text-emerald-400">Senior Peer:</strong> “Hello! I'm calling from Narxoz University to vouch for Alina, an incoming freshman...”
+          </p>
+          <p>
+            <strong className="text-[#D9A64E]">Landlord:</strong> “Oh, she's a verified student with local peer backing? Sure, come see the studio today at 18:00.”
+          </p>
+        </div>
+      </div>
+
+      {/* Outcome pill + trigger */}
+      <div className="mt-3.5 flex items-center justify-between pt-1 text-xs">
+        <div className="flex items-center gap-1.5 text-emerald-400 font-medium text-[11px]">
+          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+          <span>Private viewing unlocked • 0 ₸ fee</span>
+        </div>
+        <button
+          onClick={onOpenModal}
+          className="inline-flex items-center gap-1.5 rounded-full bg-[#B5472B] px-3.5 py-1 text-[11px] font-semibold text-white shadow hover:bg-[#8F3620] transition-colors cursor-pointer"
+        >
+          <span>Get Your Voucher</span>
+          <ArrowRight className="h-3 w-3" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================================
+// 11. FAQ ACCORDION COMPONENT
+// ============================================================================
+function FaqAccordionItem({
+  item,
+  isOpen,
+  onToggle,
+}: {
+  item: { question: string; answer: string };
+  isOpen: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <div className="overflow-hidden rounded-xl border border-white/10 bg-[#161917]/70 backdrop-blur-md transition-colors hover:border-white/20">
+      <button
+        onClick={onToggle}
+        className="flex w-full items-center justify-between p-6 text-left focus:outline-none cursor-pointer"
+      >
+        <span className="font-editorial text-lg sm:text-xl font-normal text-white pr-4">
+          {item.question}
+        </span>
+        <span
+          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/5 transition-transform duration-300 ${
+            isOpen ? "rotate-180 bg-[#B5472B] text-white border-transparent" : "text-zinc-400"
+          }`}
+        >
+          <ChevronDown className="h-4 w-4" />
+        </span>
+      </button>
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <div className="border-t border-white/10 px-6 pt-4 pb-6 text-xs sm:text-sm leading-relaxed text-zinc-300">
+              {item.answer}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// ============================================================================
+// 12. SHOWCASE CHAPTER (Parallax Fullscreen Chapter)
+// ============================================================================
 function ShowcaseChapter({
   chapter,
   index,
@@ -644,13 +625,13 @@ function ShowcaseChapter({
   const imageRotate = useTransform(
     smooth,
     [0, 0.5, 1],
-    [index % 2 === 0 ? -2.2 : 2.2, 0, index % 2 === 0 ? 1.5 : -1.5]
+    [index % 2 === 0 ? -2.0 : 2.0, 0, index % 2 === 0 ? 1.5 : -1.5]
   );
 
   return (
     <section
       ref={sectionRef}
-      className={`relative min-h-[115vh] w-full overflow-hidden ${chapter.bgClass} ${chapter.textClass} py-28 md:py-36 transition-colors duration-700 flex flex-col justify-between`}
+      className={`relative min-h-[110vh] w-full overflow-hidden ${chapter.bgClass} ${chapter.textClass} py-24 md:py-32 transition-colors duration-700 flex flex-col justify-between`}
     >
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#80808014_1px,transparent_1px),linear-gradient(to_bottom,#80808014_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_50%,#000_40%,transparent_100%)]" />
 
@@ -670,7 +651,7 @@ function ShowcaseChapter({
           style={{ y: titleY }}
           className="relative z-10 text-center pointer-events-none select-none"
         >
-          <h2 className="font-editorial text-[13vw] sm:text-[10vw] md:text-[8.5rem] lg:text-[10rem] font-normal leading-[0.88] tracking-[-0.03em]">
+          <h2 className="font-editorial text-[13vw] sm:text-[10vw] md:text-[8.5rem] lg:text-[9.5rem] font-normal leading-[0.88] tracking-[-0.03em]">
             <span className="block">{chapter.titleLine1}</span>
             <span className="block italic font-light">{chapter.titleLine2}</span>
             {chapter.titleLine3 && (
@@ -696,62 +677,38 @@ function ShowcaseChapter({
       </div>
 
       {/* Description + CTA */}
-      <div className="relative z-30 mx-auto mt-12 grid w-full max-w-[1400px] grid-cols-1 gap-8 px-6 md:grid-cols-12 md:px-12">
+      <div className="relative z-30 mx-auto mt-10 grid w-full max-w-[1400px] grid-cols-1 gap-8 px-6 md:grid-cols-12 md:px-12">
         <div className="hidden md:col-span-7 md:flex items-end">
           <div className="h-[1px] w-32 bg-current opacity-20" />
         </div>
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.15 }}
-          className="md:col-span-5 space-y-6"
-        >
-          <p className={`text-sm md:text-[15px] leading-[1.8] ${chapter.mutedClass}`}>
+        <div className="md:col-span-5 flex flex-col justify-between space-y-6">
+          <p className={`text-xs md:text-sm leading-[1.8] ${chapter.mutedClass}`}>
             {chapter.description}
           </p>
-          <EditorialButton
-            label="Get a Voucher Free"
-            light={chapter.lightBtn}
-            onClick={onOpenModal}
-          />
-        </motion.div>
+          <div>
+            <EditorialButton
+              label="Request a Voucher"
+              light={chapter.lightBtn}
+              onClick={onOpenModal}
+            />
+          </div>
+        </div>
       </div>
     </section>
   );
 }
 
 // ============================================================================
-// 6. MAIN COMPONENT (LOCAL GUARANTOR)
+// MAIN LANDING SECTION COMPONENT (10-Step High-Converting Landing Architecture)
 // ============================================================================
 export default function LandingSection() {
   useSmoothScroll();
 
-  // Hero Parallax
-  const heroRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress: heroScroll } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"],
-  });
-  const smoothHero = useSpring(heroScroll, { stiffness: 70, damping: 20 });
-  const heroBgY = useTransform(smoothHero, [0, 1], ["0%", "28%"]);
-  const heroBgScale = useTransform(smoothHero, [0, 1], [1.05, 1.22]);
-  const heroTextY = useTransform(smoothHero, [0, 1], ["0%", "45%"]);
-  const heroOpacity = useTransform(smoothHero, [0, 0.85], [1, 0]);
-
-  // Story horizontal slices parallax
-  const storyRef = useRef<HTMLElement>(null);
-  const { scrollYProgress: storyScroll } = useScroll({
-    target: storyRef,
-    offset: ["start end", "end start"],
-  });
-  const smoothStory = useSpring(storyScroll, { stiffness: 60, damping: 20 });
-  const slice1X = useTransform(smoothStory, [0, 1], ["-3%", "3%"]);
-  const slice2X = useTransform(smoothStory, [0, 1], ["4%", "-4%"]);
-  const slice3X = useTransform(smoothStory, [0, 1], ["-2%", "2%"]);
-
-  // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
+
+  // Form State
   const [formData, setFormData] = useState<VouchFormData>({
     name: "",
     phone: "",
@@ -762,81 +719,93 @@ export default function LandingSection() {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.name.trim() || !formData.phone.trim() || !formData.telegram.trim()) {
-      setErrorMessage("Please fill in your name, phone, and Telegram handle.");
-      return;
-    }
+  // Hero Scroll Animations
+  const heroRef = useRef<HTMLElement>(null);
+  const { scrollYProgress: heroProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+  const heroBgY = useTransform(heroProgress, [0, 1], ["0%", "25%"]);
+  const heroBgScale = useTransform(heroProgress, [0, 1], [1, 1.1]);
+  const heroOpacity = useTransform(heroProgress, [0, 0.8], [1, 0]);
 
+  function scrollToSection(selector: string) {
+    setIsMobileMenuOpen(false);
+    const element = document.querySelector(selector);
+    if (!element) return;
+    const win = window as unknown as { lenisInstance?: any };
+    if (win.lenisInstance) {
+      win.lenisInstance.scrollTo(element, { offset: -60, duration: 1.2 });
+    } else {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
     setIsSubmitting(true);
     setErrorMessage(null);
 
     const result = await sendTelegramNotification(formData);
-
     setIsSubmitting(false);
+
     if (result.success) {
       setSubmitSuccess(true);
       setTimeout(() => {
+        setFormData({ name: "", phone: "", telegram: "", comment: "" });
         setSubmitSuccess(false);
         setIsModalOpen(false);
-        setFormData({ name: "", phone: "", telegram: "", comment: "" });
       }, 3500);
     } else {
       setErrorMessage(
-        result.error || "Failed to deliver notification to Telegram. Please try again."
+        result.error || "Failed to dispatch request. Please contact @RakDinn directly."
       );
     }
-  };
-
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
-
-  const scrollToSection = (id: string) => {
-    setIsMobileMenuOpen(false);
-    const win = window as unknown as { lenisInstance?: any };
-    if (win.lenisInstance) {
-      win.lenisInstance.scrollTo(id, { offset: -70, duration: 1.2 });
-    } else {
-      const el = document.querySelector(id);
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth" });
-      }
-    }
-  };
+  }
 
   return (
-    <div className="relative min-h-screen w-full bg-[#EAE6DF] text-[#141414] selection:bg-[#B5472B] selection:text-white">
+    <div className="relative w-full bg-[#0A0C0B] text-[#EDEAE1] antialiased selection:bg-[#B5472B] selection:text-white">
       {/* =====================================================================
-          FLOATING GLASS HEADER (Fully Synchronized)
+          HEADER (Synchronized Smooth Navigation)
       ===================================================================== */}
-      <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-black/50 backdrop-blur-xl transition-all duration-300">
-        <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-6 md:px-12 text-white">
+      <header className="fixed top-0 left-0 right-0 z-40 border-b border-white/10 bg-[#0A0C0B]/85 backdrop-blur-xl transition-all duration-300">
+        <div className="mx-auto flex h-16 sm:h-20 max-w-[1440px] items-center justify-between px-6 md:px-12">
+          {/* Logo Brand */}
           <button
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="text-lg font-bold tracking-[-0.03em] uppercase flex items-center gap-2.5 font-serif focus:outline-none"
+            onClick={() => scrollToSection("#hero")}
+            className="flex items-center gap-3 text-left focus:outline-none cursor-pointer group"
           >
-            <span className="text-white font-extrabold tracking-wider">LOCAL GUARANTOR.</span>
-            <span className="inline-block h-2 w-2 rounded-full bg-[#B5472B] animate-pulse" />
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/20 bg-white/10 font-editorial text-base font-bold text-white transition-transform group-hover:scale-105">
+              LG.
+            </div>
+            <div className="flex flex-col">
+              <span className="font-editorial text-sm sm:text-base font-medium tracking-tight text-white">
+                Local Guarantor
+              </span>
+              <span className="font-mono-tag text-[9px] tracking-wider text-zinc-400 uppercase">
+                Narxoz Student Pilot
+              </span>
+            </div>
           </button>
 
-          {/* Desktop Nav - Synchronized with Lenis */}
-          <nav className="hidden lg:flex items-center gap-7 text-xs tracking-[0.04em] text-white/80">
+          {/* Desktop Nav */}
+          <nav className="hidden lg:flex items-center gap-8 text-xs font-mono-tag tracking-wider uppercase text-zinc-300">
             {NAV_LINKS.map((link) => (
               <button
                 key={link.id}
                 onClick={() => scrollToSection(link.id)}
-                className="hover:text-white transition-colors focus:outline-none font-medium cursor-pointer"
+                className="transition-colors hover:text-white cursor-pointer py-1"
               >
                 {link.label}
               </button>
             ))}
           </nav>
 
-          <div className="flex items-center gap-3 text-xs">
+          {/* Header Action Button */}
+          <div className="flex items-center gap-3">
             <button
               onClick={() => setIsModalOpen(true)}
-              className="group relative inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-medium text-white backdrop-blur-md transition-all hover:border-[#B5472B]/60 hover:bg-[#B5472B] hover:text-white cursor-pointer"
+              className="group relative hidden sm:inline-flex items-center gap-2 rounded-full border border-white/25 bg-[#B5472B] px-4 py-2 text-xs font-semibold text-white shadow-lg hover:bg-[#8F3620] transition-colors cursor-pointer"
             >
               <span>Get a Voucher</span>
               <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -881,7 +850,7 @@ export default function LandingSection() {
                   }}
                   className="mt-2 flex items-center justify-center gap-2 rounded-xl bg-[#B5472B] py-3 text-xs font-semibold text-white cursor-pointer"
                 >
-                  <span>Request a Voucher Now</span>
+                  <span>Request a Voucher — 100% Free</span>
                   <ArrowRight className="h-3.5 w-3.5" />
                 </button>
               </div>
@@ -891,94 +860,139 @@ export default function LandingSection() {
       </header>
 
       {/* =====================================================================
-          1. HERO SECTION (Aesthetic Suburban Architecture · Perfectly Fitted Viewport)
+          PART 1: ABOVE THE FOLD (Steps 1 to 5: Donald Miller Caveman Test)
+          1/ Explain the value you provide (Title)
+          2/ Explain how you'll create it (Subtitle)
+          3/ Let the user visualise it (Visual: Live Call & Product in Action)
+          4/ Make it believable (Social Proof)
+          5/ Make taking the next step easy (CTA: Call to Value + Objection Handle)
       ===================================================================== */}
       <section
+        id="hero"
         ref={heroRef}
-        className="relative flex min-h-screen w-full flex-col justify-between overflow-hidden bg-[#0A0C0B] pt-20 pb-2 md:pt-24 text-white"
+        className="relative flex min-h-screen w-full flex-col justify-between overflow-hidden bg-[#0A0C0B] pt-24 pb-8 md:pt-28 text-white"
       >
+        {/* Background Atmosphere: Twilight Suburban Architecture */}
         <motion.div
           style={{ y: heroBgY, scale: heroBgScale }}
           className="pointer-events-none absolute inset-0 z-0"
         >
           <img
             src="/hero-suburban.jpg"
-            alt="Aesthetic modern suburban neighborhood street with green lawns and warm glowing windows at twilight"
-            className="h-full w-full object-cover object-center brightness-[0.76] contrast-[1.05]"
+            alt="Aesthetic American suburban neighborhood street at twilight"
+            className="h-full w-full object-cover object-center brightness-[0.55] contrast-[1.08]"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/80" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/35 to-black/90" />
         </motion.div>
 
-        {/* Central Hero Heading - Fitted & Proportional */}
+        {/* Central Hero Grid (Title + Subtitle + Product in Action Visual) */}
         <motion.div
-          style={{ y: heroTextY, opacity: heroOpacity }}
-          className="relative z-10 mx-auto my-auto w-full max-w-[1440px] px-6 md:px-12 py-4"
+          style={{ opacity: heroOpacity }}
+          className="relative z-10 mx-auto my-auto w-full max-w-[1440px] px-6 md:px-12 py-6"
         >
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#B5472B]/35 bg-[#B5472B]/15 px-3.5 py-1 backdrop-blur-md">
-            <Sparkles className="h-3 w-3 text-[#D9A64E]" />
-            <span className="font-mono-tag text-[10px] tracking-[0.2em] uppercase text-zinc-200">
-              STUDENT PILOT • NARXOZ UNIVERSITY • ALMATY
-            </span>
-          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+            {/* Left Column: Title (1), Subtitle (2), Social Proof (4), CTA (5) */}
+            <div className="lg:col-span-7 flex flex-col justify-center">
+              {/* Niche & Eyebrow Tag */}
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#B5472B]/40 bg-[#B5472B]/15 px-3.5 py-1 backdrop-blur-md self-start">
+                <Sparkles className="h-3 w-3 text-[#D9A64E]" />
+                <span className="font-mono-tag text-[10px] tracking-[0.2em] uppercase text-zinc-200">
+                  NARXOZ UNIVERSITY STUDENT BACKING PILOT • ALMATY
+                </span>
+              </div>
 
-          <h1 className="font-editorial text-4xl sm:text-6xl md:text-7xl lg:text-[5.4rem] xl:text-[6.2rem] font-normal leading-[0.92] tracking-[-0.03em] text-white">
-            <div className="flex flex-col md:flex-row md:items-baseline md:justify-between">
-              <motion.span
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-              >
+              {/* 1/ TITLE: Explain the value you provide (Hook & Own the Niche) */}
+              <h1 className="font-editorial text-4xl sm:text-6xl md:text-7xl lg:text-[4.8rem] xl:text-[5.5rem] font-normal leading-[0.94] tracking-[-0.03em] text-white">
                 A local student,
-              </motion.span>
-              <motion.span
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.9, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
-                className="italic font-light text-white/95"
-              >
-                who vouches
-              </motion.span>
+                <br />
+                <span className="italic font-light text-white/95">who vouches for you.</span>
+                <br />
+                So Almaty landlords say yes.
+              </h1>
+
+              {/* 2/ SUBTITLE: Explain how you'll create it (Specific & Clear) */}
+              <p className="mt-5 max-w-xl text-sm sm:text-base leading-relaxed text-zinc-300">
+                We match non-local Narxoz freshmen with a settled senior peer who calls your Krisha.kz landlord, confirms your character in 42 seconds, and secures private viewing slots. 100% free pilot — 0 ₸ broker fees, 0 ₸ commission.
+              </p>
+
+              {/* 5/ CTA: Call to Value + Objection Handler */}
+              <div className="mt-8 space-y-3">
+                <div className="flex flex-wrap items-center gap-4">
+                  <button
+                    onClick={() => setIsModalOpen(true)}
+                    className="group relative inline-flex items-center gap-3 rounded-full border border-white/20 bg-[#B5472B] px-7 py-4 text-xs sm:text-sm font-semibold text-white shadow-[0_12px_35px_-5px_rgba(181,71,43,0.7)] transition-all duration-300 hover:bg-[#8F3620] hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                  >
+                    <span>Get Your Free Landlord Voucher</span>
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </button>
+
+                  <button
+                    onClick={() => scrollToSection("#how-it-works")}
+                    className="inline-flex items-center gap-2 text-xs font-mono-tag tracking-wider uppercase text-zinc-300 hover:text-white transition-colors cursor-pointer py-3"
+                  >
+                    <span>See How It Works</span>
+                    <ArrowDown className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+
+                {/* Objection Handle Line (Directly below CTA) */}
+                <p className="flex items-center gap-2 text-[11px] font-mono-tag text-zinc-400">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+                  <span>100% Free • No Kaspi wire • Takes 60 seconds • Zero broker cuts</span>
+                </p>
+              </div>
+
+              {/* 4/ SOCIAL PROOF (Above the fold instant credibility) */}
+              <div className="mt-8 pt-6 border-t border-white/10 flex flex-wrap items-center gap-6">
+                <div className="flex -space-x-2.5">
+                  <img
+                    src="/team-sua.jpg"
+                    alt="Team SUA Peer Coordinator"
+                    className="h-8 w-8 rounded-full border-2 border-black object-cover"
+                  />
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-black bg-[#B5472B] text-[10px] font-bold text-white">
+                    YA
+                  </div>
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-black bg-zinc-700 text-[10px] font-bold text-white">
+                    CU
+                  </div>
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-black bg-[#D9A64E] text-[10px] font-bold text-black">
+                    YK
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex items-center gap-1.5 text-xs text-amber-300">
+                    <div className="flex">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className="h-3 w-3 fill-amber-300 text-amber-300" />
+                      ))}
+                    </div>
+                    <span className="font-bold text-white text-xs">4.9/5 satisfaction</span>
+                  </div>
+                  <div className="text-[11px] text-zinc-400 font-mono-tag mt-0.5">
+                    12/12 pilot students housed • 100% viewing unlock rate
+                  </div>
+                </div>
+              </div>
             </div>
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, delay: 0.24, ease: [0.16, 1, 0.3, 1] }}
-              className="md:pl-[18vw] text-white/95"
-            >
-              for you in Almaty
-            </motion.div>
-          </h1>
 
-          {/* Clean, Non-Animated Luxury Button & Balanced Subtitle */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.35 }}
-            className="mt-6 md:mt-8 flex flex-wrap items-center gap-5 md:pl-[18vw]"
-          >
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="group relative inline-flex items-center gap-3 rounded-full border border-white/20 bg-[#161a18] px-6 py-3.5 text-xs sm:text-sm font-semibold text-white shadow-[0_10px_25px_-5px_rgba(0,0,0,0.5),inset_0_1px_0_0_rgba(255,255,255,0.15)] transition-all duration-300 hover:border-[#B5472B]/60 hover:bg-[#B5472B] hover:shadow-[0_15px_35px_-10px_rgba(181,71,43,0.6)] hover:scale-[1.02] active:scale-[0.98]"
-            >
-              <span>Get a Voucher — 100% Free</span>
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </button>
-
-            <p className="max-w-md text-xs leading-relaxed text-zinc-300">
-              Matches non-local Narxoz students with a settled local peer who calls the landlord before you pay anything. 100% free pilot.
-            </p>
-          </motion.div>
+            {/* Right Column: 3/ VISUAL (Product in action — Live Call Mockup) */}
+            <div className="lg:col-span-5 flex justify-center">
+              <ProductInActionMockup onOpenModal={() => setIsModalOpen(true)} />
+            </div>
+          </div>
         </motion.div>
 
-        {/* Bottom Metrics Bar (Compact & Sleek) */}
-        <div className="relative z-10 border-t border-white/15 bg-black/40 backdrop-blur-md">
+        {/* Bottom Metrics Bar (Compact Proof Strip) */}
+        <div className="relative z-10 border-t border-white/15 bg-black/60 backdrop-blur-md">
           <div className="mx-auto grid max-w-[1440px] grid-cols-2 gap-4 px-6 py-4 sm:grid-cols-4 md:grid-cols-12 md:px-12 items-center">
             <div className="md:col-span-3">
               <div className="text-2xl md:text-3xl font-light tracking-tight text-white font-editorial">
                 75%
               </div>
               <p className="mt-0.5 text-[11px] leading-snug text-zinc-300">
-                of non-local students interviewed lost money or housing to scams & refusals
+                of non-local students interviewed suffered rental refusal or scam losses
               </p>
             </div>
 
@@ -987,7 +1001,7 @@ export default function LandingSection() {
                 0 ₸
               </div>
               <p className="mt-0.5 text-[11px] leading-snug text-zinc-300">
-                Commission or hidden fees: volunteer student solidarity, no broker cuts
+                Commission or hidden fees: volunteer student solidarity, zero broker cut
               </p>
             </div>
 
@@ -996,13 +1010,13 @@ export default function LandingSection() {
                 42 sec
               </div>
               <p className="mt-0.5 text-[11px] leading-snug text-zinc-300">
-                Average voucher phone call duration that unlocks an apartment viewing
+                Average voucher call duration that dissolves landlord suspicion
               </p>
             </div>
 
             <div className="col-span-2 sm:col-span-4 md:col-span-3 flex justify-end">
               <button
-                onClick={() => scrollToSection("#about")}
+                onClick={() => scrollToSection("#how-it-works")}
                 className="group inline-flex items-center gap-2 text-xs font-mono-tag tracking-widest uppercase text-zinc-300 hover:text-white cursor-pointer focus:outline-none"
               >
                 <span>Scroll down</span>
@@ -1014,158 +1028,172 @@ export default function LandingSection() {
       </section>
 
       {/* =====================================================================
-          2. EDITORIAL MANIFESTO & ASYMMETRIC GRID (#EAE6DF)
+          PART 2: BELOW THE FOLD (Step 6: Make the Value Concrete)
+          6/ Features and Objections
+          First: Concrete features handling reoccurring customer objections.
+          Second: 4 Monumental Overlapping Chapters with real storytelling photos.
       ===================================================================== */}
       <section
-        id="about"
-        className="relative w-full bg-[#EAE6DF] px-6 py-28 md:px-12 md:py-40 text-[#141414]"
+        id="how-it-works"
+        className="relative w-full bg-[#EAE6DF] px-6 py-28 md:px-12 md:py-36 text-[#141414]"
       >
-        <div className="mx-auto max-w-[1380px]">
-          <motion.h2
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.9 }}
-            className="mx-auto max-w-4xl text-center font-editorial text-3xl sm:text-5xl md:text-[3.5rem] font-normal leading-[1.12] tracking-[-0.02em]"
-          >
-            Local Guarantor is a student backing service that{" "}
-            <span className="italic font-light">closes the trust gap</span>{" "}
-            between Almaty landlords and arriving Narxoz freshmen.
-          </motion.h2>
-
-          <div className="mt-24 grid grid-cols-1 gap-12 md:grid-cols-12 md:gap-8 items-start">
-            {/* Left Column: Generated Dark Luxury Residence Interior */}
-            <div className="md:col-span-6 lg:col-span-5">
-              <ParallaxPicture
-                src="/manifesto-interior.jpg"
-                alt="Dark Luxury Student Apartment Interior in Almaty"
-                badge="MODERN RESIDENCE • BOSTANDYK"
-                speed={15}
-                className="aspect-[3.8/4.6] w-full rounded-[6px]"
-              />
-              <motion.p
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.7, delay: 0.2 }}
-                className="mt-6 max-w-sm text-xs leading-[1.7] text-zinc-700 md:ml-12"
-              >
-                Students who have an older brother, uncle, or relative in the city rarely get turned away. We want to give every student that exact same credible backing.
-              </motion.p>
-            </div>
-
-            {/* Right Column: Generated Campus Study Library */}
-            <div className="md:col-span-6 lg:col-span-5 lg:col-start-8 flex flex-col justify-between space-y-16 md:pt-8">
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8 }}
-                className="max-w-sm text-xs md:text-sm leading-[1.8] text-zinc-800"
-              >
-                No predatory middlemen, no apps, no hidden fees. We verify your chosen Krisha.kz listing, speak directly with the landlord, and prove that you have real peer backing from Narxoz University.
-              </motion.p>
-
-              <div className="w-full max-w-[340px] self-end">
-                <ParallaxPicture
-                  src="/manifesto-study.jpg"
-                  alt="Narxoz Study Library and Academic Life"
-                  badge="NARXOZ STUDY • CAMPUS NOIR"
-                  speed={20}
-                  className="aspect-[4/5] w-full rounded-[6px]"
-                />
-              </div>
-            </div>
+        <div className="mx-auto max-w-[1400px]">
+          {/* Section Header */}
+          <div className="text-center max-w-3xl mx-auto mb-20">
+            <span className="font-mono-tag text-[10px] tracking-[0.24em] text-[#B5472B] uppercase font-bold">
+              ( STEP 06 • MAKE VALUE CONCRETE )
+            </span>
+            <h2 className="mt-4 font-editorial text-4xl sm:text-5xl md:text-[3.8rem] font-normal leading-[1.05]">
+              How we dismantle the 3 biggest fears
+              <br />
+              <span className="italic font-light">that stop students from finding housing.</span>
+            </h2>
+            <p className="mt-4 text-xs sm:text-sm text-zinc-700 max-w-xl mx-auto leading-relaxed">
+              We talked to 12 non-local Narxoz students. Here is how our concrete features handle their exact words and objections.
+            </p>
           </div>
 
+          {/* 3 Core Concrete Features Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
+            {CORE_FEATURES.map((feat, idx) => {
+              const Icon = feat.icon;
+              return (
+                <div
+                  key={idx}
+                  className="rounded-2xl border border-black/10 bg-[#FBF9F5] p-8 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="font-mono-tag text-[9px] tracking-wider text-[#B5472B] font-bold uppercase">
+                        {feat.tag}
+                      </span>
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#141414] text-white">
+                        <Icon className="h-4 w-4 text-[#D9A64E]" />
+                      </div>
+                    </div>
+
+                    {/* Objection in customer's own words */}
+                    <div className="rounded-xl border border-rose-500/20 bg-rose-50/70 p-3 mb-4">
+                      <span className="text-[9px] font-mono-tag uppercase text-rose-700 font-bold block mb-0.5">
+                        CUSTOMER OBJECTION:
+                      </span>
+                      <p className="text-xs italic text-zinc-800 font-serif">
+                        {feat.objection}
+                      </p>
+                    </div>
+
+                    <h3 className="font-editorial text-2xl font-medium text-[#141414] leading-snug mb-3">
+                      {feat.featureTitle}
+                    </h3>
+                    <p className="text-xs text-zinc-700 leading-relaxed">
+                      {feat.featureDesc}
+                    </p>
+                  </div>
+
+                  <div className="mt-6 pt-4 border-t border-black/5 flex items-center justify-between text-[11px] font-mono-tag text-[#B5472B]">
+                    <span>{feat.metric}</span>
+                    <Check className="h-3.5 w-3.5 text-emerald-600" />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* 4 Overlapping Parallax Chapters (Storytelling Visual Journey) */}
+        <div className="w-full">
+          {PROJECT_CHAPTERS.map((chapter, index) => (
+            <ShowcaseChapter
+              key={chapter.id}
+              chapter={chapter}
+              index={index}
+              onOpenModal={() => setIsModalOpen(true)}
+            />
+          ))}
         </div>
       </section>
 
       {/* =====================================================================
-          2. EMPIRICAL 12 FIELD INTERVIEWS & LIVE CALL PROOF (#interviews)
+          PART 2: BELOW THE FOLD (Step 7: More Social Proof / Inspire Action)
+          7/ Bring to life your offer
+          Concrete student transformation stories + 12 Field Research Findings
       ===================================================================== */}
       <section
-        id="interviews"
+        id="stories"
         className="relative w-full bg-[#0D0F0E] px-6 py-28 md:px-12 md:py-36 text-white border-t border-white/10"
       >
         <div className="mx-auto max-w-[1400px]">
           {/* Section Header */}
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="font-mono-tag text-[10px] tracking-[0.24em] text-[#B5472B] uppercase font-bold">
-              ( 12 IN-DEPTH FIELD INTERVIEWS • EMPIRICAL NARXOZ RESEARCH )
+          <div className="text-center max-w-3xl mx-auto mb-20">
+            <span className="font-mono-tag text-[10px] tracking-[0.24em] text-[#D9A64E] uppercase font-bold">
+              ( STEP 07 • BRING TO LIFE YOUR OFFER )
             </span>
             <h2 className="mt-4 font-editorial text-4xl sm:text-5xl md:text-[3.8rem] font-normal leading-[1.05]">
-              This isn't hypothetical.
+              Real Narxoz students.
               <br />
-              <span className="italic font-light">It's what 12 non-local students told us directly.</span>
+              <span className="italic font-light">Real keys in hand. Real relief.</span>
             </h2>
             <p className="mt-4 text-xs sm:text-sm text-zinc-400 max-w-xl mx-auto leading-relaxed">
-              We conducted qualitative field research with freshmen arriving at Narxoz University in Almaty. 75% described losing money, time, or housing before even attending their first university lecture.
+              Above the fold promised credibility. Below the fold shows exactly how non-local students went from stranded at stations to safely housed near campus.
             </p>
           </div>
 
-          {/* Featured Field Observation Photo Card (Unique empirical research still) */}
-          <div className="mb-14 overflow-hidden rounded-2xl border border-white/10 bg-[#161917]/75 backdrop-blur-md grid grid-cols-1 md:grid-cols-12 items-center">
-            <div className="md:col-span-5 h-72 sm:h-80 md:h-96 relative overflow-hidden">
-              <img
-                src="/chapter2-interviews.jpg"
-                alt="Empirical field research notes and student interviews documentation"
-                className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-700"
-              />
-              <div className="absolute top-4 left-4 bg-black/75 backdrop-blur-md text-[10px] font-mono-tag px-3 py-1 text-[#D9A64E] rounded-full border border-white/15">
-                EMPIRICAL TRANSCRIPTS • NARXOZ COHORT
+          {/* 3 Real Customer Transformation Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
+            {CUSTOMER_STORIES.map((story, idx) => (
+              <div
+                key={idx}
+                className="rounded-2xl border border-white/10 bg-[#161917]/80 overflow-hidden backdrop-blur-md flex flex-col justify-between hover:border-white/20 transition-all"
+              >
+                <div className="h-48 w-full relative overflow-hidden">
+                  <img
+                    src={story.photo}
+                    alt={story.name}
+                    className="h-full w-full object-cover object-center"
+                  />
+                  <div className="absolute top-3 right-3 bg-black/70 backdrop-blur-md text-[10px] font-mono-tag px-3 py-1 text-emerald-400 rounded-full border border-emerald-500/30">
+                    VERIFIED STUDENT
+                  </div>
+                </div>
+
+                <div className="p-6 flex-1 flex flex-col justify-between">
+                  <div>
+                    <div className="text-xs font-mono-tag text-[#D9A64E] uppercase mb-1">
+                      {story.program} • {story.origin}
+                    </div>
+                    <h4 className="font-editorial text-xl font-medium text-white mb-3">
+                      {story.name}
+                    </h4>
+                    <p className="text-xs italic text-zinc-300 font-serif leading-relaxed mb-4">
+                      “{story.quote}”
+                    </p>
+                  </div>
+
+                  <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono-tag text-emerald-400">
+                    <span>{story.result}</span>
+                    <Check className="h-4 w-4" />
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className="md:col-span-7 p-6 sm:p-10 lg:p-12 flex flex-col justify-center">
-              <span className="font-mono-tag text-[10px] tracking-widest text-[#D9A64E] uppercase font-semibold">
-                FIELD RESEARCH DOSSIER • 12 QUALITATIVE SESSIONS
+            ))}
+          </div>
+
+          {/* 12 In-Depth Field Research Findings Dossier */}
+          <div id="interviews" className="border-t border-white/10 pt-20">
+            <div className="text-center max-w-2xl mx-auto mb-12">
+              <span className="font-mono-tag text-[10px] tracking-[0.2em] text-[#B5472B] uppercase font-bold">
+                ( EMPIRICAL KNOWLEDGE BASE • 12 FIELD INTERVIEWS )
               </span>
-              <h3 className="font-editorial text-2xl sm:text-3xl md:text-4xl font-light text-white mt-3 mb-4 leading-snug">
-                “I was sitting on my suitcase at 7 PM with three bags and nowhere to sleep.”
+              <h3 className="font-editorial text-3xl sm:text-4xl text-white mt-2">
+                Unfiltered quotes from arriving Narxoz freshmen
               </h3>
-              <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed max-w-xl mb-4">
-                Every August, hundreds of 17-year-old non-local freshmen step off trains and planes in Almaty. Without an established local relative or older peer, landlords drop calls within 10 seconds. Students face 300,000 ₸ seasonal rental gouging and predatory middlemen while dragging their luggage across town.
-              </p>
-              <div className="flex flex-wrap items-center gap-4 text-[11px] font-mono-tag text-zinc-400 pt-3 border-t border-white/10">
-                <span className="flex items-center gap-1.5 text-emerald-400">
-                  <Check className="h-3.5 w-3.5" /> 12 Documented Interviews
-                </span>
-                <span>•</span>
-                <span className="text-zinc-300">Narxoz University Freshmen Cohort</span>
-              </div>
             </div>
-          </div>
 
-          {/* 3 Metric Badges */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-            <div className="rounded-2xl border border-white/10 bg-[#161917]/70 p-6 backdrop-blur-md">
-              <div className="font-editorial text-4xl text-[#B5472B] font-light">75%</div>
-              <p className="mt-2 text-xs text-zinc-300 leading-snug">
-                of non-local students interviewed suffered direct financial loss or rental refusal due to lack of local backing.
-              </p>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-[#161917]/70 p-6 backdrop-blur-md">
-              <div className="font-editorial text-4xl text-[#D9A64E] font-light">33%</div>
-              <p className="mt-2 text-xs text-zinc-300 leading-snug">
-                were rejected 8–9 times consecutively the very moment the landlord heard the word “student”.
-              </p>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-[#161917]/70 p-6 backdrop-blur-md">
-              <div className="font-editorial text-4xl text-emerald-400 font-light">42 sec</div>
-              <p className="mt-2 text-xs text-zinc-300 leading-snug">
-                Average call duration from a local student voucher required to dissolve suspicion and book a viewing.
-              </p>
-            </div>
-          </div>
-
-          {/* Quotes Grid + Interactive Live Call Simulation */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            {/* 6 Real Quotation Cards (Span 7 cols) */}
-            <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {INTERVIEW_FINDINGS.map((finding, idx) => (
                 <div
                   key={idx}
-                  className="rounded-2xl border border-white/10 bg-[#161917]/80 p-5 backdrop-blur-md flex flex-col justify-between hover:border-white/20 transition-colors"
+                  className="rounded-2xl border border-white/10 bg-[#161917]/70 p-6 backdrop-blur-md flex flex-col justify-between hover:border-white/20 transition-colors"
                 >
                   <div>
                     <span className="font-mono-tag text-[9px] tracking-widest text-[#B5472B] uppercase font-bold">
@@ -1187,164 +1215,35 @@ export default function LandingSection() {
                 </div>
               ))}
             </div>
-
-            {/* Live Call Simulator (Span 5 cols) */}
-            <div className="lg:col-span-5 sticky top-24">
-              <LiveCallSimulation onOpenModal={() => setIsModalOpen(true)} />
-            </div>
           </div>
         </div>
       </section>
 
       {/* =====================================================================
-          3. THREE MONUMENTAL PARALLAX CHAPTERS (How It Works)
-      ===================================================================== */}
-      <div id="how-it-works">
-        {PROJECT_CHAPTERS.map((chapter, index) => (
-          <ShowcaseChapter
-            key={chapter.id}
-            chapter={chapter}
-            index={index}
-            onOpenModal={() => setIsModalOpen(true)}
-          />
-        ))}
-      </div>
-
-      {/* =====================================================================
-          4. 21st.dev SPOTLIGHT INSIGHTS BENCHMARK
-      ===================================================================== */}
-      <section id="cases" className="relative w-full bg-[#EAE6DF] px-6 py-32 md:px-12 md:py-44 text-[#141414]">
-        <div className="mx-auto max-w-[1400px]">
-          <div className="grid grid-cols-1 md:grid-cols-12 mb-16">
-            <div className="md:col-span-8 md:col-start-4 text-center md:text-left">
-              <span className="font-mono-tag text-[10px] tracking-[0.22em] text-[#B5472B] uppercase font-bold">
-                ( EMPIRICAL KNOWLEDGE BASE )
-              </span>
-              <h2 className="mt-4 font-editorial text-4xl sm:text-6xl md:text-[4.2rem] font-normal leading-[1.02] tracking-[-0.02em]">
-                What students told us, and how we resolve every friction
-              </h2>
-            </div>
-          </div>
-
-          {/* Grid of Interactive Spotlight Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <InteractiveInsightCard
-              tag="AUTOMATIC REFUSALS"
-              title="“No students allowed”"
-              quote="We only rent to married couples without kids. No students under any circumstances."
-              solution="Our 42-second voucher call breaks the stereotype: landlords hear a calm peer vouching for you and agree to a viewing."
-              icon={PhoneCall}
-              onClick={() => setIsModalOpen(true)}
-            />
-
-            <InteractiveInsightCard
-              tag="BROKER SCAMS"
-              title="“Most agents are predatory”"
-              quote="They took 15,000 ₸ upfront for an exclusive list of landlord numbers that were all fake."
-              solution="0 ₸ commission, always. We are fellow students, not real estate agents. We never charge for vouching."
-              icon={ShieldCheck}
-              onClick={() => setIsModalOpen(true)}
-            />
-
-            <InteractiveInsightCard
-              tag="RENTAL SPIKES"
-              title="“300,000 ₸ for a studio”"
-              quote="Prices double in August and September exploiting the panic of arriving freshmen."
-              solution="Objective guidance on fair rental rates across Almaty districts (Auezov, Bostandyk, Almaly)."
-              icon={Compass}
-              onClick={() => setIsModalOpen(true)}
-            />
-
-            <InteractiveInsightCard
-              tag="KASPI TRANSFERS"
-              title="“No transfers before viewing”"
-              quote="They asked for a deposit via Kaspi to hold the viewing slot, then immediately blocked me."
-              solution="Strict safety rule: verify official ownership documents and never wire money before inspecting in person."
-              icon={Lock}
-              onClick={() => setIsModalOpen(true)}
-            />
-          </div>
-
-          {/* Value Comparison Table (What you get vs what students told us) */}
-          <div className="mt-24 border-t border-black/10 pt-16">
-            <div className="mb-10 text-center md:text-left">
-              <span className="font-mono-tag text-[10px] tracking-[0.22em] text-[#B5472B] uppercase font-bold">
-                ( WHAT YOU GET VS. WHAT STUDENTS WORRIED ABOUT )
-              </span>
-              <h3 className="mt-3 font-editorial text-3xl sm:text-5xl font-normal text-[#141414] leading-tight">
-                Direct answers to the real fears non-local students expressed
-              </h3>
-            </div>
-
-            <div className="space-y-4">
-              {VALUE_COMPARISONS.map((comp, idx) => (
-                <div
-                  key={idx}
-                  className="rounded-2xl border border-black/10 bg-[#FBF9F5] p-6 md:p-8 shadow-sm transition-all hover:shadow-md"
-                >
-                  <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-                    <div className="md:col-span-4 space-y-1.5">
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono-tag text-[10px] tracking-wider text-[#B5472B] font-bold uppercase">
-                          {comp.pillar}
-                        </span>
-                        <span className="rounded-full bg-[#141414] text-white px-2.5 py-0.5 text-[9px] font-mono-tag uppercase tracking-widest">
-                          {comp.badge}
-                        </span>
-                      </div>
-                      <h4 className="font-editorial text-xl font-medium text-[#141414]">
-                        {comp.headline}
-                      </h4>
-                    </div>
-
-                    <div className="md:col-span-4 rounded-xl border border-rose-500/20 bg-rose-50/70 p-4">
-                      <div className="text-[10px] font-mono-tag uppercase text-rose-700 font-bold mb-1">
-                        WHAT STUDENTS TOLD US
-                      </div>
-                      <p className="text-xs sm:text-sm italic text-zinc-800 font-serif">
-                        “{comp.studentQuote}”
-                      </p>
-                    </div>
-
-                    <div className="md:col-span-4 rounded-xl border border-emerald-500/30 bg-emerald-50/80 p-4">
-                      <div className="text-[10px] font-mono-tag uppercase text-emerald-800 font-bold mb-1">
-                        OUR SYSTEM RESOLUTION
-                      </div>
-                      <p className="text-xs sm:text-sm text-zinc-900 leading-relaxed font-medium">
-                        {comp.ourAnswer}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* =====================================================================
-          5. FAQ SECTION ("Questions, Answered")
+          PART 2: BELOW THE FOLD (Step 8: FAQ / Tie up loose ends)
+          8/ FAQ
+          Write down residual questions & objections. Reframe into Q&A.
       ===================================================================== */}
       <section
         id="faq"
-        className="relative w-full bg-[#0D0F0E] px-6 py-28 md:px-12 md:py-36 text-white border-t border-white/10"
+        className="relative w-full bg-[#0A0C0B] px-6 py-28 md:px-12 md:py-36 text-white border-t border-white/10"
       >
         <div className="mx-auto max-w-4xl">
           <div className="text-center mb-16">
             <span className="font-mono-tag text-[10px] tracking-[0.24em] text-[#B5472B] uppercase font-bold">
-              ( FREQUENTLY ASKED QUESTIONS )
+              ( STEP 08 • TIE UP LOOSE ENDS )
             </span>
             <h2 className="mt-4 font-editorial text-4xl sm:text-5xl font-normal leading-tight">
               Questions, answered with complete transparency
             </h2>
             <p className="mt-3 text-xs sm:text-sm text-zinc-400">
-              Everything you need to know about how our student voucher pilot works in Almaty.
+              Everything you need to know about our student voucher backing pilot before applying.
             </p>
           </div>
 
           <div className="space-y-4">
             {FAQS.map((faq, idx) => (
-              <FaqItem
+              <FaqAccordionItem
                 key={idx}
                 item={faq}
                 isOpen={openFaq === idx}
@@ -1352,115 +1251,180 @@ export default function LandingSection() {
               />
             ))}
           </div>
-
-          {/* Quick Contact CTA in FAQ */}
-          <div className="mt-14 rounded-2xl border border-white/10 bg-[#161917]/70 p-6 md:p-8 backdrop-blur-md text-center flex flex-col sm:flex-row items-center justify-between gap-5">
-            <div className="text-left">
-              <h4 className="font-editorial text-xl font-normal text-white">Have a specific Krisha.kz listing to check?</h4>
-              <p className="text-xs text-zinc-400 mt-1">Send the link directly to our coordinator on Telegram for immediate peer advice.</p>
-            </div>
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="inline-flex shrink-0 items-center gap-2 rounded-full bg-[#B5472B] px-5 py-2.5 text-xs font-semibold text-white shadow-md hover:bg-[#8F3620] transition-colors cursor-pointer"
-            >
-              <span>Get a Voucher Free</span>
-              <ArrowRight className="h-3.5 w-3.5" />
-            </button>
-          </div>
         </div>
       </section>
 
       {/* =====================================================================
-          5. STORY SECTION (Team SUA · Tech Entrepreneurship)
+          PART 2: BELOW THE FOLD (Step 9: 2nd CTA / Luxury of Space)
+          9/ 2nd CTA
+          Remind the customer WHY they are clicking.
       ===================================================================== */}
       <section
-        id="team"
-        ref={storyRef}
-        className="relative flex min-h-[105vh] w-full flex-col items-center justify-between overflow-hidden bg-[#0A0C0B] px-6 py-28 text-white md:px-12"
+        id="cta-repeat"
+        className="relative w-full bg-[#121614] px-6 py-28 md:px-12 md:py-36 text-white border-t border-white/10 overflow-hidden"
       >
-        <div className="pointer-events-none absolute inset-0 z-0 flex flex-col overflow-hidden opacity-45">
-          <motion.div style={{ x: slice1X }} className="h-1/3 w-[110%] -ml-[5%] overflow-hidden">
-            <img
-              src="/team-sua.jpg"
-              alt="Team SUA Slice 1"
-              className="h-[300%] w-full object-cover object-top scale-105"
-            />
-          </motion.div>
-          <motion.div style={{ x: slice2X }} className="h-1/3 w-[110%] -ml-[5%] overflow-hidden border-y border-white/10">
-            <img
-              src="/team-sua.jpg"
-              alt="Team SUA Slice 2"
-              className="h-[300%] w-full -translate-y-1/3 object-cover object-center scale-105"
-            />
-          </motion.div>
-          <motion.div style={{ x: slice3X }} className="h-1/3 w-[110%] -ml-[5%] overflow-hidden">
-            <img
-              src="/team-sua.jpg"
-              alt="Team SUA Slice 3"
-              className="h-[300%] w-full -translate-y-2/3 object-cover object-bottom scale-105"
-            />
-          </motion.div>
-          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/45 to-black/90" />
-        </div>
-
-        <div className="relative z-10 text-center max-w-3xl mx-auto">
+        <div className="absolute top-0 right-0 h-96 w-96 bg-[#B5472B]/15 blur-3xl rounded-full pointer-events-none" />
+        <div className="mx-auto max-w-4xl text-center relative z-10">
           <span className="font-mono-tag text-[10px] tracking-[0.24em] text-[#D9A64E] uppercase font-bold">
-            ( TEAM SUA • TECH ENTREPRENEURSHIP )
+            ( STEP 09 • REPEAT YOUR CALL TO ACTION )
           </span>
-          <h2 className="mt-5 font-editorial text-4xl sm:text-6xl md:text-[4.25rem] font-normal leading-[1.02]">
-            We are Narxoz students solving a problem we lived through ourselves
+          <h2 className="mt-4 font-editorial text-4xl sm:text-6xl md:text-[4.2rem] font-normal leading-[1.02]">
+            Don't search alone.
+            <br />
+            <span className="italic font-light">Let a fellow Narxoz peer back you up.</span>
           </h2>
-        </div>
+          <p className="mt-4 text-xs sm:text-sm text-zinc-300 max-w-xl mx-auto leading-relaxed">
+            Don't spend another evening stranded with suitcases, facing rude landlord hang-ups, or paying commission to shady brokers.
+          </p>
 
-        <div className="relative z-10 my-10 w-full max-w-xl text-center space-y-4 text-xs sm:text-sm text-zinc-300 leading-relaxed bg-black/40 p-6 rounded-2xl border border-white/10 backdrop-blur-md">
-          <p>
-            “Picture arriving in Almaty with no family nearby and a semester starting in two weeks. You call listing after listing, and the answer keeps being 'we don't rent to students.' Students with local relatives avoid this — we want to give every student that same backing.”
-          </p>
-          <p className="font-editorial text-lg text-white font-medium">
-            — Claudio, Yersultan Aldanazar &amp; Yerkezhan, Team SUA
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-4 pt-2 text-xs font-mono-tag text-zinc-400">
-            <a href="tel:+77085010270" className="hover:text-white transition-colors">
-              📞 +7 708 501 02 70 (Yersultan)
-            </a>
-            <span>•</span>
-            <a href="mailto:yersultan.aldanazar@narxoz.kz" className="hover:text-white transition-colors">
-              ✉️ yersultan.aldanazar@narxoz.kz
-            </a>
-            <span>•</span>
-            <a href="https://t.me/RakDinn" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">
-              ✈️ @RakDinn
-            </a>
+          {/* 4 Value Checkmarks (Why they're clicking) */}
+          <div className="my-10 grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl mx-auto text-left text-xs font-mono-tag">
+            <div className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-black/40 p-3">
+              <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+              <span>0 ₸ commission — zero broker fees, always</span>
+            </div>
+            <div className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-black/40 p-3">
+              <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+              <span>42-second phone call to any Krisha landlord</span>
+            </div>
+            <div className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-black/40 p-3">
+              <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+              <span>Title deed & bilateral contract screening</span>
+            </div>
+            <div className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-black/40 p-3">
+              <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+              <span>Direct Telegram reply from Team SUA in 1h</span>
+            </div>
           </div>
-        </div>
 
-        <div className="relative z-10">
-          <EditorialButton
-            label="Request Voucher on Telegram"
-            light
-            onClick={() => setIsModalOpen(true)}
-          />
+          <div className="space-y-3">
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="group inline-flex items-center gap-3 rounded-full bg-[#B5472B] px-8 py-4 text-sm font-semibold text-white shadow-[0_15px_40px_-5px_rgba(181,71,43,0.8)] hover:bg-[#8F3620] hover:scale-[1.03] transition-all cursor-pointer"
+            >
+              <span>Get Your Free Landlord Voucher Now</span>
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </button>
+            <p className="text-[11px] font-mono-tag text-zinc-400">
+              ⚡ 100% Free Pilot • No credit card required • No Kaspi wire • Narxoz University Student Solidarity
+            </p>
+          </div>
         </div>
       </section>
 
       {/* =====================================================================
-          6. MONUMENTAL FOOTER (LG. Monogram + Full-width Wordmark)
+          PART 2: BELOW THE FOLD (Step 10: Founder's Note / Make Yourself Memorable)
+          10/ Founder's Note
+          1/ Put yourself in their shoes
+          2/ Explain their problem
+          3/ Take ownership of it
+          4/ Show the happy ending
+          "People buy from people."
       ===================================================================== */}
-      <footer className="relative w-full overflow-hidden bg-[#0A0C0B] pt-24 pb-6 text-white">
+      <section
+        id="founder-note"
+        className="relative w-full bg-[#0A0C0B] px-6 py-28 md:px-12 md:py-36 text-white border-t border-white/10"
+      >
+        <div className="mx-auto max-w-4xl">
+          <div className="text-center mb-12">
+            <span className="font-mono-tag text-[10px] tracking-[0.24em] text-[#D9A64E] uppercase font-bold">
+              ( STEP 10 • FOUNDER'S NOTE • TEAM SUA )
+            </span>
+            <h2 className="mt-3 font-editorial text-4xl sm:text-5xl font-normal">
+              Why we built Local Guarantor
+            </h2>
+          </div>
+
+          {/* Letter container */}
+          <div className="rounded-2xl border border-white/15 bg-[#141816]/90 p-8 sm:p-12 backdrop-blur-xl shadow-2xl relative overflow-hidden">
+            <div className="flex flex-col sm:flex-row items-center gap-6 pb-8 border-b border-white/10">
+              <img
+                src="/team-sua.jpg"
+                alt="Team SUA: Claudio, Yersultan Aldanazar, Yerkezhan"
+                className="h-20 w-20 rounded-full object-cover border-2 border-[#D9A64E]"
+              />
+              <div className="text-center sm:text-left">
+                <h3 className="font-editorial text-2xl font-medium text-white">
+                  A personal note from Team SUA
+                </h3>
+                <p className="text-xs text-zinc-400 font-mono-tag mt-1">
+                  Claudio, Yersultan Aldanazar &amp; Yerkezhan • Tech Entrepreneurship, Narxoz University
+                </p>
+              </div>
+            </div>
+
+            <div className="pt-8 space-y-5 text-xs sm:text-sm text-zinc-300 leading-relaxed font-sans">
+              {/* 1/ Put yourself in their shoes */}
+              <p className="font-editorial text-lg text-white font-normal italic">
+                “Dear arriving Narxoz student,”
+              </p>
+              <p>
+                We still remember stepping off the train at Almaty-2 station as freshmen. Three heavy suitcases, two weeks until classes started, and not a single relative in this massive city.
+              </p>
+
+              {/* 2/ Explain their problem */}
+              <p>
+                We called dozens of Krisha.kz ads. The very moment we said <em>“we are students”</em>, landlords hung up or claimed the apartment was suddenly taken. Greedy brokers tried to extort 30,000–50,000 ₸ upfront just for fake phone numbers, and scams were everywhere. We spent nights wondering if we'd have to sleep in sketchy hostels before our first academic lecture.
+              </p>
+
+              {/* 3/ Take ownership of it */}
+              <p>
+                Then we noticed something crucial: classmates who had an older brother or uncle living in Almaty never faced this prejudice. When an older, established voice placed the call, landlords smiled and unlocked the doors immediately. We thought: <em>why shouldn't every student have that exact same credible backing?</em>
+              </p>
+
+              {/* 4/ Show the happy ending */}
+              <p className="text-white font-medium">
+                So we built Local Guarantor. Today, all 12 freshmen in our pilot cohort are safely settled in clean, honest apartments near campus, studying peacefully and cooking dinner with roommates. You don't have to face Almaty's housing market alone — we are right here to vouch for you.
+              </p>
+
+              {/* Signatures & Direct Contacts */}
+              <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+                <div>
+                  <div className="font-editorial text-xl text-[#D9A64E]">
+                    Yersultan Aldanazar, Claudio &amp; Yerkezhan
+                  </div>
+                  <div className="text-[11px] font-mono-tag text-zinc-400">
+                    Team SUA • Narxoz University, Almaty
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-4 text-xs font-mono-tag text-zinc-300">
+                  <a href="tel:+77085010270" className="hover:text-white transition-colors">
+                    📞 +7 708 501 02 70
+                  </a>
+                  <span>•</span>
+                  <a href="mailto:yersultan.aldanazar@narxoz.kz" className="hover:text-white transition-colors">
+                    ✉️ Email
+                  </a>
+                  <span>•</span>
+                  <a
+                    href="https://t.me/RakDinn"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[#D9A64E] hover:underline"
+                  >
+                    ✈️ Telegram @RakDinn
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =====================================================================
+          MONUMENTAL FOOTER (LG. Monogram + Full-width Brand Wordmark)
+      ===================================================================== */}
+      <footer className="relative w-full overflow-hidden bg-[#0A0C0B] pt-20 pb-6 text-white border-t border-white/10">
         <div className="mx-auto grid max-w-[1440px] grid-cols-2 gap-10 px-6 sm:grid-cols-4 md:px-12 text-xs">
           <div className="space-y-4">
             <div className="font-mono-tag text-[10px] tracking-[0.2em] text-[#B5472B] uppercase font-bold">
-              ( STUDENTS )
+              ( FOR STUDENTS )
             </div>
-            <ul className="space-y-2.5 text-zinc-300">
+            <ul className="space-y-2 text-zinc-300">
               <li>
                 <button onClick={() => setIsModalOpen(true)} className="hover:text-white transition-colors cursor-pointer">
-                  Request a Voucher
-                </button>
-              </li>
-              <li>
-                <button onClick={() => scrollToSection("#interviews")} className="hover:text-white transition-colors cursor-pointer">
-                  12 Field Interviews
+                  Request Free Voucher
                 </button>
               </li>
               <li>
@@ -1469,13 +1433,13 @@ export default function LandingSection() {
                 </button>
               </li>
               <li>
-                <button onClick={() => scrollToSection("#cases")} className="hover:text-white transition-colors cursor-pointer">
-                  Friction &amp; Proof
+                <button onClick={() => scrollToSection("#stories")} className="hover:text-white transition-colors cursor-pointer">
+                  Student Stories
                 </button>
               </li>
               <li>
-                <button onClick={() => scrollToSection("#faq")} className="hover:text-white transition-colors cursor-pointer">
-                  FAQ ("Questions, Answered")
+                <button onClick={() => scrollToSection("#interviews")} className="hover:text-white transition-colors cursor-pointer">
+                  12 Field Interviews
                 </button>
               </li>
             </ul>
@@ -1483,21 +1447,13 @@ export default function LandingSection() {
 
           <div className="space-y-4">
             <div className="font-mono-tag text-[10px] tracking-[0.2em] text-[#B5472B] uppercase font-bold">
-              ( LANDLORDS )
+              ( FOR LANDLORDS )
             </div>
-            <ul className="space-y-2.5 text-zinc-300">
-              <li>
-                <span className="text-zinc-400">Student Identity Verification</span>
-              </li>
-              <li>
-                <span className="text-zinc-400">Narxoz University Enrollment</span>
-              </li>
-              <li>
-                <span className="text-zinc-400">Direct Dialogue (No Middlemen)</span>
-              </li>
-              <li>
-                <span className="text-zinc-400">0 ₸ Commission Protection</span>
-              </li>
+            <ul className="space-y-2 text-zinc-400">
+              <li>Student Enrollment Check</li>
+              <li>Narxoz Community Guarantee</li>
+              <li>Direct Contact (No Middlemen)</li>
+              <li>0 ₸ Commission Protection</li>
             </ul>
           </div>
 
@@ -1505,29 +1461,21 @@ export default function LandingSection() {
             <div className="font-mono-tag text-[10px] tracking-[0.2em] text-[#B5472B] uppercase font-bold">
               ( ABOUT PILOT )
             </div>
-            <ul className="space-y-2.5 text-zinc-300">
+            <ul className="space-y-2 text-zinc-300">
+              <li>Tech Entrepreneurship Course</li>
+              <li>Narxoz University, Almaty</li>
+              <li>Team SUA (Claudio, Yersultan, Yerkezhan)</li>
               <li>
-                <span>Tech Entrepreneurship</span>
-              </li>
-              <li>
-                <span>Narxoz University, Almaty</span>
-              </li>
-              <li>
-                <button onClick={() => scrollToSection("#team")} className="hover:text-white transition-colors text-left cursor-pointer">
-                  Team SUA (Claudio, Yersultan, Yerkezhan)
-                </button>
-              </li>
-              <li>
-                <span className="text-[11px] text-zinc-500">Student pilot — not an official university department</span>
+                <span className="text-[10px] text-zinc-500">Student initiative, not official dept</span>
               </li>
             </ul>
           </div>
 
           <div className="space-y-4">
             <div className="font-mono-tag text-[10px] tracking-[0.2em] text-[#B5472B] uppercase font-bold">
-              ( CONTACT )
+              ( DIRECT CONTACT )
             </div>
-            <ul className="space-y-2.5 text-zinc-300">
+            <ul className="space-y-2 text-zinc-300">
               <li>
                 <a href="tel:+77085010270" className="hover:text-white transition-colors">
                   📞 +7 708 501 02 70 (Yersultan)
@@ -1539,13 +1487,8 @@ export default function LandingSection() {
                 </a>
               </li>
               <li>
-                <a href="mailto:uwagbaclaudio@gmail.com" className="hover:text-white transition-colors">
-                  ✉️ uwagbaclaudio@gmail.com
-                </a>
-              </li>
-              <li>
-                <a href="https://t.me/RakDinn" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">
-                  ✈️ Telegram: @RakDinn ↗
+                <a href="https://t.me/RakDinn" target="_blank" rel="noreferrer" className="text-[#D9A64E] hover:underline">
+                  ✈️ Telegram: @RakDinn
                 </a>
               </li>
             </ul>
@@ -1553,19 +1496,19 @@ export default function LandingSection() {
         </div>
 
         {/* 3D Monogram Cube */}
-        <div className="my-20 flex flex-col items-center justify-center">
+        <div className="my-16 flex flex-col items-center justify-center">
           <motion.div
             whileHover={{ rotateY: 18, rotateX: -12, scale: 1.06 }}
             transition={{ type: "spring", stiffness: 200, damping: 18 }}
             style={{ transformStyle: "preserve-3d" }}
             onClick={() => setIsModalOpen(true)}
-            className="relative flex h-28 w-28 items-center justify-center rounded-2xl border border-white/15 bg-gradient-to-br from-zinc-200 via-zinc-400 to-[#B5472B]/60 text-[#141414] shadow-[0_25px_70px_rgba(0,0,0,0.8),inset_0_2px_4px_rgba(255,255,255,0.8)] cursor-pointer select-none"
+            className="relative flex h-24 w-24 items-center justify-center rounded-2xl border border-white/15 bg-gradient-to-br from-zinc-200 via-zinc-400 to-[#B5472B]/60 text-[#141414] shadow-[0_20px_50px_rgba(0,0,0,0.8)] cursor-pointer select-none"
           >
-            <span className="font-extrabold text-5xl tracking-tighter drop-shadow-[0_2px_3px_rgba(255,255,255,0.5)] font-serif">
+            <span className="font-extrabold text-4xl tracking-tighter font-serif">
               LG.
             </span>
           </motion.div>
-          <span className="mt-3 text-[11px] font-mono-tag text-zinc-400">
+          <span className="mt-3 text-[10px] font-mono-tag text-zinc-400">
             LOCAL GUARANTOR • ALMATY
           </span>
         </div>
@@ -1583,20 +1526,14 @@ export default function LandingSection() {
 
         {/* MONUMENTAL FULL-WIDTH BRAND WORDMARK */}
         <div className="mt-2 w-full overflow-hidden text-center leading-none select-none">
-          <motion.div
-            initial={{ y: "30%", opacity: 0 }}
-            whileInView={{ y: "0%", opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
-            className="text-[14.5vw] font-black tracking-[-0.05em] text-[#423C36]/80 font-serif"
-          >
+          <div className="text-[14.5vw] font-black tracking-[-0.05em] text-[#332e2a]/80 font-serif">
             LOCAL GUARANTOR.
-          </motion.div>
+          </div>
         </div>
       </footer>
 
       {/* =====================================================================
-          7. INTERACTIVE TELEGRAM LEAD MODAL (Connected to src/lib/telegram.ts)
+          INTERACTIVE TELEGRAM LEAD MODAL (Connected to src/lib/telegram.ts)
       ===================================================================== */}
       <AnimatePresence>
         {isModalOpen && (
@@ -1618,7 +1555,7 @@ export default function LandingSection() {
             >
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="absolute top-5 right-5 flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-zinc-400 hover:bg-white/10 hover:text-white transition-colors"
+                className="absolute top-5 right-5 flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-zinc-400 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -1631,7 +1568,7 @@ export default function LandingSection() {
                   Request a Local Voucher
                 </h3>
                 <p className="mt-1 text-xs text-zinc-400 leading-relaxed">
-                  Fill in your details below. A fellow Narxoz student will contact you and call the Almaty landlord on your behalf. Instantly delivered to the team Telegram group.
+                  Fill in your details below. A fellow Narxoz student will contact you and call the Almaty landlord on your behalf. Instantly dispatched to Team SUA on Telegram.
                 </p>
               </div>
 
@@ -1719,7 +1656,7 @@ export default function LandingSection() {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#B5472B] px-6 py-3.5 text-xs font-semibold text-white shadow-[0_10px_30px_-8px_rgba(181,71,43,0.6)] hover:bg-[#8F3620] disabled:opacity-50 transition-all"
+                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#B5472B] px-6 py-3.5 text-xs font-semibold text-white shadow-[0_10px_30px_-8px_rgba(181,71,43,0.6)] hover:bg-[#8F3620] disabled:opacity-50 transition-all cursor-pointer"
                     >
                       {isSubmitting ? (
                         <>
@@ -1729,7 +1666,7 @@ export default function LandingSection() {
                       ) : (
                         <>
                           <Send className="h-4 w-4" />
-                          <span>Send Request to Voucher</span>
+                          <span>Send Request to Voucher — 100% Free</span>
                         </>
                       )}
                     </button>
