@@ -37,16 +37,16 @@ export async function sendTelegramNotification(
     : `@${data.telegram.trim()}`;
 
   const message = `
-🔔 <b>New Vouch Request Received! (Local Guarantor)</b>
+🔔 <b>New Vouch & Verification Request! (Local Guarantor)</b>
 
-👤 <b>Student Name & Year:</b> ${escapeHtml(data.name)}
+👤 <b>Applicant / Category:</b> ${escapeHtml(data.name)}
 📞 <b>Phone / WhatsApp:</b> <code>${escapeHtml(data.phone)}</code>
 ✈️ <b>Telegram:</b> ${escapeHtml(formattedTg)}
-📝 <b>Krisha.kz Listing / Notes:</b>
+📝 <b>Krisha.kz Listing / Situation:</b>
 ${data.comment ? escapeHtml(data.comment) : "<i>(No details provided)</i>"}
 
-📍 <b>Campus:</b> Narxoz University, Almaty
-👥 <b>Team Lead:</b> Yersultan Aldanazar (+7 708 501 02 70)
+📍 <b>City:</b> Almaty, Kazakhstan
+👥 <b>Coordinator:</b> Team SUA (+7 708 501 02 70)
 ⏰ <b>Timestamp:</b> ${new Date().toLocaleString("en-US", { timeZone: "Asia/Almaty" })} (Almaty Time)
 `.trim();
 

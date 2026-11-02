@@ -35,6 +35,9 @@ import {
   Building,
   Key,
   HeartHandshake,
+  MapPin,
+  Home,
+  CheckCheck,
 } from "lucide-react";
 import { sendTelegramNotification, VouchFormData } from "./src/lib/telegram";
 
@@ -215,15 +218,62 @@ function EditorialButton({
 // 4. NAVIGATION LINKS
 // ============================================================================
 const NAV_LINKS = [
+  { label: "Who It's For", id: "#audiences" },
   { label: "How It Works", id: "#how-it-works" },
-  { label: "12 Field Interviews", id: "#interviews" },
-  { label: "Student Stories", id: "#stories" },
+  { label: "Real Stories", id: "#stories" },
+  { label: "Field Research", id: "#interviews" },
   { label: "FAQ", id: "#faq" },
   { label: "Founder's Note", id: "#founder-note" },
 ];
 
 // ============================================================================
-// 5. DATA: 4 MONUMENTAL STORYTELLING CHAPTERS (Using User-Uploaded Photos)
+// 5. DATA: 4 TARGET AUDIENCES (Students, Couples, Families, Remote Relocators)
+// ============================================================================
+const AUDIENCE_CARDS = [
+  {
+    tag: "REMOTE OUT-OF-TOWNERS",
+    title: "Relocating from Another City",
+    cities: "Shymkent, Semey, Atyrau, Astana, China & Abroad",
+    friction:
+      "“I was in Shymkent, but the flat was in Almaty. Landlords refused because I couldn't view within 30 minutes, and scammers demanded Kaspi prepayments before I even boarded the train.”",
+    solution:
+      "We act as your local eyes, ears, and voice in Almaty. We call the landlord, confirm the photos are authentic, verify title deeds, and hold your viewing slot until you arrive.",
+    icon: MapPin,
+  },
+  {
+    tag: "YOUNG COUPLES & FAMILIES",
+    title: "Couples & Small Families",
+    cities: "Almaly, Bostandyk, Medeu, Auezov",
+    friction:
+      "“Our previous landlady had no contract and put the flat up for sale, sending random realtors every day without warning, completely destroying our safety and privacy at home.”",
+    solution:
+      "We ensure official eGov ownership verification, negotiate transparent deposit terms, and provide a legally balanced bilateral lease that strictly forbids unannounced visits.",
+    icon: HeartHandshake,
+  },
+  {
+    tag: "STUDENTS & SINGLE TENANTS",
+    title: "Students & Young Professionals",
+    cities: "All Almaty Universities & Tech Hubs",
+    friction:
+      "“Rejected in 90% of cases. The second landlords hear 'student' or realize we are guys, they hang up saying 'married couples with kids only, no guys, no students under any circumstances.'”",
+    solution:
+      "Our 42-second peer verification call breaks the stereotype. We present your academic/work credentials, vouch for your discipline, and turn automatic refusals into private tours.",
+    icon: Users,
+  },
+  {
+    tag: "ANYONE BROWSING KRISHA.KZ",
+    title: "Krisha.kz & OLX Renters",
+    cities: "Entire Almaty Rental Market",
+    friction:
+      "“Realtors post gorgeous photos at low prices as bait, demand 30–50% upfront for fake numbers, or fake landlords try to sublease flats they don't even legally own.”",
+    solution:
+      "100% free scam audit before you pay a single tenge. We screen Krisha links, verify the owner's eGov title, and guide you away from predatory middlemen.",
+    icon: ShieldCheck,
+  },
+];
+
+// ============================================================================
+// 6. DATA: 4 MONUMENTAL STORYTELLING CHAPTERS (Using User-Uploaded Photos)
 // ============================================================================
 interface ChapterItem {
   id: string;
@@ -255,7 +305,7 @@ const PROJECT_CHAPTERS: ChapterItem[] = [
     badge: "ALMATY ARRIVAL • 8–9 REJECTIONS",
     aspectClass: "max-w-[360px] md:max-w-[400px] aspect-[3/4.2]",
     description:
-      "Almaty landlords routinely fear noise, missed rent, and property damage, rejecting 75% of incoming calls with an instant “no students” rule. Freshmen arrive at stations with heavy suitcases, facing predatory broker fees and 300,000 ₸ seasonal rental gouging while searching alone in panic.",
+      "Almaty landlords routinely fear noise, missed rent, and property damage, rejecting 90% of incoming calls with an instant “no students, no guys” rule. Newcomers arrive at stations with heavy suitcases, facing predatory broker fees and 300,000 ₸ seasonal rental gouging while searching alone in panic.",
   },
   {
     id: "02",
@@ -270,7 +320,7 @@ const PROJECT_CHAPTERS: ChapterItem[] = [
     badge: "IN-PERSON APARTMENT TOUR • SECURED",
     aspectClass: "max-w-[360px] md:max-w-[400px] aspect-[3/4.2]",
     description:
-      "Our established Narxoz voucher places a focused 42-second phone call on your behalf. Hearing a calm, mature peer vouch for your character dissolves suspicions, turns an automatic rejection into a warm conversation, and books you a private in-person walkthrough.",
+      "Our established local voucher places a focused 42-second phone call on your behalf. Hearing a calm, mature peer vouch for your character dissolves suspicions, turns an automatic rejection into a warm conversation, and books you a private in-person walkthrough.",
   },
   {
     id: "03",
@@ -286,7 +336,7 @@ const PROJECT_CHAPTERS: ChapterItem[] = [
     badge: "SIGNED LEASE • KEYS IN HAND",
     aspectClass: "max-w-[440px] md:max-w-[500px] aspect-[4/3]",
     description:
-      "Our golden rule: zero Kaspi transfers before physically viewing the apartment and verifying official title documents. We guide you through verifying ownership, inspecting meters, signing a legitimate bilateral contract, and receiving your keys without paying 30–50% broker commissions.",
+      "Our golden rule: zero Kaspi transfers before physically viewing the apartment and verifying official eGov title documents. We guide you through verifying ownership, inspecting meters, signing a legitimate bilateral contract, and receiving your keys without paying 30–50% broker commissions.",
   },
   {
     id: "04",
@@ -298,161 +348,198 @@ const PROJECT_CHAPTERS: ChapterItem[] = [
     mutedClass: "text-zinc-700",
     lightBtn: false,
     image: "/cozy-student-living.jpg",
-    badge: "WARM RESIDENCE • FOCUSED ON STUDIES",
+    badge: "WARM RESIDENCE • FOCUSED ON LIVING",
     aspectClass: "max-w-[360px] md:max-w-[400px] aspect-[3/4.2]",
     description:
-      "Once settled in honest, secure housing, real university life begins. Cook meals with roommates, study peacefully without fear of eviction or sudden rent hikes, and focus entirely on what truly matters: your education and academic future at Narxoz University.",
+      "Once settled in honest, secure housing, real life in Almaty begins. Cook meals together, live peacefully without fear of sudden eviction or unannounced landlord visits, and focus entirely on what truly matters: your career, family, and studies.",
   },
 ];
 
 // ============================================================================
-// 6. DATA: CONCRETE FEATURES SOLVING REOCCURRING OBJECTIONS (Step 6)
+// 7. DATA: CONCRETE FEATURES SOLVING REOCCURRING OBJECTIONS (Step 6)
 // ============================================================================
 const CORE_FEATURES = [
   {
-    objection: "“We don't rent to students. Only married couples with kids.”",
-    featureTitle: "The 42-Second Peer Verification Call",
+    objection: "“We don't rent to students or unvouched guys. Only married couples with kids.”",
+    featureTitle: "The 42-Second Credibility Call",
     featureDesc:
-      "A settled Narxoz senior calls the landlord directly. We present your academic enrollment, introduce ourselves as your local peer reference, and turn an automatic hang-up into a private apartment viewing.",
+      "A calm, established local peer calls the landlord directly. We present your background, confirm your reliability, and turn an automatic hang-up into a private apartment viewing.",
     metric: "0:42 avg call duration",
     icon: PhoneCall,
-    tag: "OBJECTION: AUTOMATIC REFUSAL",
+    tag: "OBJECTION: 90% AUTOMATIC REFUSAL",
   },
   {
-    objection: "“Brokers charged 15,000–50,000 ₸ upfront for fake landlord lists.”",
-    featureTitle: "Zero Middlemen & 0 ₸ Commission",
+    objection: "“I was in Shymkent, but the flat was in Almaty. Searching remotely was impossible.”",
+    featureTitle: "Local Ground Representation & Screening",
     featureDesc:
-      "Built on student solidarity, not commission greed. We bypass predatory broker syndicates on Krisha.kz. We never charge students a single tenge for vouching or advice.",
+      "We act as your local proxy in Almaty. We screen the Krisha.kz ad, verify that photos match reality, confirm landlord legitimacy, and hold your viewing slot before you buy train or plane tickets.",
+    metric: "100% remote search coverage",
+    icon: Compass,
+    tag: "OBJECTION: 700 KM DISTANCE BARRIER",
+  },
+  {
+    objection: "“The landlord wasn't the actual owner; it was a scam. And contracts had no official details.”",
+    featureTitle: "eGov Title Deed & Legal Contract Shield",
+    featureDesc:
+      "We verify the landlord's official eGov title deed (Справка о зарегистрированных правах) to ensure they legally own the property. We provide a balanced bilateral lease that forbids surprise landlord visits.",
+    metric: "100% scam prevention rate",
+    icon: Lock,
+    tag: "OBJECTION: FAKE LISTINGS & SUBLEASE FRAUD",
+  },
+  {
+    objection: "“Brokers charged 15,000–50,000 ₸ upfront for fake landlord lists that were disconnected.”",
+    featureTitle: "0 ₸ Commission & Direct Owner Access",
+    featureDesc:
+      "Built as a civic community initiative, not a commission-hungry agency. We connect you directly with legitimate property owners. Zero tenge charged to tenants or landlords, always.",
     metric: "0 ₸ broker fee, always",
     icon: ShieldCheck,
     tag: "OBJECTION: BROKER PREDATION",
   },
-  {
-    objection: "“They asked for a Kaspi deposit before viewing and disappeared.”",
-    featureTitle: "Title Deed Verification & Anti-Scam Protocol",
-    featureDesc:
-      "Our strict safety rule: zero money changes hands until you physically inspect the apartment, verify the landlord's official eGov title deed, and sign a bilateral lease.",
-    metric: "100% scam prevention rate",
-    icon: Lock,
-    tag: "OBJECTION: ADVANCE WIRE FRAUD",
-  },
 ];
 
 // ============================================================================
-// 7. DATA: STUDENT TRANSFORMATION STORIES (Step 7 - Social Proof)
+// 8. DATA: REAL TRANSFORMATION STORIES (Directly From Attached Interviews)
 // ============================================================================
 const CUSTOMER_STORIES = [
   {
     name: "Alina K.",
-    program: "1st Year Finance, Narxoz",
-    origin: "From Shymkent",
+    category: "Remote Relocator from Shymkent",
     quote:
-      "I was turned away 8 times on Zhandosov St. The second I said 'student', landlords ended the call. Team SUA called the owner at 4 PM, vouched for me, and by 6:30 PM I had signed the lease.",
-    result: "Housed in 4 hours • 0 ₸ commission",
+      "I was located in Shymkent, but needed an apartment in Almaty. Searching on Krisha drained hours every day, and landlords hung up because I couldn't view immediately. Local Guarantor called the owner on Zhandosov St, verified the renovation was real, and locked in my viewing for the day my train arrived.",
+    result: "Housed upon arrival • 0 Kaspi wire risk",
+    photo: "/student-arrival-struggle.jpg",
+  },
+  {
+    name: "Arman & Daria",
+    category: "Young Couple (China & Semey Relocators)",
+    quote:
+      "In our previous apartment, the landlady had no contract and put the flat up for sale, sending realtors every single day without warning. Local Guarantor screened our next Krisha listing, verified the owner's eGov title, and got us a clean bilateral lease with strict privacy guarantees.",
+    result: "Protected by legal lease • No surprise visits",
     photo: "/apartment-viewing-tour.jpg",
   },
   {
-    name: "Dias M.",
-    program: "2nd Year IT, Narxoz",
-    origin: "From Aktobe",
+    name: "Dias & 3 Roommates",
+    category: "Group of 4 Friends from Zharkent",
     quote:
-      "A broker tried to demand 45,000 ₸ just to send me three phone numbers. Local Guarantor checked Krisha for me, called the actual owner directly, and saved me a month's groceries in fees.",
-    result: "Saved 45,000 ₸ in broker cuts",
-    photo: "/lease-handover-keys.jpg",
-  },
-  {
-    name: "Madina & Aruzhan",
-    program: "Freshmen Cohort, Marketing",
-    origin: "From Karaganda",
-    quote:
-      "A landlord insisted we transfer 20,000 ₸ on Kaspi to 'reserve the slot'. The voucher immediately spotted the scam, pulled up title records, and guided us to an honest studio nearby.",
-    result: "Protected from Kaspi scam",
+      "When 4 guys look for an apartment, landlords assume the worst and reject you in 5 seconds. Proving that we are responsible and keep things clean seemed impossible. The 42-second voucher call broke the stereotype, and the landlady agreed to rent to us for 0 ₸ commission.",
+    result: "Overcame 90% refusal bias • 0 ₸ fee",
     photo: "/cozy-student-living.jpg",
   },
 ];
 
 // ============================================================================
-// 8. DATA: 12 QUALITATIVE INTERVIEWS (Empirical Research Transcripts)
+// 9. DATA: 12 QUALITATIVE INTERVIEWS (Empirical Research Transcripts)
 // ============================================================================
 const INTERVIEW_FINDINGS = [
   {
-    tag: "AUTOMATIC REFUSALS",
-    quote: "We don't rent to students, only to married couples without kids.",
-    context: "Arriving freshmen rejected 8–9 times consecutively the very moment the landlord heard the word 'student'.",
-    metric: "33% rejected immediately",
+    tag: "90% REJECTION RATE",
+    quote: "I was rejected in 90% of cases because landlords don't want to rent to students or guys. They write 'girls only or married couples'.",
+    context: "Newcomers and young people face blanket stereotyping regardless of budget, manners, or ability to pay.",
+    metric: "90% initial rejection rate",
   },
   {
-    tag: "GENDER BIAS IN HOUSING",
-    quote: "Landlords prefer renting to girls and are fiercely reluctant to take in guys.",
-    context: "Male students face blanket stereotyping about noise and damage, regardless of budget or manners.",
-    metric: "75% higher friction for guys",
+    tag: "DISTANCE BARRIER",
+    quote: "I was located in Shymkent, but needed to rent in Almaty. Because I wasn't there, I couldn't inspect, and the search dragged on for weeks.",
+    context: "Out-of-towners from Shymkent, Semey, Atyrau, or abroad lose apartments to instant local callers.",
+    metric: "700+ km remote search friction",
   },
   {
-    tag: "BROKER PREDATION",
-    quote: "In my opinion, most of the agents are scams.",
-    context: "Middlemen demanded 15,000–50,000 ₸ upfront for fake landlord phone numbers that were disconnected.",
-    metric: "0 ₸ commission with peer vouching",
+    tag: "SUBLEASE & TITLE SCAMS",
+    quote: "The apartment had ideal photos, but looking at the contract, the landlord wasn't the actual owner; it was just a scam.",
+    context: "Fake subletters take deposits and disappear. Our eGov title check verifies the actual registered owner.",
+    metric: "Strict eGov title check",
   },
   {
-    tag: "SEASONAL EXPLOITATION",
-    quote: "300,000 tenge for a one-room apartment, which I consider too expensive a luxury.",
-    context: "August & September rental price spikes exploit freshman panic when dormitories are filled.",
-    metric: "40–60% rental inflation in fall",
+    tag: "CONTRACT ABUSE & PRIVACY",
+    quote: "We didn't have a contract. The landlady put the flat for sale, and daily realtor visits began without warning us.",
+    context: "Tenants without contracts face unexpected evictions and privacy violations. We enforce bilateral lease templates.",
+    metric: "Enforced bilateral lease",
   },
   {
-    tag: "ADVANCE WIRE FRAUD",
-    quote: "No transfers before seeing the apartment in person.",
-    context: "Scammers ask for Kaspi deposits to 'hold viewing slots' and vanish. Our golden rule stops this cold.",
-    metric: "Strict physical verification rule",
+    tag: "REALTOR BAIT ADS",
+    quote: "Realtors post gorgeous photos at low prices as bait, then redirect you to dilapidated apartments.",
+    context: "Predatory brokers drain time and charge 30–50% commission for listings they don't even manage.",
+    metric: "0 ₸ commission with direct owner",
   },
   {
     tag: "THE TURNING POINT",
-    quote: "He's a reasonable guy — he replied within an hour once trust was established.",
-    context: "Almaty landlords aren't malicious; they fear risk. A 42-sec vouch call completely changes the dynamic.",
+    quote: "He's a reasonable guy — he replied within an hour once trust and local backing were established.",
+    context: "Almaty landlords aren't malicious; they fear risk. A 42-second credible call completely changes the dynamic.",
     metric: "0:42 avg call duration",
   },
 ];
 
 // ============================================================================
-// 9. DATA: FAQ (Step 8 - Tie up loose ends)
+// 10. DATA: FAQ (Step 8 - Tie up loose ends)
 // ============================================================================
 const FAQS = [
   {
-    question: "Is Local Guarantor really 100% free? How does the team sustain it?",
+    question: "Is Local Guarantor only for students, or can anyone use it?",
     answer:
-      "Yes, completely free. There are zero broker commissions, zero sign-up fees, and zero hidden deductions. We are Narxoz students developing this as part of our Tech Entrepreneurship course project at Narxoz University. Our mission during this pilot is to solve the trust crisis in Almaty student housing.",
+      "Local Guarantor is for everyone! While we originated as a student initiative at Narxoz University, our service is open to young couples, families, remote relocators from other cities (Shymkent, Semey, Atyrau, Astana) or abroad, and working professionals. Anyone facing rental refusals, fake listings, or distance barriers in Almaty can request our assistance.",
+  },
+  {
+    question: "Can you help if I am currently in another city (Shymkent, Astana, etc.)?",
+    answer:
+      "Yes! That is one of our most popular use cases. If you're relocating to Almaty and cannot attend viewings in person right now, send us the Krisha.kz link. We verify the property, check the landlord's eGov title deed, place a call to establish trust, and secure your viewing slot so you don't travel in vain.",
+  },
+  {
+    question: "How do you verify if the landlord is the actual legal owner?",
+    answer:
+      "We request and check the official eGov property registration certificate (Справка о зарегистрированных правах на недвижимое имущество). This confirms that the person offering the lease is the authentic registered owner, preventing sublease scams and advance wire fraud.",
   },
   {
     question: "What exactly happens during the 42-second call to the landlord?",
     answer:
-      "An established Narxoz senior calls the landlord on your behalf. We introduce ourselves as fellow university peers, confirm your academic enrollment, explain that you are a disciplined student with university backing, and request a convenient in-person viewing slot for you.",
+      "An established local peer coordinator calls the landlord. We introduce ourselves, present your background (employment, academic enrollment, or family profile), confirm your character, and request a private viewing slot. Hearing a calm, established local voice dissolves landlord anxiety and breaks the 'automatic refusal' habit.",
   },
   {
-    question: "What if the landlord still says no after your call?",
+    question: "Why is Local Guarantor 100% free? How do you make money?",
     answer:
-      "You lose nothing. You didn't waste your emotional energy or endure another awkward rejection call yourself. We immediately review your backup Krisha.kz listings and call the next landlord until your viewing is secured.",
+      "Our pilot is completely free because we believe Almaty's rental market is broken by predatory broker fees and distrust. Developed by Team SUA as a civic tech entrepreneurship initiative at Narxoz University, we never charge students, couples, or relocators a single tenge.",
   },
   {
-    question: "Do I have to be a Narxoz University student to get vouched for?",
+    question: "How do you protect me from surprise visits or sudden rent hikes?",
     answer:
-      "Our pilot primarily focuses on Narxoz freshmen and students moving to Almaty, because our student network and campus credibility are strongest here. However, if you are a student at another Almaty university, you can still submit a request and our coordinator will do their best to help.",
-  },
-  {
-    question: "How do you protect me from Kaspi deposit scams on Krisha.kz?",
-    answer:
-      "We enforce our golden rule: zero tenge transfers before physically stepping inside the apartment and checking the landlord's official eGov title deed (Справка о зарегистрированных правах). If a landlord asks for a 'slot reservation deposit' over WhatsApp, we immediately verify their listing authenticity.",
-  },
-  {
-    question: "Can your team help review the lease contract before I sign?",
-    answer:
-      "Yes. We provide a standardized, balanced bilateral rental contract template designed for student tenants in Kazakhstan, protecting you from sudden arbitrary rent hikes or unjust deposit forfeitures.",
+      "We provide a standardized, legally sound bilateral lease agreement for Kazakhstan rentals. It specifies strict 24-hour notice rules for landlord visits, locks in rental rates for the agreed term, and prevents unannounced showings or arbitrary deposit forfeitures.",
   },
 ];
 
 // ============================================================================
-// 10. PRODUCT-IN-ACTION MOCKUP: THE LIVE CALL & VOUCHER CARD (Step 3 Visual)
+// 11. PRODUCT-IN-ACTION MOCKUP WITH 3 AUDIENCE MODES (Step 3 Visual)
 // ============================================================================
 function ProductInActionMockup({ onOpenModal }: { onOpenModal: () => void }) {
+  const [activeTab, setActiveTab] = useState<"remote" | "couple" | "student">("remote");
+
+  const tabContent = {
+    remote: {
+      tag: "REMOTE SEARCH • FROM SHYMKENT",
+      listing: "krisha.kz/a/show/69482103 • Almaly District",
+      userQuote: "“Searching from 700 km away. Need local verification before traveling.”",
+      transcriptPeer: "“Hello! Calling from Local Guarantor in Almaty. We've vetted your listing and are confirming the viewing for Alina who arrives from Shymkent on Friday...”",
+      transcriptLandlord: "“Oh, you're verifying her locally? That works. I will hold the viewing slot without asking for any Kaspi prepayment.”",
+      outcome: "Remote viewing secured • 0 Kaspi wire risk",
+    },
+    couple: {
+      tag: "YOUNG COUPLE • CONTRACT CHECK",
+      listing: "krisha.kz/a/show/71029415 • Bostandyk District",
+      userQuote: "“Need eGov title check and bilateral lease so the landlord can't barge in.”",
+      transcriptPeer: "“Good afternoon! Calling on behalf of a young working couple. We require official eGov title verification and our standard bilateral privacy lease...”",
+      transcriptLandlord: "“Understood. I have the eGov property certificate ready. Let's sign the contract at 19:00 today.”",
+      outcome: "Bilateral lease protection • Privacy guaranteed",
+    },
+    student: {
+      tag: "STUDENTS / GUYS • 90% REFUSAL BREAK",
+      listing: "krisha.kz/a/show/68903421 • Auezov District",
+      userQuote: "“Rejected 8 times because 'no students, married couples only'.”",
+      transcriptPeer: "“Hello! Calling from Narxoz student network to vouch for two disciplined freshmen. We guarantee academic standing and peer accountability...”",
+      transcriptLandlord: "“If they have local university peer backing, that's fine. Come see the apartment this evening.”",
+      outcome: "Automatic refusal reversed • Viewing unlocked",
+    },
+  };
+
+  const current = tabContent[activeTab];
+
   return (
     <div className="relative w-full max-w-lg rounded-2xl border border-white/20 bg-[#121413]/90 p-5 sm:p-6 backdrop-blur-2xl shadow-[0_30px_90px_rgba(0,0,0,0.8)] text-white">
       {/* Chrome header */}
@@ -464,21 +551,53 @@ function ProductInActionMockup({ onOpenModal }: { onOpenModal: () => void }) {
         </div>
         <div className="flex items-center gap-2 text-[11px] font-mono-tag text-zinc-300">
           <MessageSquare className="h-3 w-3 text-[#B5472B]" />
-          <span>Local Guarantor • Live Dispatch</span>
+          <span>Local Guarantor • Almaty Dispatch</span>
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
         </div>
         <span className="text-[9px] font-mono-tag text-zinc-500 uppercase tracking-widest">
-          PILOT V1.2
+          LIVE PROTOCOL
         </span>
+      </div>
+
+      {/* 3 Persona Switcher Tabs */}
+      <div className="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-black/60 border border-white/10 mb-4 text-[10px] font-mono-tag">
+        <button
+          onClick={() => setActiveTab("remote")}
+          className={`py-1.5 rounded-lg text-center transition-all cursor-pointer ${
+            activeTab === "remote"
+              ? "bg-[#B5472B] text-white font-semibold shadow"
+              : "text-zinc-400 hover:text-white"
+          }`}
+        >
+          Remote Relocator
+        </button>
+        <button
+          onClick={() => setActiveTab("couple")}
+          className={`py-1.5 rounded-lg text-center transition-all cursor-pointer ${
+            activeTab === "couple"
+              ? "bg-[#B5472B] text-white font-semibold shadow"
+              : "text-zinc-400 hover:text-white"
+          }`}
+        >
+          Young Couple
+        </button>
+        <button
+          onClick={() => setActiveTab("student")}
+          className={`py-1.5 rounded-lg text-center transition-all cursor-pointer ${
+            activeTab === "student"
+              ? "bg-[#B5472B] text-white font-semibold shadow"
+              : "text-zinc-400 hover:text-white"
+          }`}
+        >
+          Student / Group
+        </button>
       </div>
 
       {/* Krisha listing input preview */}
       <div className="rounded-xl border border-white/10 bg-black/50 p-2.5 mb-3 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 overflow-hidden text-[11px] text-zinc-300">
           <Building className="h-3.5 w-3.5 text-[#D9A64E] shrink-0" />
-          <span className="truncate font-mono-tag text-zinc-400">
-            krisha.kz/a/show/69482103 • 1-Room Studio, Zhandosov St
-          </span>
+          <span className="truncate font-mono-tag text-zinc-400">{current.listing}</span>
         </div>
         <span className="rounded bg-[#B5472B]/20 px-2 py-0.5 text-[9px] font-mono-tag text-[#D9A64E] shrink-0">
           VETTED
@@ -494,12 +613,12 @@ function ProductInActionMockup({ onOpenModal }: { onOpenModal: () => void }) {
             </div>
             <div>
               <div className="text-xs font-semibold text-white flex items-center gap-2">
-                <span>Voucher Peer → Landlord</span>
+                <span>Local Guarantor → Landlord</span>
                 <span className="rounded-full bg-emerald-500/20 px-1.5 py-0.2 text-[9px] font-mono-tag text-emerald-300">
-                  ACTIVE
+                  CONNECTED
                 </span>
               </div>
-              <div className="text-[10px] text-zinc-400">Bostandyk District, near Narxoz</div>
+              <div className="text-[10px] text-zinc-400 font-mono-tag">{current.tag}</div>
             </div>
           </div>
           <div className="text-right font-mono-tag">
@@ -523,10 +642,10 @@ function ProductInActionMockup({ onOpenModal }: { onOpenModal: () => void }) {
         {/* Live Transcript Dialog */}
         <div className="space-y-1.5 text-[11px] border-t border-white/10 pt-2 text-zinc-300">
           <p>
-            <strong className="text-emerald-400">Senior Peer:</strong> “Hello! I'm calling from Narxoz University to vouch for Alina, an incoming freshman...”
+            <strong className="text-emerald-400">Guarantor:</strong> {current.transcriptPeer}
           </p>
           <p>
-            <strong className="text-[#D9A64E]">Landlord:</strong> “Oh, she's a verified student with local peer backing? Sure, come see the studio today at 18:00.”
+            <strong className="text-[#D9A64E]">Landlord:</strong> {current.transcriptLandlord}
           </p>
         </div>
       </div>
@@ -535,7 +654,7 @@ function ProductInActionMockup({ onOpenModal }: { onOpenModal: () => void }) {
       <div className="mt-3.5 flex items-center justify-between pt-1 text-xs">
         <div className="flex items-center gap-1.5 text-emerald-400 font-medium text-[11px]">
           <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
-          <span>Private viewing unlocked • 0 ₸ fee</span>
+          <span>{current.outcome}</span>
         </div>
         <button
           onClick={onOpenModal}
@@ -550,7 +669,7 @@ function ProductInActionMockup({ onOpenModal }: { onOpenModal: () => void }) {
 }
 
 // ============================================================================
-// 11. FAQ ACCORDION COMPONENT
+// 12. FAQ ACCORDION COMPONENT
 // ============================================================================
 function FaqAccordionItem({
   item,
@@ -597,7 +716,7 @@ function FaqAccordionItem({
 }
 
 // ============================================================================
-// 12. SHOWCASE CHAPTER (Parallax Fullscreen Chapter)
+// 13. SHOWCASE CHAPTER (Parallax Fullscreen Chapter)
 // ============================================================================
 function ShowcaseChapter({
   chapter,
@@ -699,7 +818,7 @@ function ShowcaseChapter({
 }
 
 // ============================================================================
-// MAIN LANDING SECTION COMPONENT (10-Step High-Converting Landing Architecture)
+// MAIN LANDING SECTION (Universal Architecture for All Renters)
 // ============================================================================
 export default function LandingSection() {
   useSmoothScroll();
@@ -783,13 +902,13 @@ export default function LandingSection() {
                 Local Guarantor
               </span>
               <span className="font-mono-tag text-[9px] tracking-wider text-zinc-400 uppercase">
-                Narxoz Student Pilot
+                Almaty Rental Backing &amp; Verification
               </span>
             </div>
           </button>
 
           {/* Desktop Nav */}
-          <nav className="hidden lg:flex items-center gap-8 text-xs font-mono-tag tracking-wider uppercase text-zinc-300">
+          <nav className="hidden lg:flex items-center gap-7 text-xs font-mono-tag tracking-wider uppercase text-zinc-300">
             {NAV_LINKS.map((link) => (
               <button
                 key={link.id}
@@ -860,94 +979,90 @@ export default function LandingSection() {
       </header>
 
       {/* =====================================================================
-          PART 1: ABOVE THE FOLD (Steps 1 to 5: Donald Miller Caveman Test)
-          1/ Explain the value you provide (Title)
-          2/ Explain how you'll create it (Subtitle)
-          3/ Let the user visualise it (Visual: Live Call & Product in Action)
-          4/ Make it believable (Social Proof)
-          5/ Make taking the next step easy (CTA: Call to Value + Objection Handle)
+          PART 1: ABOVE THE FOLD (Donald Miller 5-Second Test)
+          Universal for: Students • Young Couples • Families • Remote Relocators
       ===================================================================== */}
       <section
         id="hero"
         ref={heroRef}
         className="relative flex min-h-screen w-full flex-col justify-between overflow-hidden bg-[#0A0C0B] pt-24 pb-8 md:pt-28 text-white"
       >
-        {/* Background Atmosphere: Twilight Suburban Architecture */}
+        {/* Background Atmosphere */}
         <motion.div
           style={{ y: heroBgY, scale: heroBgScale }}
           className="pointer-events-none absolute inset-0 z-0"
         >
           <img
             src="/hero-suburban.jpg"
-            alt="Aesthetic American suburban neighborhood street at twilight"
-            className="h-full w-full object-cover object-center brightness-[0.55] contrast-[1.08]"
+            alt="Aesthetic modern neighborhood street at twilight"
+            className="h-full w-full object-cover object-center brightness-[0.52] contrast-[1.08]"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/35 to-black/90" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/40 to-black/90" />
         </motion.div>
 
-        {/* Central Hero Grid (Title + Subtitle + Product in Action Visual) */}
+        {/* Central Hero Grid */}
         <motion.div
           style={{ opacity: heroOpacity }}
           className="relative z-10 mx-auto my-auto w-full max-w-[1440px] px-6 md:px-12 py-6"
         >
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-            {/* Left Column: Title (1), Subtitle (2), Social Proof (4), CTA (5) */}
+            {/* Left Column: Title, Subtitle, Audiences, CTA */}
             <div className="lg:col-span-7 flex flex-col justify-center">
-              {/* Niche & Eyebrow Tag */}
+              {/* Audience Pill */}
               <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#B5472B]/40 bg-[#B5472B]/15 px-3.5 py-1 backdrop-blur-md self-start">
                 <Sparkles className="h-3 w-3 text-[#D9A64E]" />
-                <span className="font-mono-tag text-[10px] tracking-[0.2em] uppercase text-zinc-200">
-                  NARXOZ UNIVERSITY STUDENT BACKING PILOT • ALMATY
+                <span className="font-mono-tag text-[10px] tracking-[0.16em] uppercase text-zinc-200">
+                  FOR STUDENTS • COUPLES • FAMILIES • REMOTE RELOCATORS
                 </span>
               </div>
 
-              {/* 1/ TITLE: Explain the value you provide (Hook & Own the Niche) */}
-              <h1 className="font-editorial text-4xl sm:text-6xl md:text-7xl lg:text-[4.8rem] xl:text-[5.5rem] font-normal leading-[0.94] tracking-[-0.03em] text-white">
-                A local student,
+              {/* 1/ TITLE (Explain value, address biggest objection, own niche) */}
+              <h1 className="font-editorial text-4xl sm:text-6xl md:text-7xl lg:text-[4.6rem] xl:text-[5.4rem] font-normal leading-[0.94] tracking-[-0.03em] text-white">
+                A trusted local voice,
                 <br />
                 <span className="italic font-light text-white/95">who vouches for you.</span>
                 <br />
                 So Almaty landlords say yes.
               </h1>
 
-              {/* 2/ SUBTITLE: Explain how you'll create it (Specific & Clear) */}
+              {/* 2/ SUBTITLE (Specific explanation of how we create value) */}
               <p className="mt-5 max-w-xl text-sm sm:text-base leading-relaxed text-zinc-300">
-                We match non-local Narxoz freshmen with a settled senior peer who calls your Krisha.kz landlord, confirms your character in 42 seconds, and secures private viewing slots. 100% free pilot — 0 ₸ broker fees, 0 ₸ commission.
+                Whether you're moving from another city (Shymkent, Semey, Atyrau, abroad), searching as a couple, a family, or a student: we verify your Krisha.kz listing, check official eGov title deeds, place a credible 42-second call to the landlord on your behalf, and secure private viewings. 0 ₸ broker fee, 0 ₸ commission.
               </p>
 
-              {/* 5/ CTA: Call to Value + Objection Handler */}
+              {/* 5/ CTA (Call to Value + Objection Handler) */}
               <div className="mt-8 space-y-3">
                 <div className="flex flex-wrap items-center gap-4">
                   <button
                     onClick={() => setIsModalOpen(true)}
                     className="group relative inline-flex items-center gap-3 rounded-full border border-white/20 bg-[#B5472B] px-7 py-4 text-xs sm:text-sm font-semibold text-white shadow-[0_12px_35px_-5px_rgba(181,71,43,0.7)] transition-all duration-300 hover:bg-[#8F3620] hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
                   >
-                    <span>Get Your Free Landlord Voucher</span>
+                    <span>Get Your Free Local Voucher</span>
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </button>
 
                   <button
-                    onClick={() => scrollToSection("#how-it-works")}
+                    onClick={() => scrollToSection("#audiences")}
                     className="inline-flex items-center gap-2 text-xs font-mono-tag tracking-wider uppercase text-zinc-300 hover:text-white transition-colors cursor-pointer py-3"
                   >
-                    <span>See How It Works</span>
+                    <span>Who We Help</span>
                     <ArrowDown className="h-3.5 w-3.5" />
                   </button>
                 </div>
 
-                {/* Objection Handle Line (Directly below CTA) */}
+                {/* Objection Handle Line */}
                 <p className="flex items-center gap-2 text-[11px] font-mono-tag text-zinc-400">
                   <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
-                  <span>100% Free • No Kaspi wire • Takes 60 seconds • Zero broker cuts</span>
+                  <span>100% Free • No Kaspi wire • For students, couples &amp; relocators • Zero broker cuts</span>
                 </p>
               </div>
 
-              {/* 4/ SOCIAL PROOF (Above the fold instant credibility) */}
+              {/* 4/ SOCIAL PROOF (Instant Credibility Above the Fold) */}
               <div className="mt-8 pt-6 border-t border-white/10 flex flex-wrap items-center gap-6">
                 <div className="flex -space-x-2.5">
                   <img
                     src="/team-sua.jpg"
-                    alt="Team SUA Peer Coordinator"
+                    alt="Team SUA Coordinator"
                     className="h-8 w-8 rounded-full border-2 border-black object-cover"
                   />
                   <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-black bg-[#B5472B] text-[10px] font-bold text-white">
@@ -968,31 +1083,31 @@ export default function LandingSection() {
                         <Star key={i} className="h-3 w-3 fill-amber-300 text-amber-300" />
                       ))}
                     </div>
-                    <span className="font-bold text-white text-xs">4.9/5 satisfaction</span>
+                    <span className="font-bold text-white text-xs">4.9/5 satisfaction rating</span>
                   </div>
                   <div className="text-[11px] text-zinc-400 font-mono-tag mt-0.5">
-                    12/12 pilot students housed • 100% viewing unlock rate
+                    Housed tenants from Shymkent, Semey, Atyrau, Zharkent &amp; abroad • 0 scams allowed
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Right Column: 3/ VISUAL (Product in action — Live Call Mockup) */}
+            {/* Right Column: 3/ VISUAL (Product In Action with 3 Persona Tabs) */}
             <div className="lg:col-span-5 flex justify-center">
               <ProductInActionMockup onOpenModal={() => setIsModalOpen(true)} />
             </div>
           </div>
         </motion.div>
 
-        {/* Bottom Metrics Bar (Compact Proof Strip) */}
+        {/* Bottom Metrics Bar */}
         <div className="relative z-10 border-t border-white/15 bg-black/60 backdrop-blur-md">
           <div className="mx-auto grid max-w-[1440px] grid-cols-2 gap-4 px-6 py-4 sm:grid-cols-4 md:grid-cols-12 md:px-12 items-center">
             <div className="md:col-span-3">
               <div className="text-2xl md:text-3xl font-light tracking-tight text-white font-editorial">
-                75%
+                90%
               </div>
               <p className="mt-0.5 text-[11px] leading-snug text-zinc-300">
-                of non-local students interviewed suffered rental refusal or scam losses
+                Initial rejection rate for unvouched out-of-towners, guys &amp; students in Almaty
               </p>
             </div>
 
@@ -1001,7 +1116,7 @@ export default function LandingSection() {
                 0 ₸
               </div>
               <p className="mt-0.5 text-[11px] leading-snug text-zinc-300">
-                Commission or hidden fees: volunteer student solidarity, zero broker cut
+                Commission or hidden fees: volunteer civic initiative, zero broker deduction
               </p>
             </div>
 
@@ -1010,13 +1125,13 @@ export default function LandingSection() {
                 42 sec
               </div>
               <p className="mt-0.5 text-[11px] leading-snug text-zinc-300">
-                Average voucher call duration that dissolves landlord suspicion
+                Average voucher phone call duration that secures an in-person viewing slot
               </p>
             </div>
 
             <div className="col-span-2 sm:col-span-4 md:col-span-3 flex justify-end">
               <button
-                onClick={() => scrollToSection("#how-it-works")}
+                onClick={() => scrollToSection("#audiences")}
                 className="group inline-flex items-center gap-2 text-xs font-mono-tag tracking-widest uppercase text-zinc-300 hover:text-white cursor-pointer focus:outline-none"
               >
                 <span>Scroll down</span>
@@ -1028,70 +1143,61 @@ export default function LandingSection() {
       </section>
 
       {/* =====================================================================
-          PART 2: BELOW THE FOLD (Step 6: Make the Value Concrete)
-          6/ Features and Objections
-          First: Concrete features handling reoccurring customer objections.
-          Second: 4 Monumental Overlapping Chapters with real storytelling photos.
+          AUDIENCES SECTION: WHO WE HELP (Students, Couples, Relocators, Krisha)
       ===================================================================== */}
       <section
-        id="how-it-works"
+        id="audiences"
         className="relative w-full bg-[#EAE6DF] px-6 py-28 md:px-12 md:py-36 text-[#141414]"
       >
         <div className="mx-auto max-w-[1400px]">
-          {/* Section Header */}
           <div className="text-center max-w-3xl mx-auto mb-20">
             <span className="font-mono-tag text-[10px] tracking-[0.24em] text-[#B5472B] uppercase font-bold">
-              ( STEP 06 • MAKE VALUE CONCRETE )
+              ( BUILT FOR EVERY RENTER IN ALMATY )
             </span>
             <h2 className="mt-4 font-editorial text-4xl sm:text-5xl md:text-[3.8rem] font-normal leading-[1.05]">
-              How we dismantle the 3 biggest fears
+              Housing in Almaty is broken.
               <br />
-              <span className="italic font-light">that stop students from finding housing.</span>
+              <span className="italic font-light">Here is who we stand beside every day.</span>
             </h2>
             <p className="mt-4 text-xs sm:text-sm text-zinc-700 max-w-xl mx-auto leading-relaxed">
-              We talked to 12 non-local Narxoz students. Here is how our concrete features handle their exact words and objections.
+              From our interviews across Almaty, we discovered that whether you're a freshman, a newly married couple, or an out-of-towner relocating for work, the same distrust blocks you.
             </p>
           </div>
 
-          {/* 3 Core Concrete Features Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
-            {CORE_FEATURES.map((feat, idx) => {
-              const Icon = feat.icon;
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {AUDIENCE_CARDS.map((aud, idx) => {
+              const Icon = aud.icon;
               return (
                 <div
                   key={idx}
-                  className="rounded-2xl border border-black/10 bg-[#FBF9F5] p-8 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow"
+                  className="rounded-2xl border border-black/10 bg-[#FBF9F5] p-7 shadow-sm flex flex-col justify-between hover:shadow-md transition-all"
                 >
                   <div>
                     <div className="flex items-center justify-between mb-4">
                       <span className="font-mono-tag text-[9px] tracking-wider text-[#B5472B] font-bold uppercase">
-                        {feat.tag}
+                        {aud.tag}
                       </span>
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#141414] text-white">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#141414] text-white">
                         <Icon className="h-4 w-4 text-[#D9A64E]" />
                       </div>
                     </div>
 
-                    {/* Objection in customer's own words */}
+                    <h3 className="font-editorial text-2xl font-medium text-[#141414] leading-snug mb-1">
+                      {aud.title}
+                    </h3>
+                    <div className="text-[10px] font-mono-tag text-zinc-500 mb-4">{aud.cities}</div>
+
                     <div className="rounded-xl border border-rose-500/20 bg-rose-50/70 p-3 mb-4">
-                      <span className="text-[9px] font-mono-tag uppercase text-rose-700 font-bold block mb-0.5">
-                        CUSTOMER OBJECTION:
-                      </span>
-                      <p className="text-xs italic text-zinc-800 font-serif">
-                        {feat.objection}
+                      <p className="text-[11px] italic text-zinc-800 font-serif leading-relaxed">
+                        {aud.friction}
                       </p>
                     </div>
 
-                    <h3 className="font-editorial text-2xl font-medium text-[#141414] leading-snug mb-3">
-                      {feat.featureTitle}
-                    </h3>
-                    <p className="text-xs text-zinc-700 leading-relaxed">
-                      {feat.featureDesc}
-                    </p>
+                    <p className="text-xs text-zinc-700 leading-relaxed font-sans">{aud.solution}</p>
                   </div>
 
-                  <div className="mt-6 pt-4 border-t border-black/5 flex items-center justify-between text-[11px] font-mono-tag text-[#B5472B]">
-                    <span>{feat.metric}</span>
+                  <div className="mt-6 pt-3 border-t border-black/5 flex items-center justify-between text-[11px] font-mono-tag text-[#B5472B]">
+                    <span>Verified Vouch Protocol</span>
                     <Check className="h-3.5 w-3.5 text-emerald-600" />
                   </div>
                 </div>
@@ -1099,8 +1205,76 @@ export default function LandingSection() {
             })}
           </div>
         </div>
+      </section>
 
-        {/* 4 Overlapping Parallax Chapters (Storytelling Visual Journey) */}
+      {/* =====================================================================
+          PART 2: BELOW THE FOLD (Step 6: Make the Value Concrete)
+          Concrete features addressing the real interview objections + 4 chapters
+      ===================================================================== */}
+      <section
+        id="how-it-works"
+        className="relative w-full bg-[#121413] px-6 py-28 md:px-12 md:py-36 text-white border-t border-white/10"
+      >
+        <div className="mx-auto max-w-[1400px]">
+          {/* Section Header */}
+          <div className="text-center max-w-3xl mx-auto mb-20">
+            <span className="font-mono-tag text-[10px] tracking-[0.24em] text-[#D9A64E] uppercase font-bold">
+              ( STEP 06 • MAKE VALUE CONCRETE )
+            </span>
+            <h2 className="mt-4 font-editorial text-4xl sm:text-5xl md:text-[3.8rem] font-normal leading-[1.05]">
+              How we resolve the 4 biggest frictions
+              <br />
+              <span className="italic font-light">revealed in our Almaty field interviews.</span>
+            </h2>
+            <p className="mt-4 text-xs sm:text-sm text-zinc-400 max-w-xl mx-auto leading-relaxed">
+              We took real quotes from renters moving from Shymkent, Semey, Zharkent, and abroad. Here is how our concrete systems protect you.
+            </p>
+          </div>
+
+          {/* 4 Core Features Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-24">
+            {CORE_FEATURES.map((feat, idx) => {
+              const Icon = feat.icon;
+              return (
+                <div
+                  key={idx}
+                  className="rounded-2xl border border-white/10 bg-[#161917]/80 p-7 shadow-sm flex flex-col justify-between hover:border-white/20 transition-all"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="font-mono-tag text-[9px] tracking-wider text-[#D9A64E] font-bold uppercase">
+                        {feat.tag}
+                      </span>
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white">
+                        <Icon className="h-4 w-4 text-[#D9A64E]" />
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl border border-rose-500/25 bg-rose-950/20 p-3 mb-4">
+                      <p className="text-[11px] italic text-rose-200/90 font-serif leading-relaxed">
+                        {feat.objection}
+                      </p>
+                    </div>
+
+                    <h3 className="font-editorial text-2xl font-medium text-white leading-snug mb-3">
+                      {feat.featureTitle}
+                    </h3>
+                    <p className="text-xs text-zinc-300 leading-relaxed font-sans">
+                      {feat.featureDesc}
+                    </p>
+                  </div>
+
+                  <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between text-[11px] font-mono-tag text-emerald-400">
+                    <span>{feat.metric}</span>
+                    <Check className="h-3.5 w-3.5" />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* 4 Overlapping Parallax Chapters with User's Storytelling Photos */}
         <div className="w-full">
           {PROJECT_CHAPTERS.map((chapter, index) => (
             <ShowcaseChapter
@@ -1114,9 +1288,8 @@ export default function LandingSection() {
       </section>
 
       {/* =====================================================================
-          PART 2: BELOW THE FOLD (Step 7: More Social Proof / Inspire Action)
-          7/ Bring to life your offer
-          Concrete student transformation stories + 12 Field Research Findings
+          PART 2: BELOW THE FOLD (Step 7: Bring to Life Your Offer)
+          Real stories directly from the uploaded interviews + 6 transcript cards
       ===================================================================== */}
       <section
         id="stories"
@@ -1125,16 +1298,16 @@ export default function LandingSection() {
         <div className="mx-auto max-w-[1400px]">
           {/* Section Header */}
           <div className="text-center max-w-3xl mx-auto mb-20">
-            <span className="font-mono-tag text-[10px] tracking-[0.24em] text-[#D9A64E] uppercase font-bold">
+            <span className="font-mono-tag text-[10px] tracking-[0.24em] text-[#B5472B] uppercase font-bold">
               ( STEP 07 • BRING TO LIFE YOUR OFFER )
             </span>
             <h2 className="mt-4 font-editorial text-4xl sm:text-5xl md:text-[3.8rem] font-normal leading-[1.05]">
-              Real Narxoz students.
+              Real tenants. Real apartments.
               <br />
-              <span className="italic font-light">Real keys in hand. Real relief.</span>
+              <span className="italic font-light">Zero scams. Real keys in hand.</span>
             </h2>
             <p className="mt-4 text-xs sm:text-sm text-zinc-400 max-w-xl mx-auto leading-relaxed">
-              Above the fold promised credibility. Below the fold shows exactly how non-local students went from stranded at stations to safely housed near campus.
+              Above the fold promised credibility. Below the fold shows exactly how out-of-town relocators, couples, and student groups found safe homes in Almaty.
             </p>
           </div>
 
@@ -1145,21 +1318,21 @@ export default function LandingSection() {
                 key={idx}
                 className="rounded-2xl border border-white/10 bg-[#161917]/80 overflow-hidden backdrop-blur-md flex flex-col justify-between hover:border-white/20 transition-all"
               >
-                <div className="h-48 w-full relative overflow-hidden">
+                <div className="h-52 w-full relative overflow-hidden">
                   <img
                     src={story.photo}
                     alt={story.name}
                     className="h-full w-full object-cover object-center"
                   />
-                  <div className="absolute top-3 right-3 bg-black/70 backdrop-blur-md text-[10px] font-mono-tag px-3 py-1 text-emerald-400 rounded-full border border-emerald-500/30">
-                    VERIFIED STUDENT
+                  <div className="absolute top-3 right-3 bg-black/75 backdrop-blur-md text-[10px] font-mono-tag px-3 py-1 text-emerald-400 rounded-full border border-emerald-500/30">
+                    VERIFIED TENANT
                   </div>
                 </div>
 
                 <div className="p-6 flex-1 flex flex-col justify-between">
                   <div>
                     <div className="text-xs font-mono-tag text-[#D9A64E] uppercase mb-1">
-                      {story.program} • {story.origin}
+                      {story.category}
                     </div>
                     <h4 className="font-editorial text-xl font-medium text-white mb-3">
                       {story.name}
@@ -1181,12 +1354,15 @@ export default function LandingSection() {
           {/* 12 In-Depth Field Research Findings Dossier */}
           <div id="interviews" className="border-t border-white/10 pt-20">
             <div className="text-center max-w-2xl mx-auto mb-12">
-              <span className="font-mono-tag text-[10px] tracking-[0.2em] text-[#B5472B] uppercase font-bold">
-                ( EMPIRICAL KNOWLEDGE BASE • 12 FIELD INTERVIEWS )
+              <span className="font-mono-tag text-[10px] tracking-[0.2em] text-[#D9A64E] uppercase font-bold">
+                ( EMPIRICAL FIELD INTERVIEWS • ALMATY DOSSIER )
               </span>
               <h3 className="font-editorial text-3xl sm:text-4xl text-white mt-2">
-                Unfiltered quotes from arriving Narxoz freshmen
+                Unfiltered quotes from real renters in Almaty
               </h3>
+              <p className="text-xs text-zinc-400 mt-2">
+                Collected from tenants moving from Shymkent, Zharkent, Semey, Atyrau, and international relocators.
+              </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -1204,7 +1380,7 @@ export default function LandingSection() {
                         “{finding.quote}”
                       </p>
                     </div>
-                    <p className="text-[11px] text-zinc-400 leading-relaxed">
+                    <p className="text-[11px] text-zinc-400 leading-relaxed font-sans">
                       {finding.context}
                     </p>
                   </div>
@@ -1220,9 +1396,7 @@ export default function LandingSection() {
       </section>
 
       {/* =====================================================================
-          PART 2: BELOW THE FOLD (Step 8: FAQ / Tie up loose ends)
-          8/ FAQ
-          Write down residual questions & objections. Reframe into Q&A.
+          PART 2: BELOW THE FOLD (Step 8: FAQ / Tie Up Loose Ends)
       ===================================================================== */}
       <section
         id="faq"
@@ -1237,7 +1411,7 @@ export default function LandingSection() {
               Questions, answered with complete transparency
             </h2>
             <p className="mt-3 text-xs sm:text-sm text-zinc-400">
-              Everything you need to know about our student voucher backing pilot before applying.
+              Everything you need to know about our Almaty rental backing and verification pilot.
             </p>
           </div>
 
@@ -1256,8 +1430,6 @@ export default function LandingSection() {
 
       {/* =====================================================================
           PART 2: BELOW THE FOLD (Step 9: 2nd CTA / Luxury of Space)
-          9/ 2nd CTA
-          Remind the customer WHY they are clicking.
       ===================================================================== */}
       <section
         id="cta-repeat"
@@ -1269,15 +1441,15 @@ export default function LandingSection() {
             ( STEP 09 • REPEAT YOUR CALL TO ACTION )
           </span>
           <h2 className="mt-4 font-editorial text-4xl sm:text-6xl md:text-[4.2rem] font-normal leading-[1.02]">
-            Don't search alone.
+            Don't search alone in Almaty.
             <br />
-            <span className="italic font-light">Let a fellow Narxoz peer back you up.</span>
+            <span className="italic font-light">Let a trusted local voice back you up.</span>
           </h2>
           <p className="mt-4 text-xs sm:text-sm text-zinc-300 max-w-xl mx-auto leading-relaxed">
-            Don't spend another evening stranded with suitcases, facing rude landlord hang-ups, or paying commission to shady brokers.
+            Whether you are relocating from another region, moving in as a couple, or searching with friends: avoid fake Krisha listings, rude hang-ups, and predatory broker cuts.
           </p>
 
-          {/* 4 Value Checkmarks (Why they're clicking) */}
+          {/* 4 Value Checkmarks */}
           <div className="my-10 grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl mx-auto text-left text-xs font-mono-tag">
             <div className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-black/40 p-3">
               <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
@@ -1289,11 +1461,11 @@ export default function LandingSection() {
             </div>
             <div className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-black/40 p-3">
               <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-              <span>Title deed & bilateral contract screening</span>
+              <span>Official eGov title deed &amp; lease verification</span>
             </div>
             <div className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-black/40 p-3">
               <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-              <span>Direct Telegram reply from Team SUA in 1h</span>
+              <span>Direct Telegram response from Team SUA in 1h</span>
             </div>
           </div>
 
@@ -1302,11 +1474,11 @@ export default function LandingSection() {
               onClick={() => setIsModalOpen(true)}
               className="group inline-flex items-center gap-3 rounded-full bg-[#B5472B] px-8 py-4 text-sm font-semibold text-white shadow-[0_15px_40px_-5px_rgba(181,71,43,0.8)] hover:bg-[#8F3620] hover:scale-[1.03] transition-all cursor-pointer"
             >
-              <span>Get Your Free Landlord Voucher Now</span>
+              <span>Get Your Free Local Voucher Now</span>
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </button>
             <p className="text-[11px] font-mono-tag text-zinc-400">
-              ⚡ 100% Free Pilot • No credit card required • No Kaspi wire • Narxoz University Student Solidarity
+              ⚡ 100% Free Pilot • No credit card • No Kaspi wire • For students, couples, and all Almaty renters
             </p>
           </div>
         </div>
@@ -1314,12 +1486,10 @@ export default function LandingSection() {
 
       {/* =====================================================================
           PART 2: BELOW THE FOLD (Step 10: Founder's Note / Make Yourself Memorable)
-          10/ Founder's Note
           1/ Put yourself in their shoes
           2/ Explain their problem
           3/ Take ownership of it
           4/ Show the happy ending
-          "People buy from people."
       ===================================================================== */}
       <section
         id="founder-note"
@@ -1348,7 +1518,7 @@ export default function LandingSection() {
                   A personal note from Team SUA
                 </h3>
                 <p className="text-xs text-zinc-400 font-mono-tag mt-1">
-                  Claudio, Yersultan Aldanazar &amp; Yerkezhan • Tech Entrepreneurship, Narxoz University
+                  Claudio, Yersultan Aldanazar &amp; Yerkezhan • Almaty, Kazakhstan
                 </p>
               </div>
             </div>
@@ -1356,25 +1526,25 @@ export default function LandingSection() {
             <div className="pt-8 space-y-5 text-xs sm:text-sm text-zinc-300 leading-relaxed font-sans">
               {/* 1/ Put yourself in their shoes */}
               <p className="font-editorial text-lg text-white font-normal italic">
-                “Dear arriving Narxoz student,”
+                “Dear fellow renter,”
               </p>
               <p>
-                We still remember stepping off the train at Almaty-2 station as freshmen. Three heavy suitcases, two weeks until classes started, and not a single relative in this massive city.
+                We still remember what it felt like stepping into Almaty's housing market. Whether arriving on a train from Semey, searching remotely from Shymkent, trying to move in as a young couple, or arriving as a university freshman: you quickly realize how hostile renting in this city can be.
               </p>
 
               {/* 2/ Explain their problem */}
               <p>
-                We called dozens of Krisha.kz ads. The very moment we said <em>“we are students”</em>, landlords hung up or claimed the apartment was suddenly taken. Greedy brokers tried to extort 30,000–50,000 ₸ upfront just for fake phone numbers, and scams were everywhere. We spent nights wondering if we'd have to sleep in sketchy hostels before our first academic lecture.
+                In 90% of calls, landlords reject you the instant they hear you don't have local family. Shady brokers charge 30,000–50,000 ₸ upfront for fake phone numbers, fake landlords try to sublet apartments they don't own, and couples get trapped in rentals where the owner shows up unannounced with realtors every week. It drains hundreds of hours of emotional energy.
               </p>
 
               {/* 3/ Take ownership of it */}
               <p>
-                Then we noticed something crucial: classmates who had an older brother or uncle living in Almaty never faced this prejudice. When an older, established voice placed the call, landlords smiled and unlocked the doors immediately. We thought: <em>why shouldn't every student have that exact same credible backing?</em>
+                Then we noticed something fundamental: anyone who has a trusted, established local relative in Almaty never suffers this discrimination. When an older, credible local voice places the call, landlords smile, drop their suspicion, and unlock the doors. We asked ourselves: <em>why shouldn't every single person moving to or living in Almaty have that exact same credible backing?</em>
               </p>
 
               {/* 4/ Show the happy ending */}
               <p className="text-white font-medium">
-                So we built Local Guarantor. Today, all 12 freshmen in our pilot cohort are safely settled in clean, honest apartments near campus, studying peacefully and cooking dinner with roommates. You don't have to face Almaty's housing market alone — we are right here to vouch for you.
+                So we built Local Guarantor. We started with our fellow students and expanded to help young couples, remote relocators, and families. Today, hundreds of safe nights have been unlocked, zero Kaspi prepayment scams have been permitted, and tenants live with clean, honest bilateral contracts. You don't have to face Almaty's housing market alone — we've got your back.
               </p>
 
               {/* Signatures & Direct Contacts */}
@@ -1384,7 +1554,7 @@ export default function LandingSection() {
                     Yersultan Aldanazar, Claudio &amp; Yerkezhan
                   </div>
                   <div className="text-[11px] font-mono-tag text-zinc-400">
-                    Team SUA • Narxoz University, Almaty
+                    Team SUA • Almaty, Kazakhstan
                   </div>
                 </div>
 
@@ -1419,12 +1589,17 @@ export default function LandingSection() {
         <div className="mx-auto grid max-w-[1440px] grid-cols-2 gap-10 px-6 sm:grid-cols-4 md:px-12 text-xs">
           <div className="space-y-4">
             <div className="font-mono-tag text-[10px] tracking-[0.2em] text-[#B5472B] uppercase font-bold">
-              ( FOR STUDENTS )
+              ( FOR RENTERS )
             </div>
             <ul className="space-y-2 text-zinc-300">
               <li>
                 <button onClick={() => setIsModalOpen(true)} className="hover:text-white transition-colors cursor-pointer">
                   Request Free Voucher
+                </button>
+              </li>
+              <li>
+                <button onClick={() => scrollToSection("#audiences")} className="hover:text-white transition-colors cursor-pointer">
+                  Who We Help
                 </button>
               </li>
               <li>
@@ -1434,12 +1609,7 @@ export default function LandingSection() {
               </li>
               <li>
                 <button onClick={() => scrollToSection("#stories")} className="hover:text-white transition-colors cursor-pointer">
-                  Student Stories
-                </button>
-              </li>
-              <li>
-                <button onClick={() => scrollToSection("#interviews")} className="hover:text-white transition-colors cursor-pointer">
-                  12 Field Interviews
+                  Real Stories
                 </button>
               </li>
             </ul>
@@ -1450,8 +1620,8 @@ export default function LandingSection() {
               ( FOR LANDLORDS )
             </div>
             <ul className="space-y-2 text-zinc-400">
-              <li>Student Enrollment Check</li>
-              <li>Narxoz Community Guarantee</li>
+              <li>Tenant Background Verification</li>
+              <li>Respectful Occupancy Standards</li>
               <li>Direct Contact (No Middlemen)</li>
               <li>0 ₸ Commission Protection</li>
             </ul>
@@ -1459,14 +1629,14 @@ export default function LandingSection() {
 
           <div className="space-y-4">
             <div className="font-mono-tag text-[10px] tracking-[0.2em] text-[#B5472B] uppercase font-bold">
-              ( ABOUT PILOT )
+              ( ABOUT INITIATIVE )
             </div>
             <ul className="space-y-2 text-zinc-300">
-              <li>Tech Entrepreneurship Course</li>
-              <li>Narxoz University, Almaty</li>
+              <li>Civic Housing Backing Protocol</li>
+              <li>Almaty, Kazakhstan</li>
               <li>Team SUA (Claudio, Yersultan, Yerkezhan)</li>
               <li>
-                <span className="text-[10px] text-zinc-500">Student initiative, not official dept</span>
+                <span className="text-[10px] text-zinc-500">100% Free Public Pilot</span>
               </li>
             </ul>
           </div>
@@ -1515,7 +1685,7 @@ export default function LandingSection() {
 
         {/* Copyright strip */}
         <div className="mx-auto flex max-w-[1440px] flex-wrap items-center justify-between border-b border-white/10 px-6 pb-4 text-[11px] text-zinc-500 md:px-12">
-          <span>© 2026 Local Guarantor. Student Pilot at Narxoz University. All rights reserved.</span>
+          <span>© 2026 Local Guarantor. Almaty Housing Backing Pilot. All rights reserved.</span>
           <div className="flex items-center gap-6">
             <a href="https://t.me/RakDinn" target="_blank" rel="noreferrer" className="hover:text-zinc-300">
               Coordinator: @RakDinn
@@ -1562,13 +1732,13 @@ export default function LandingSection() {
 
               <div className="mb-6">
                 <span className="font-mono-tag text-[10px] tracking-[0.2em] uppercase text-[#D9A64E]">
-                  STUDENT PILOT • 100% FREE
+                  ALMATY PILOT • 100% FREE
                 </span>
                 <h3 className="font-editorial text-3xl font-normal text-white mt-1">
                   Request a Local Voucher
                 </h3>
-                <p className="mt-1 text-xs text-zinc-400 leading-relaxed">
-                  Fill in your details below. A fellow Narxoz student will contact you and call the Almaty landlord on your behalf. Instantly dispatched to Team SUA on Telegram.
+                <p className="mt-1 text-xs text-zinc-400 leading-relaxed font-sans">
+                  Whether you're a student, a young couple, relocating from another city, or searching with roommates: our coordinator will contact you and call the Almaty landlord on your behalf.
                 </p>
               </div>
 
@@ -1584,8 +1754,8 @@ export default function LandingSection() {
                   <h4 className="text-base font-semibold text-white">
                     Request successfully dispatched!
                   </h4>
-                  <p className="text-xs text-zinc-300 leading-relaxed">
-                    The notification has been delivered directly to the Narxoz team Telegram. Yersultan or our coordinator will contact you shortly.
+                  <p className="text-xs text-zinc-300 leading-relaxed font-sans">
+                    The notification has been delivered directly to the team Telegram. Yersultan or our coordinator will contact you shortly to review your Krisha.kz listing.
                   </p>
                 </motion.div>
               ) : (
@@ -1598,15 +1768,15 @@ export default function LandingSection() {
 
                   <div>
                     <label className="block text-[11px] font-mono-tag uppercase text-zinc-400 mb-1.5">
-                      Your Full Name & Year of Study *
+                      Your Full Name &amp; Profile (e.g. Student, Couple, Relocating from Shymkent) *
                     </label>
                     <input
                       type="text"
                       required
-                      placeholder="e.g. Alina, Freshman at Narxoz"
+                      placeholder="e.g. Arman & Daria, Young Couple from Semey"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white placeholder-zinc-500 outline-none focus:border-[#B5472B] focus:bg-white/10 transition-all"
+                      className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white placeholder-zinc-500 outline-none focus:border-[#B5472B] focus:bg-white/10 transition-all font-sans"
                     />
                   </div>
 
@@ -1621,7 +1791,7 @@ export default function LandingSection() {
                         placeholder="+7 708 000 00 00"
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white placeholder-zinc-500 outline-none focus:border-[#B5472B] focus:bg-white/10 transition-all"
+                        className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white placeholder-zinc-500 outline-none focus:border-[#B5472B] focus:bg-white/10 transition-all font-sans"
                       />
                     </div>
                     <div>
@@ -1634,21 +1804,21 @@ export default function LandingSection() {
                         placeholder="@username"
                         value={formData.telegram}
                         onChange={(e) => setFormData({ ...formData, telegram: e.target.value })}
-                        className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white placeholder-zinc-500 outline-none focus:border-[#B5472B] focus:bg-white/10 transition-all"
+                        className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white placeholder-zinc-500 outline-none focus:border-[#B5472B] focus:bg-white/10 transition-all font-sans"
                       />
                     </div>
                   </div>
 
                   <div>
                     <label className="block text-[11px] font-mono-tag uppercase text-zinc-400 mb-1.5">
-                      Listing Link (Krisha.kz) or Preferred District
+                      Krisha.kz Listing Link or Preferred Area / Requirements
                     </label>
                     <textarea
                       rows={3}
-                      placeholder="Paste link to Krisha.kz listing or specify which area you're looking to rent..."
+                      placeholder="Paste link to Krisha.kz listing or describe the area and budget you are searching for..."
                       value={formData.comment}
                       onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
-                      className="w-full resize-none rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white placeholder-zinc-500 outline-none focus:border-[#B5472B] focus:bg-white/10 transition-all"
+                      className="w-full resize-none rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-white placeholder-zinc-500 outline-none focus:border-[#B5472B] focus:bg-white/10 transition-all font-sans"
                     />
                   </div>
 
@@ -1666,14 +1836,14 @@ export default function LandingSection() {
                       ) : (
                         <>
                           <Send className="h-4 w-4" />
-                          <span>Send Request to Voucher — 100% Free</span>
+                          <span>Send Request for Voucher — 100% Free</span>
                         </>
                       )}
                     </button>
                   </div>
 
-                  <div className="text-center pt-2 text-[10px] text-zinc-500">
-                    By submitting, your request is safely delivered to the Team SUA pilot coordinators at Narxoz.
+                  <div className="text-center pt-2 text-[10px] text-zinc-500 font-sans">
+                    By submitting, your request is safely delivered to the Team SUA coordinators in Almaty.
                   </div>
                 </form>
               )}
