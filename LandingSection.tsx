@@ -40,6 +40,17 @@ import {
   CheckCheck,
 } from "lucide-react";
 import { sendTelegramNotification, VouchFormData } from "./src/lib/telegram";
+import { saveSubmission, exportSubmissionsToCSV } from "./src/lib/database";
+import {
+  initGA4,
+  trackPageView,
+  trackCtaClick,
+  trackSignUp,
+  trackSectionView,
+  trackScrollDepth,
+  detectTrafficSource,
+} from "./src/lib/analytics";
+import { AdminDashboardModal } from "./src/components/AdminDashboardModal";
 
 // ============================================================================
 // 1. SMOOTH SCROLL ENGINE (Lenis Smooth Inertial Scroll)
@@ -824,6 +835,7 @@ export default function LandingSection() {
   useSmoothScroll();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
@@ -838,6 +850,12 @@ export default function LandingSection() {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Open voucher modal and track CTA click in the conversion funnel (Step 2: cta_click)
+  const openVoucherModal = (location: string, label: string = "Request Voucher") => {
+    trackCtaClick(location, label);
+    setIsModalOpen(true);
+  };
+
   // Hero Scroll Animations
   const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress: heroProgress } = useScroll({
@@ -847,6 +865,90 @@ export default function LandingSection() {
   const heroBgY = useTransform(heroProgress, [0, 1], ["0%", "25%"]);
   const heroBgScale = useTransform(heroProgress, [0, 1], [1, 1.1]);
   const heroOpacity = useTransform(heroProgress, [0, 0.8], [1, 0]);
+
+  // Analytics & Section Tracking (Part 3: GA4 & Metric Measurement)
+  useEffect(() => {
+    initGA4();
+    trackPageView("Local Guarantor — Almaty Housing Verification & Backing");
+
+    // Section-level engagement tracking (Dwell time threshold > 1.5s)
+    const sectionIds = [
+      "#hero",
+      "#audiences",
+      "#how-it-works",
+      "#stories",
+      "#interviews",
+      "#faq",
+      "#cta-repeat",
+      "#founder-note",
+    ];
+    const observers: IntersectionObserver[] = [];
+
+    sectionIds.forEach((id) => {
+      const el = document.querySelector(id);
+      if (el) {
+        let timer: any = null;
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                timer = setTimeout(() => {
+                  trackSectionView(id, 1500);
+                }, 1500);
+              } else if (timer) {
+                clearTimeout(timer);
+              }
+            });
+          },
+          { threshold: 0.3 }
+        );
+        observer.observe(el);
+        observers.push(observer);
+      }
+    });
+
+    // Scroll depth milestones (25%, 50%, 75%, 100%)
+    const milestones = { "25%": false, "50%": false, "75%": false, "100%": false };
+    const handleScroll = () => {
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (scrollHeight <= 0) return;
+      const pct = (window.scrollY / scrollHeight) * 100;
+
+      if (pct >= 25 && !milestones["25%"]) {
+        milestones["25%"] = true;
+        trackScrollDepth(25);
+      }
+      if (pct >= 50 && !milestones["50%"]) {
+        milestones["50%"] = true;
+        trackScrollDepth(50);
+      }
+      if (pct >= 75 && !milestones["75%"]) {
+        milestones["75%"] = true;
+        trackScrollDepth(75);
+      }
+      if (pct >= 95 && !milestones["100%"]) {
+        milestones["100%"] = true;
+        trackScrollDepth(100);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    // Keyboard shortcut for Admin CRM & Analytics Dashboard: Ctrl+Shift+A
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === "A" || e.key === "a")) {
+        e.preventDefault();
+        setIsAdminModalOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      observers.forEach((o) => o.disconnect());
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   function scrollToSection(selector: string) {
     setIsMobileMenuOpen(false);
@@ -865,19 +967,38 @@ export default function LandingSection() {
     setIsSubmitting(true);
     setErrorMessage(null);
 
-    const result = await sendTelegramNotification(formData);
-    setIsSubmitting(false);
+    try {
+      // PART 2: Write submission to persistent real database
+      const source = detectTrafficSource();
+      await saveSubmission({
+        name: formData.name,
+        phone: formData.phone,
+        telegram: formData.telegram,
+        comment: formData.comment,
+        trafficSource: source,
+      });
 
-    if (result.success) {
+      // PART 3: Track GA4 Key Event / Conversion: sign_up
+      trackSignUp({
+        name: formData.name,
+        phone: formData.phone,
+        trafficSource: source,
+      });
+
+      // Dispatch to Telegram Bot for live team notification
+      const tgResult = await sendTelegramNotification(formData);
+
+      setIsSubmitting(false);
       setSubmitSuccess(true);
       setTimeout(() => {
         setFormData({ name: "", phone: "", telegram: "", comment: "" });
         setSubmitSuccess(false);
         setIsModalOpen(false);
       }, 3500);
-    } else {
+    } catch (err: any) {
+      setIsSubmitting(false);
       setErrorMessage(
-        result.error || "Failed to dispatch request. Please contact @RakDinn directly."
+        err?.message || "Failed to dispatch request. Please contact @RakDinn directly."
       );
     }
   }
@@ -923,7 +1044,7 @@ export default function LandingSection() {
           {/* Header Action Button */}
           <div className="flex items-center gap-3">
             <button
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => openVoucherModal("header", "Get a Voucher")}
               className="group relative hidden sm:inline-flex items-center gap-2 rounded-full border border-white/25 bg-[#B5472B] px-4 py-2 text-xs font-semibold text-white shadow-lg hover:bg-[#8F3620] transition-colors cursor-pointer"
             >
               <span>Get a Voucher</span>
@@ -965,7 +1086,7 @@ export default function LandingSection() {
                 <button
                   onClick={() => {
                     setIsMobileMenuOpen(false);
-                    setIsModalOpen(true);
+                    openVoucherModal("mobile_menu", "Request a Voucher — 100% Free");
                   }}
                   className="mt-2 flex items-center justify-center gap-2 rounded-xl bg-[#B5472B] py-3 text-xs font-semibold text-white cursor-pointer"
                 >
@@ -1034,7 +1155,7 @@ export default function LandingSection() {
               <div className="mt-8 space-y-3">
                 <div className="flex flex-wrap items-center gap-4">
                   <button
-                    onClick={() => setIsModalOpen(true)}
+                    onClick={() => openVoucherModal("hero", "Get Your Free Local Voucher")}
                     className="group relative inline-flex items-center gap-3 rounded-full border border-white/20 bg-[#B5472B] px-7 py-4 text-xs sm:text-sm font-semibold text-white shadow-[0_12px_35px_-5px_rgba(181,71,43,0.7)] transition-all duration-300 hover:bg-[#8F3620] hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
                   >
                     <span>Get Your Free Local Voucher</span>
@@ -1094,7 +1215,7 @@ export default function LandingSection() {
 
             {/* Right Column: 3/ VISUAL (Product In Action with 3 Persona Tabs) */}
             <div className="lg:col-span-5 flex justify-center">
-              <ProductInActionMockup onOpenModal={() => setIsModalOpen(true)} />
+              <ProductInActionMockup onOpenModal={() => openVoucherModal("hero_visual_mockup", "Preview Card CTA")} />
             </div>
           </div>
         </motion.div>
@@ -1281,7 +1402,9 @@ export default function LandingSection() {
               key={chapter.id}
               chapter={chapter}
               index={index}
-              onOpenModal={() => setIsModalOpen(true)}
+              onOpenModal={() =>
+                openVoucherModal("showcase_chapter", `${chapter.titleLine1} ${chapter.titleLine2}`)
+              }
             />
           ))}
         </div>
@@ -1471,7 +1594,7 @@ export default function LandingSection() {
 
           <div className="space-y-3">
             <button
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => openVoucherModal("cta_repeat", "Get Your Free Local Voucher Now")}
               className="group inline-flex items-center gap-3 rounded-full bg-[#B5472B] px-8 py-4 text-sm font-semibold text-white shadow-[0_15px_40px_-5px_rgba(181,71,43,0.8)] hover:bg-[#8F3620] hover:scale-[1.03] transition-all cursor-pointer"
             >
               <span>Get Your Free Local Voucher Now</span>
@@ -1593,7 +1716,7 @@ export default function LandingSection() {
             </div>
             <ul className="space-y-2 text-zinc-300">
               <li>
-                <button onClick={() => setIsModalOpen(true)} className="hover:text-white transition-colors cursor-pointer">
+                <button onClick={() => openVoucherModal("footer", "Request Free Voucher")} className="hover:text-white transition-colors cursor-pointer">
                   Request Free Voucher
                 </button>
               </li>
@@ -1671,7 +1794,7 @@ export default function LandingSection() {
             whileHover={{ rotateY: 18, rotateX: -12, scale: 1.06 }}
             transition={{ type: "spring", stiffness: 200, damping: 18 }}
             style={{ transformStyle: "preserve-3d" }}
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => openVoucherModal("monogram_cube", "LG Monogram")}
             className="relative flex h-24 w-24 items-center justify-center rounded-2xl border border-white/15 bg-gradient-to-br from-zinc-200 via-zinc-400 to-[#B5472B]/60 text-[#141414] shadow-[0_20px_50px_rgba(0,0,0,0.8)] cursor-pointer select-none"
           >
             <span className="font-extrabold text-4xl tracking-tighter font-serif">
@@ -1692,6 +1815,28 @@ export default function LandingSection() {
             </a>
             <span className="text-zinc-400">Almaty, Kazakhstan</span>
           </div>
+        </div>
+
+        {/* Admin CRM Database & Analytics Trigger Pill (Part 2 & Part 3) */}
+        <div className="mx-auto mt-6 mb-2 flex max-w-[1440px] flex-wrap items-center justify-center gap-3 px-6 text-xs md:px-12">
+          <button
+            onClick={() => setIsAdminModalOpen(true)}
+            className="group flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-950/40 px-4 py-2 text-[11px] font-mono-tag text-emerald-300 backdrop-blur-sm transition-all hover:border-emerald-400 hover:bg-emerald-900/60 hover:text-white cursor-pointer"
+          >
+            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span>Admin CRM Database &amp; GA4 Analytics</span>
+            <span className="rounded bg-black/50 px-1.5 py-0.5 text-[9px] text-zinc-400 group-hover:text-zinc-200">
+              Ctrl+Shift+A
+            </span>
+          </button>
+
+          <button
+            onClick={() => exportSubmissionsToCSV()}
+            className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3.5 py-2 text-[11px] font-mono-tag text-zinc-300 transition-all hover:border-white/25 hover:bg-white/10 hover:text-white cursor-pointer"
+            title="Download RFC 4180 CSV export of all database leads"
+          >
+            <span>📥 Export Submissions CSV</span>
+          </button>
         </div>
 
         {/* MONUMENTAL FULL-WIDTH BRAND WORDMARK */}
@@ -1851,6 +1996,14 @@ export default function LandingSection() {
           </div>
         )}
       </AnimatePresence>
+
+      {/* =====================================================================
+          ADMIN DATABASE & GA4 ANALYTICS MODAL (Part 2 & Part 3)
+      ===================================================================== */}
+      <AdminDashboardModal
+        isOpen={isAdminModalOpen}
+        onClose={() => setIsAdminModalOpen(false)}
+      />
     </div>
   );
 }
