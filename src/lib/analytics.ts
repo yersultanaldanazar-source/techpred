@@ -164,6 +164,30 @@ export function initGA4() {
     }
   }
 
+  // Initialize Yandex Metrica if ID is provided via env, window or localStorage
+  const ymId =
+    import.meta.env.VITE_YANDEX_METRICA_ID ||
+    (window as any).VITE_YANDEX_METRICA_ID ||
+    (typeof localStorage !== "undefined" ? localStorage.getItem("lg_ym_id") : null);
+
+  if (ymId && !(window as any).ym) {
+    (window as any)._ym_counter_id = ymId;
+    (function(m: any, e: any, t: any, r: any, i: any, k?: any, a?: any){
+      m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+      m[i].l=1*new Date().getTime();
+      for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+      k=e.createElement(t);a=e.getElementsByTagName(t)[0];k.async=1;k.src=r;a.parentNode.insertBefore(k,a)
+    })(window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+    (window as any).ym(Number(ymId) || ymId, "init", {
+      clickmap: true,
+      trackLinks: true,
+      accurateTrackBounce: true,
+      webvisor: true
+    });
+    console.log(`[Yandex Metrica] Initialized counter: ${ymId}`);
+  }
+
   // Record Unique Visitor & Traffic Source in metrics
   const visitorId = getOrCreateVisitorId();
   const source = detectTrafficSource();
@@ -227,6 +251,16 @@ export function trackCtaClick(location: string, label: string) {
     });
   }
 
+  // Yandex Metrica target reach
+  if (typeof window !== "undefined" && (window as any).ym) {
+    const ymId = (window as any)._ym_counter_id;
+    if (ymId) {
+      try {
+        (window as any).ym(Number(ymId) || ymId, "reachGoal", "cta_click");
+      } catch (e) {}
+    }
+  }
+
   console.log(`[Analytics: Funnel Step 2] cta_click at ${location} ("${label}")`);
 
   updateMetrics((prev) => ({
@@ -236,7 +270,7 @@ export function trackCtaClick(location: string, label: string) {
 }
 
 /**
- * Track Sign Up Conversion (Step 3: Key Conversion Event in GA4).
+ * Track Sign Up Conversion (Step 3: Key Conversion Event in GA4 & Yandex Metrica).
  */
 export function trackSignUp(leadData: { name: string; phone: string; trafficSource?: string }) {
   const source = leadData.trafficSource || detectTrafficSource();
@@ -252,6 +286,16 @@ export function trackSignUp(leadData: { name: string; phone: string; trafficSour
       // GA4 key event marker
       is_key_event: true,
     });
+  }
+
+  // Yandex Metrica target reach
+  if (typeof window !== "undefined" && (window as any).ym) {
+    const ymId = (window as any)._ym_counter_id;
+    if (ymId) {
+      try {
+        (window as any).ym(Number(ymId) || ymId, "reachGoal", "sign_up");
+      } catch (e) {}
+    }
   }
 
   console.log(`[Analytics: Funnel Step 3 / KEY EVENT] sign_up completed by ${leadData.name}`);

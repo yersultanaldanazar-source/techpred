@@ -1884,7 +1884,7 @@ export default function LandingSection() {
               className="flex items-center gap-1.5 rounded-full border border-rose-500/30 bg-rose-950/40 px-3.5 py-2 text-[11px] font-mono-tag text-rose-300 transition-all hover:border-rose-400 hover:bg-rose-900/60 hover:text-white cursor-pointer"
               title="Lock Admin Mode"
             >
-              <span>🔒 Выйти (Lock)</span>
+              <span>🔒 Lock Admin</span>
             </button>
           </div>
         )}

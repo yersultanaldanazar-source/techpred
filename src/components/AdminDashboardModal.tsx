@@ -114,7 +114,7 @@ export function AdminDashboardModal({
       setPinError("");
       setPinInput("");
     } else {
-      setPinError("Неверный PIN-код. Для проверки используйте 2026.");
+      setPinError("Invalid PIN code. Use 2026 for evaluation.");
     }
   };
 
@@ -209,7 +209,7 @@ export function AdminDashboardModal({
                 <Lock className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="font-editorial text-2xl text-white">Вход для администраторов</h3>
+                <h3 className="font-editorial text-2xl text-white">Administrator Access</h3>
                 <span className="text-[10px] font-mono-tag text-zinc-400 uppercase tracking-wider">
                   Admin Verification Required
                 </span>
@@ -217,13 +217,13 @@ export function AdminDashboardModal({
             </div>
 
             <p className="text-xs text-zinc-300 font-sans leading-relaxed mb-5">
-              База заявок жильцов, личные телефоны и воронка конверсий защищены от посторонних глаз. Введите PIN-код администратора для доступа к CRM:
+              The tenant submissions database, customer contact details, and full conversion funnel metrics are restricted. Enter the administrator PIN to access the CRM &amp; analytics console:
             </p>
 
             <form onSubmit={handlePinSubmit} className="space-y-4">
               <div>
                 <label className="block text-[11px] font-mono-tag uppercase text-zinc-400 mb-1.5">
-                  PIN-код администратора
+                  Administrator PIN Code
                 </label>
                 <input
                   type="password"
@@ -247,10 +247,10 @@ export function AdminDashboardModal({
               <div className="rounded-lg border border-white/10 bg-white/5 p-3 text-[11px] text-zinc-400 space-y-1">
                 <div className="text-zinc-300 font-semibold flex items-center gap-1">
                   <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-                  <span>PIN для проверки преподавателем:</span>
+                  <span>Academic Evaluation PIN:</span>
                 </div>
                 <div className="font-mono text-amber-300 font-bold tracking-wider">
-                  2026 <span className="text-zinc-500 font-normal font-sans">(или 1234)</span>
+                  2026 <span className="text-zinc-500 font-normal font-sans">(or 1234)</span>
                 </div>
               </div>
 
@@ -259,7 +259,7 @@ export function AdminDashboardModal({
                 className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#B5472B] px-5 py-3 text-xs font-semibold text-white shadow-lg hover:bg-[#8F3620] transition-colors cursor-pointer"
               >
                 <Lock className="h-3.5 w-3.5" />
-                <span>Войти в панель CRM &amp; GA4</span>
+                <span>Unlock CRM &amp; GA4 Dashboard</span>
               </button>
             </form>
           </motion.div>
@@ -289,10 +289,10 @@ export function AdminDashboardModal({
                   <h2 className="font-editorial text-2xl sm:text-3xl font-medium text-white flex items-center gap-2">
                     <span>
                       {activeTab === "database"
-                        ? "База заявок (CRM)"
+                        ? "Submissions CRM"
                         : activeTab === "analytics"
-                        ? "Воронка & GA4"
-                        : "Карта кликов (Heatmap)"}
+                        ? "GA4 Funnel & Metrics"
+                        : "Click Map & Heatmap"}
                     </span>
                     <span className="text-[10px] font-mono-tag px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                       ADMIN
@@ -316,7 +316,7 @@ export function AdminDashboardModal({
                     }`}
                   >
                     <Database className="h-3.5 w-3.5" />
-                    <span>CRM База</span>
+                    <span>CRM Database</span>
                   </button>
                   <button
                     onClick={() => setActiveTab("analytics")}
@@ -327,7 +327,7 @@ export function AdminDashboardModal({
                     }`}
                   >
                     <BarChart3 className="h-3.5 w-3.5" />
-                    <span>Воронка GA4</span>
+                    <span>GA4 Funnel</span>
                   </button>
                   <button
                     onClick={() => {
@@ -341,7 +341,7 @@ export function AdminDashboardModal({
                     }`}
                   >
                     <Flame className="h-3.5 w-3.5 text-amber-400" />
-                    <span>Карта кликов</span>
+                    <span>Click Heatmap</span>
                   </button>
                 </div>
 
@@ -349,9 +349,9 @@ export function AdminDashboardModal({
                 <button
                   onClick={handleLogout}
                   className="px-2.5 py-1.5 rounded-lg border border-white/10 bg-white/5 text-[11px] font-mono-tag text-zinc-400 hover:text-rose-400 hover:border-rose-500/40 transition-all cursor-pointer"
-                  title="Выйти из режима администратора"
+                  title="Lock and exit administrator mode"
                 >
-                  Выйти
+                  Log Out
                 </button>
 
                 {/* Close Button */}
@@ -381,30 +381,30 @@ export function AdminDashboardModal({
                   {/* 4 Summary KPI Cards */}
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     <div className="rounded-xl border border-white/10 bg-black/40 p-3.5">
-                      <span className="text-[10px] font-mono-tag uppercase text-zinc-400">Всего заявок (Total)</span>
+                      <span className="text-[10px] font-mono-tag uppercase text-zinc-400">Total Submissions</span>
                       <div className="mt-1 text-2xl font-bold text-white font-mono">{submissions.length}</div>
-                      <span className="text-[10px] text-zinc-500">В базе данных</span>
+                      <span className="text-[10px] text-zinc-500">In persistent database</span>
                     </div>
                     <div className="rounded-xl border border-blue-500/30 bg-blue-950/20 p-3.5">
-                      <span className="text-[10px] font-mono-tag uppercase text-blue-300">Новые (New)</span>
+                      <span className="text-[10px] font-mono-tag uppercase text-blue-300">New Leads</span>
                       <div className="mt-1 text-2xl font-bold text-blue-300 font-mono">
                         {submissions.filter((s) => s.status === "new").length}
                       </div>
-                      <span className="text-[10px] text-zinc-500">Ожидают звонка</span>
+                      <span className="text-[10px] text-zinc-500">Awaiting initial call</span>
                     </div>
                     <div className="rounded-xl border border-amber-500/30 bg-amber-950/20 p-3.5">
-                      <span className="text-[10px] font-mono-tag uppercase text-amber-300">В обработке</span>
+                      <span className="text-[10px] font-mono-tag uppercase text-amber-300">In Progress</span>
                       <div className="mt-1 text-2xl font-bold text-amber-300 font-mono">
                         {submissions.filter((s) => s.status === "contacted").length}
                       </div>
-                      <span className="text-[10px] text-zinc-500">Координатор звонит</span>
+                      <span className="text-[10px] text-zinc-500">Coordinator in touch</span>
                     </div>
                     <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-3.5">
-                      <span className="text-[10px] font-mono-tag uppercase text-emerald-300">Заселены (Housed)</span>
+                      <span className="text-[10px] font-mono-tag uppercase text-emerald-300">Housed</span>
                       <div className="mt-1 text-2xl font-bold text-emerald-300 font-mono">
                         {submissions.filter((s) => s.status === "housed").length}
                       </div>
-                      <span className="text-[10px] text-zinc-500">Ключи на руках</span>
+                      <span className="text-[10px] text-zinc-500">Lease signed &amp; keys handed</span>
                     </div>
                   </div>
                 {/* Actions Toolbar */}
@@ -861,10 +861,10 @@ export function AdminDashboardModal({
                     </div>
                     <div>
                       <h4 className="text-sm font-semibold text-white">
-                        Как отслеживать, куда кликают пользователи? (Инструкция для презентации)
+                        How to Track User Clicks &amp; Attention Heatmaps (Methodology &amp; Evaluation Guide)
                       </h4>
                       <p className="text-xs text-zinc-300 font-sans mt-1 leading-relaxed">
-                        В индустрии веб-аналитики для отслеживания кликов используются два подхода:
+                        In modern web analytics, two standard approaches are used to visualize user attention and click interactions:
                       </p>
                     </div>
                   </div>
@@ -873,38 +873,60 @@ export function AdminDashboardModal({
                     <div className="rounded-lg border border-white/10 bg-black/40 p-4 space-y-2">
                       <div className="font-semibold text-emerald-400 flex items-center gap-1.5">
                         <CheckCircle2 className="h-3.5 w-3.5" />
-                        <span>1. Microsoft Clarity (Бесплатно навсегда)</span>
+                        <span>1. Microsoft Clarity (100% Free Forever)</span>
                       </div>
                       <p className="text-zinc-300 leading-relaxed text-[11px]">
-                        Официальный бесплатный сервис от Microsoft без ограничений по трафику. Создает:
+                        Official telemetry from Microsoft with zero traffic limits:
                       </p>
                       <ul className="list-disc pl-4 space-y-1 text-zinc-400 text-[11px]">
-                        <li><b>Тепловые карты кликов (Click Heatmaps)</b>: цветные зоны (красные = много кликов, синие = мало).</li>
-                        <li><b>Видеозаписи сессий (Session Replays)</b>: просмотр того, как пользователь водил мышкой и скроллил.</li>
-                        <li><b>Rage Clicks</b>: детекция мест, где пользователь кликал в ярости несколько раз.</li>
+                        <li><b>Click Heatmaps</b>: Thermal color mapping (red = high click density, blue = low).</li>
+                        <li><b>Session Replays</b>: Pixel-accurate video playback of cursor movements, gestures, and scrolling.</li>
+                        <li><b>Rage Clicks</b>: Pinpoints UX friction points where visitors click repeatedly in frustration.</li>
                       </ul>
                     </div>
 
                     <div className="rounded-lg border border-white/10 bg-black/40 p-4 space-y-2">
                       <div className="font-semibold text-amber-400 flex items-center gap-1.5">
                         <CheckCircle2 className="h-3.5 w-3.5" />
-                        <span>2. Яндекс Метрика (Карта кликов + Вебвизор)</span>
+                        <span>2. Yandex Metrica (Click Map + Webvisor 2.0)</span>
                       </div>
                       <p className="text-zinc-300 leading-relaxed text-[11px]">
-                        Стандарт аналитики в СНГ и Казахстане. Инструменты:
+                        Widely used regional analytics standard for Kazakhstan and CIS:
                       </p>
                       <ul className="list-disc pl-4 space-y-1 text-zinc-400 text-[11px]">
-                        <li><b>Карта кликов</b>: визуальное наложение цветных точек прямо поверх элементов страницы.</li>
-                        <li><b>Вебвизор 2.0</b>: покадровое воспроизведение действий посетителя.</li>
-                        <li><b>Аналитика форм</b>: показывает, на каком поле ввода люди уходят.</li>
+                        <li><b>Click Map (Карта кликов)</b>: Thermal visual cluster overlays on top of interactive buttons.</li>
+                        <li><b>Webvisor 2.0 (Вебвизор)</b>: Frame-by-frame recordings of real visitor navigation sessions.</li>
+                        <li><b>Form Analytics</b>: Step-by-step conversion drop-off tracking across form fields.</li>
                       </ul>
+                    </div>
+                  </div>
+
+                  {/* Yandex Metrica CMS / CRM Setup Clarification */}
+                  <div className="rounded-lg border border-blue-500/30 bg-blue-950/20 p-3.5 text-xs font-sans space-y-1.5">
+                    <div className="flex items-center gap-2 text-blue-300 font-semibold font-mono-tag text-[11px] uppercase">
+                      <span>💡 What to select for CMS &amp; CRM in Yandex Metrica?</span>
+                    </div>
+                    <p className="text-zinc-300 text-[11px] leading-relaxed">
+                      When creating your counter, Yandex Metrica asks for your <b>CMS</b> and <b>CRM</b>:
+                    </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 font-mono-tag text-[10px]">
+                      <div className="rounded bg-black/50 p-2 border border-white/10">
+                        <span className="text-zinc-400 block font-sans">CMS / Site Platform:</span>
+                        <span className="text-emerald-300 font-bold">Select "Other" / "Custom" or "No CMS"</span>
+                        <span className="text-zinc-500 block font-sans mt-0.5">(Because this is a custom React Vite SPA)</span>
+                      </div>
+                      <div className="rounded bg-black/50 p-2 border border-white/10">
+                        <span className="text-zinc-400 block font-sans">CRM System:</span>
+                        <span className="text-amber-300 font-bold">Select "None" or "Custom / Other"</span>
+                        <span className="text-zinc-500 block font-sans mt-0.5">(We built a custom in-app CRM with SQLite &amp; Telegram)</span>
+                      </div>
                     </div>
                   </div>
 
                   {/* Code snippet to copy for Microsoft Clarity */}
                   <div className="rounded-lg border border-white/10 bg-black/60 p-3 space-y-2">
                     <div className="flex items-center justify-between text-[11px] font-mono-tag">
-                      <span className="text-zinc-400">Код для установки Microsoft Clarity в index.html:</span>
+                      <span className="text-zinc-400">Snippet for Microsoft Clarity (index.html):</span>
                       <button
                         onClick={() => {
                           const code = `<script type="text/javascript">
@@ -921,7 +943,7 @@ export function AdminDashboardModal({
                         className="flex items-center gap-1 text-amber-400 hover:text-white transition-colors cursor-pointer"
                       >
                         {copiedSnippet ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
-                        <span>{copiedSnippet ? "Скопировано!" : "Копировать код"}</span>
+                        <span>{copiedSnippet ? "Copied!" : "Copy Code"}</span>
                       </button>
                     </div>
                     <pre className="text-[10px] font-mono text-zinc-300 bg-black/80 p-2.5 rounded overflow-x-auto">
