@@ -29,3 +29,21 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Custom slick dark scrollbar for modal and dashboards */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #121514;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+  background: #2a312d;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #B5472B;
+}
+

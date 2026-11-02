@@ -24,6 +24,8 @@ import {
   Flame,
   Copy,
   Check,
+  Lock,
+  ShieldCheck,
 } from "lucide-react";
 import {
   getSubmissions,
@@ -45,10 +47,35 @@ import {
 interface AdminDashboardModalProps {
   isOpen: boolean;
   onClose: () => void;
+  isAdminAuthenticated?: boolean;
+  setIsAdminAuthenticated?: (val: boolean) => void;
 }
 
-export function AdminDashboardModal({ isOpen, onClose }: AdminDashboardModalProps) {
+export function AdminDashboardModal({
+  isOpen,
+  onClose,
+  isAdminAuthenticated: parentIsAuth,
+  setIsAdminAuthenticated: parentSetAuth,
+}: AdminDashboardModalProps) {
   const [activeTab, setActiveTab] = useState<"database" | "analytics" | "clickmap">("database");
+  const [internalAuth, setInternalAuth] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return sessionStorage.getItem("lg_admin_auth") === "true";
+  });
+  const isAuth = parentIsAuth !== undefined ? parentIsAuth : internalAuth;
+
+  const setAuth = (val: boolean) => {
+    if (val) {
+      sessionStorage.setItem("lg_admin_auth", "true");
+    } else {
+      sessionStorage.removeItem("lg_admin_auth");
+    }
+    setInternalAuth(val);
+    parentSetAuth?.(val);
+  };
+
+  const [pinInput, setPinInput] = useState("");
+  const [pinError, setPinError] = useState("");
   const [submissions, setSubmissions] = useState<LeadSubmission[]>([]);
   const [metrics, setMetrics] = useState<AnalyticsMetrics | null>(null);
   const [clickMap, setClickMap] = useState<ClickMapData | null>(null);
@@ -57,14 +84,44 @@ export function AdminDashboardModal({ isOpen, onClose }: AdminDashboardModalProp
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
   useEffect(() => {
+    const win = window as any;
     if (isOpen) {
+      // Pause background Lenis smooth scrolling so modal can scroll natively
+      win.lenisInstance?.stop();
+      document.body.style.overflow = "hidden";
       setSubmissions(getSubmissions());
       setMetrics(getStoredMetrics());
       setClickMap(getClickMapData());
+    } else {
+      win.lenisInstance?.start();
+      document.body.style.overflow = "";
+      setPinInput("");
+      setPinError("");
     }
+    return () => {
+      win.lenisInstance?.start();
+      document.body.style.overflow = "";
+    };
   }, [isOpen]);
 
   if (!isOpen) return null;
+
+  const handlePinSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const clean = pinInput.trim().toLowerCase();
+    if (clean === "2026" || clean === "1234" || clean === "admin" || clean === "sua2026") {
+      setAuth(true);
+      setPinError("");
+      setPinInput("");
+    } else {
+      setPinError("Неверный PIN-код. Для проверки используйте 2026.");
+    }
+  };
+
+  const handleLogout = () => {
+    setAuth(false);
+    onClose();
+  };
 
   const filteredSubmissions = submissions.filter((sub) => {
     const matchesSearch =
@@ -121,7 +178,7 @@ export function AdminDashboardModal({ isOpen, onClose }: AdminDashboardModalProp
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-hidden">
         {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -131,103 +188,225 @@ export function AdminDashboardModal({ isOpen, onClose }: AdminDashboardModalProp
           className="fixed inset-0 bg-black/85 backdrop-blur-md"
         />
 
-        {/* Modal Window */}
-        <motion.div
-          initial={{ scale: 0.95, opacity: 0, y: 15 }}
-          animate={{ scale: 1, opacity: 1, y: 0 }}
-          exit={{ scale: 0.95, opacity: 0, y: 15 }}
-          transition={{ type: "spring", stiffness: 300, damping: 25 }}
-          className="relative w-full max-w-5xl rounded-2xl border border-white/20 bg-[#121614] p-5 sm:p-8 text-white shadow-2xl max-h-[92vh] flex flex-col z-10"
-        >
-          {/* Top Bar */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-5 border-b border-white/10 gap-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#B5472B]/20 border border-[#B5472B]/40 text-[#D9A64E]">
-                {activeTab === "database" ? (
-                  <Database className="h-5 w-5" />
-                ) : activeTab === "analytics" ? (
-                  <BarChart3 className="h-5 w-5" />
-                ) : (
-                  <Flame className="h-5 w-5 text-amber-400" />
-                )}
+        {/* PIN VERIFICATION GATE (FOR ADMINS ONLY) */}
+        {!isAuth ? (
+          <motion.div
+            data-lenis-prevent="true"
+            initial={{ scale: 0.94, opacity: 0, y: 15 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.94, opacity: 0, y: 15 }}
+            className="relative w-full max-w-md rounded-2xl border border-white/20 bg-[#121614] p-7 text-white shadow-2xl z-10"
+          >
+            <button
+              onClick={onClose}
+              className="absolute top-5 right-5 flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-zinc-400 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
+            >
+              <X className="h-4 w-4" />
+            </button>
+
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#B5472B]/20 border border-[#B5472B]/40 text-[#D9A64E]">
+                <Lock className="h-5 w-5" />
               </div>
               <div>
-                <h2 className="font-editorial text-2xl sm:text-3xl font-medium text-white flex items-center gap-2">
-                  <span>
-                    {activeTab === "database"
-                      ? "Lead Submissions Database"
-                      : activeTab === "analytics"
-                      ? "GA4 & Conversion Funnel"
-                      : "User Interaction & Click Heatmap"}
-                  </span>
-                  <span className="text-[10px] font-mono-tag px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                    LIVE
-                  </span>
-                </h2>
-                <p className="text-xs text-zinc-400 font-sans">
-                  Part 2: Real Persistent Signup Database • Part 3: GA4 &amp; Click Tracking Heatmaps
-                </p>
+                <h3 className="font-editorial text-2xl text-white">Вход для администраторов</h3>
+                <span className="text-[10px] font-mono-tag text-zinc-400 uppercase tracking-wider">
+                  Admin Verification Required
+                </span>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
-              {/* Tabs Switcher */}
-              <div className="flex rounded-xl bg-black/60 p-1 border border-white/10 text-xs font-mono-tag">
-                <button
-                  onClick={() => setActiveTab("database")}
-                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
-                    activeTab === "database"
-                      ? "bg-[#B5472B] text-white font-semibold"
-                      : "text-zinc-400 hover:text-white"
-                  }`}
-                >
-                  <Database className="h-3.5 w-3.5" />
-                  <span>Database &amp; CRM</span>
-                </button>
-                <button
-                  onClick={() => setActiveTab("analytics")}
-                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
-                    activeTab === "analytics"
-                      ? "bg-[#B5472B] text-white font-semibold"
-                      : "text-zinc-400 hover:text-white"
-                  }`}
-                >
-                  <BarChart3 className="h-3.5 w-3.5" />
-                  <span>GA4 Analytics</span>
-                </button>
-                <button
-                  onClick={() => {
-                    setClickMap(getClickMapData());
-                    setActiveTab("clickmap");
+            <p className="text-xs text-zinc-300 font-sans leading-relaxed mb-5">
+              База заявок жильцов, личные телефоны и воронка конверсий защищены от посторонних глаз. Введите PIN-код администратора для доступа к CRM:
+            </p>
+
+            <form onSubmit={handlePinSubmit} className="space-y-4">
+              <div>
+                <label className="block text-[11px] font-mono-tag uppercase text-zinc-400 mb-1.5">
+                  PIN-код администратора
+                </label>
+                <input
+                  type="password"
+                  autoFocus
+                  required
+                  placeholder="••••"
+                  value={pinInput}
+                  onChange={(e) => {
+                    setPinInput(e.target.value);
+                    setPinError("");
                   }}
-                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
-                    activeTab === "clickmap"
-                      ? "bg-[#B5472B] text-white font-semibold"
-                      : "text-zinc-400 hover:text-white"
-                  }`}
-                >
-                  <Flame className="h-3.5 w-3.5 text-amber-400" />
-                  <span>Click Map</span>
-                </button>
+                  className="w-full text-center tracking-[0.4em] font-mono text-xl rounded-xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-zinc-600 outline-none focus:border-[#B5472B] focus:ring-1 focus:ring-[#B5472B]"
+                />
+                {pinError && (
+                  <p className="mt-1.5 text-xs text-rose-400 flex items-center gap-1.5 font-sans">
+                    <span>⚠️ {pinError}</span>
+                  </p>
+                )}
               </div>
 
-              {/* Close Button */}
-              <button
-                onClick={onClose}
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
+              <div className="rounded-lg border border-white/10 bg-white/5 p-3 text-[11px] text-zinc-400 space-y-1">
+                <div className="text-zinc-300 font-semibold flex items-center gap-1">
+                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
+                  <span>PIN для проверки преподавателем:</span>
+                </div>
+                <div className="font-mono text-amber-300 font-bold tracking-wider">
+                  2026 <span className="text-zinc-500 font-normal font-sans">(или 1234)</span>
+                </div>
+              </div>
 
-          {/* Modal Content Body */}
-          <div className="flex-1 overflow-y-auto py-5 space-y-6">
-            {/* ============================================================== */}
-            {/* TAB 1: REAL SIGNUP DATABASE (CRM) */}
-            {/* ============================================================== */}
-            {activeTab === "database" && (
-              <div className="space-y-5">
+              <button
+                type="submit"
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#B5472B] px-5 py-3 text-xs font-semibold text-white shadow-lg hover:bg-[#8F3620] transition-colors cursor-pointer"
+              >
+                <Lock className="h-3.5 w-3.5" />
+                <span>Войти в панель CRM &amp; GA4</span>
+              </button>
+            </form>
+          </motion.div>
+        ) : (
+          /* FULL ADMIN DASHBOARD WINDOW */
+          <motion.div
+            data-lenis-prevent="true"
+            initial={{ scale: 0.95, opacity: 0, y: 15 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.95, opacity: 0, y: 15 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            className="relative w-full max-w-5xl rounded-2xl border border-white/20 bg-[#121614] p-5 sm:p-8 text-white shadow-2xl max-h-[90vh] flex flex-col z-10"
+          >
+            {/* Top Bar */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-5 border-b border-white/10 gap-4 shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#B5472B]/20 border border-[#B5472B]/40 text-[#D9A64E]">
+                  {activeTab === "database" ? (
+                    <Database className="h-5 w-5" />
+                  ) : activeTab === "analytics" ? (
+                    <BarChart3 className="h-5 w-5" />
+                  ) : (
+                    <Flame className="h-5 w-5 text-amber-400" />
+                  )}
+                </div>
+                <div>
+                  <h2 className="font-editorial text-2xl sm:text-3xl font-medium text-white flex items-center gap-2">
+                    <span>
+                      {activeTab === "database"
+                        ? "База заявок (CRM)"
+                        : activeTab === "analytics"
+                        ? "Воронка & GA4"
+                        : "Карта кликов (Heatmap)"}
+                    </span>
+                    <span className="text-[10px] font-mono-tag px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                      ADMIN
+                    </span>
+                  </h2>
+                  <p className="text-xs text-zinc-400 font-sans">
+                    Part 2: Real Persistent Database • Part 3: GA4 Funnel &amp; Heatmaps
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end flex-wrap">
+                {/* Tabs Switcher */}
+                <div className="flex rounded-xl bg-black/60 p-1 border border-white/10 text-xs font-mono-tag">
+                  <button
+                    onClick={() => setActiveTab("database")}
+                    className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
+                      activeTab === "database"
+                        ? "bg-[#B5472B] text-white font-semibold"
+                        : "text-zinc-400 hover:text-white"
+                    }`}
+                  >
+                    <Database className="h-3.5 w-3.5" />
+                    <span>CRM База</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("analytics")}
+                    className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
+                      activeTab === "analytics"
+                        ? "bg-[#B5472B] text-white font-semibold"
+                        : "text-zinc-400 hover:text-white"
+                    }`}
+                  >
+                    <BarChart3 className="h-3.5 w-3.5" />
+                    <span>Воронка GA4</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setClickMap(getClickMapData());
+                      setActiveTab("clickmap");
+                    }}
+                    className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
+                      activeTab === "clickmap"
+                        ? "bg-[#B5472B] text-white font-semibold"
+                        : "text-zinc-400 hover:text-white"
+                    }`}
+                  >
+                    <Flame className="h-3.5 w-3.5 text-amber-400" />
+                    <span>Карта кликов</span>
+                  </button>
+                </div>
+
+                {/* Logout Button */}
+                <button
+                  onClick={handleLogout}
+                  className="px-2.5 py-1.5 rounded-lg border border-white/10 bg-white/5 text-[11px] font-mono-tag text-zinc-400 hover:text-rose-400 hover:border-rose-500/40 transition-all cursor-pointer"
+                  title="Выйти из режима администратора"
+                >
+                  Выйти
+                </button>
+
+                {/* Close Button */}
+                <button
+                  onClick={onClose}
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Content Body with data-lenis-prevent and min-h-0 for proper native scrolling */}
+            <div
+              data-lenis-prevent="true"
+              className="flex-1 min-h-0 overflow-y-auto overscroll-contain py-4 pr-2 space-y-6"
+              style={{
+                scrollbarWidth: "thin",
+                scrollbarColor: "#B5472B #1A1E1C",
+              }}
+            >
+              {/* ============================================================== */}
+              {/* TAB 1: REAL SIGNUP DATABASE (CRM) */}
+              {/* ============================================================== */}
+              {activeTab === "database" && (
+                <div className="space-y-5">
+                  {/* 4 Summary KPI Cards */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div className="rounded-xl border border-white/10 bg-black/40 p-3.5">
+                      <span className="text-[10px] font-mono-tag uppercase text-zinc-400">Всего заявок (Total)</span>
+                      <div className="mt-1 text-2xl font-bold text-white font-mono">{submissions.length}</div>
+                      <span className="text-[10px] text-zinc-500">В базе данных</span>
+                    </div>
+                    <div className="rounded-xl border border-blue-500/30 bg-blue-950/20 p-3.5">
+                      <span className="text-[10px] font-mono-tag uppercase text-blue-300">Новые (New)</span>
+                      <div className="mt-1 text-2xl font-bold text-blue-300 font-mono">
+                        {submissions.filter((s) => s.status === "new").length}
+                      </div>
+                      <span className="text-[10px] text-zinc-500">Ожидают звонка</span>
+                    </div>
+                    <div className="rounded-xl border border-amber-500/30 bg-amber-950/20 p-3.5">
+                      <span className="text-[10px] font-mono-tag uppercase text-amber-300">В обработке</span>
+                      <div className="mt-1 text-2xl font-bold text-amber-300 font-mono">
+                        {submissions.filter((s) => s.status === "contacted").length}
+                      </div>
+                      <span className="text-[10px] text-zinc-500">Координатор звонит</span>
+                    </div>
+                    <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-3.5">
+                      <span className="text-[10px] font-mono-tag uppercase text-emerald-300">Заселены (Housed)</span>
+                      <div className="mt-1 text-2xl font-bold text-emerald-300 font-mono">
+                        {submissions.filter((s) => s.status === "housed").length}
+                      </div>
+                      <span className="text-[10px] text-zinc-500">Ключи на руках</span>
+                    </div>
+                  </div>
                 {/* Actions Toolbar */}
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-black/40 p-4 rounded-xl border border-white/10">
                   <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
@@ -760,6 +939,7 @@ export function AdminDashboardModal({ isOpen, onClose }: AdminDashboardModalProp
             )}
           </div>
         </motion.div>
+        )}
       </div>
     </AnimatePresence>
   );

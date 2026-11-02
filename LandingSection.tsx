@@ -837,6 +837,10 @@ export default function LandingSection() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return sessionStorage.getItem("lg_admin_auth") === "true";
+  });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
@@ -850,6 +854,25 @@ export default function LandingSection() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Secret Easter Egg: Triple-click monogram to open admin
+  const monogramClicksRef = useRef(0);
+  const monogramTimerRef = useRef<any>(null);
+
+  const handleMonogramClick = () => {
+    monogramClicksRef.current += 1;
+    clearTimeout(monogramTimerRef.current);
+    monogramTimerRef.current = setTimeout(() => {
+      monogramClicksRef.current = 0;
+    }, 1000);
+
+    if (monogramClicksRef.current >= 3) {
+      monogramClicksRef.current = 0;
+      setIsAdminModalOpen(true);
+    } else {
+      openVoucherModal("monogram_cube", "LG Monogram");
+    }
+  };
 
   // Open voucher modal and track CTA click in the conversion funnel (Step 2: cta_click)
   const openVoucherModal = (location: string, label: string = "Request Voucher") => {
@@ -935,6 +958,14 @@ export default function LandingSection() {
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
+
+    // Check URL query parameters for direct admin access (?admin=1 or ?admin=true)
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("admin") === "1" || params.get("admin") === "true") {
+        setIsAdminModalOpen(true);
+      }
+    }
 
     // Keyboard shortcut for Admin CRM & Analytics Dashboard: Ctrl+Shift+A
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -1797,8 +1828,9 @@ export default function LandingSection() {
             whileHover={{ rotateY: 18, rotateX: -12, scale: 1.06 }}
             transition={{ type: "spring", stiffness: 200, damping: 18 }}
             style={{ transformStyle: "preserve-3d" }}
-            onClick={() => openVoucherModal("monogram_cube", "LG Monogram")}
+            onClick={handleMonogramClick}
             className="relative flex h-24 w-24 items-center justify-center rounded-2xl border border-white/15 bg-gradient-to-br from-zinc-200 via-zinc-400 to-[#B5472B]/60 text-[#141414] shadow-[0_20px_50px_rgba(0,0,0,0.8)] cursor-pointer select-none"
+            title="Local Guarantor Monogram"
           >
             <span className="font-extrabold text-4xl tracking-tighter font-serif">
               LG.
@@ -1820,27 +1852,42 @@ export default function LandingSection() {
           </div>
         </div>
 
-        {/* Admin CRM Database & Analytics Trigger Pill (Part 2 & Part 3) */}
-        <div className="mx-auto mt-6 mb-2 flex max-w-[1440px] flex-wrap items-center justify-center gap-3 px-6 text-xs md:px-12">
-          <button
-            onClick={() => setIsAdminModalOpen(true)}
-            className="group flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-950/40 px-4 py-2 text-[11px] font-mono-tag text-emerald-300 backdrop-blur-sm transition-all hover:border-emerald-400 hover:bg-emerald-900/60 hover:text-white cursor-pointer"
-          >
-            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Admin CRM Database &amp; GA4 Analytics</span>
-            <span className="rounded bg-black/50 px-1.5 py-0.5 text-[9px] text-zinc-400 group-hover:text-zinc-200">
-              Ctrl+Shift+A
-            </span>
-          </button>
+        {/* Admin CRM Database & Analytics Trigger Pill — ONLY VISIBLE TO AUTHENTICATED ADMINS */}
+        {isAdminAuthenticated && (
+          <div className="mx-auto mt-6 mb-2 flex max-w-[1440px] flex-wrap items-center justify-center gap-3 px-6 text-xs md:px-12">
+            <button
+              onClick={() => setIsAdminModalOpen(true)}
+              className="group flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-950/40 px-4 py-2 text-[11px] font-mono-tag text-emerald-300 backdrop-blur-sm transition-all hover:border-emerald-400 hover:bg-emerald-900/60 hover:text-white cursor-pointer"
+            >
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>Admin CRM Database &amp; GA4 Analytics</span>
+              <span className="rounded bg-black/50 px-1.5 py-0.5 text-[9px] text-zinc-400 group-hover:text-zinc-200">
+                Ctrl+Shift+A
+              </span>
+            </button>
 
-          <button
-            onClick={() => exportSubmissionsToCSV()}
-            className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3.5 py-2 text-[11px] font-mono-tag text-zinc-300 transition-all hover:border-white/25 hover:bg-white/10 hover:text-white cursor-pointer"
-            title="Download RFC 4180 CSV export of all database leads"
-          >
-            <span>📥 Export Submissions CSV</span>
-          </button>
-        </div>
+            <button
+              onClick={() => exportSubmissionsToCSV()}
+              className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3.5 py-2 text-[11px] font-mono-tag text-zinc-300 transition-all hover:border-white/25 hover:bg-white/10 hover:text-white cursor-pointer"
+              title="Download RFC 4180 CSV export of all database leads"
+            >
+              <span>📥 Export Submissions CSV</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setIsAdminAuthenticated(false);
+                if (typeof window !== "undefined") {
+                  sessionStorage.removeItem("lg_admin_auth");
+                }
+              }}
+              className="flex items-center gap-1.5 rounded-full border border-rose-500/30 bg-rose-950/40 px-3.5 py-2 text-[11px] font-mono-tag text-rose-300 transition-all hover:border-rose-400 hover:bg-rose-900/60 hover:text-white cursor-pointer"
+              title="Lock Admin Mode"
+            >
+              <span>🔒 Выйти (Lock)</span>
+            </button>
+          </div>
+        )}
 
         {/* MONUMENTAL FULL-WIDTH BRAND WORDMARK */}
         <div className="mt-2 w-full overflow-hidden text-center leading-none select-none">
@@ -2006,6 +2053,8 @@ export default function LandingSection() {
       <AdminDashboardModal
         isOpen={isAdminModalOpen}
         onClose={() => setIsAdminModalOpen(false)}
+        isAdminAuthenticated={isAdminAuthenticated}
+        setIsAdminAuthenticated={setIsAdminAuthenticated}
       />
     </div>
   );
