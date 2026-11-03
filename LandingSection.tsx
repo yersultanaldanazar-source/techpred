@@ -427,7 +427,7 @@ const CUSTOMER_STORIES = [
     quote:
       "In our previous apartment, the landlady had no contract and put the flat up for sale, sending realtors every single day without warning. Local Guarantor screened our next Krisha listing, verified the owner's eGov title, and got us a clean bilateral lease with strict privacy guarantees.",
     result: "Protected by legal lease • No surprise visits",
-    photo: "/apartment-viewing-tour.jpg",
+    photo: "/story-couple-peace.jpg",
   },
   {
     name: "Dias & 3 Roommates",
@@ -435,7 +435,7 @@ const CUSTOMER_STORIES = [
     quote:
       "When 4 guys look for an apartment, landlords assume the worst and reject you in 5 seconds. Proving that we are responsible and keep things clean seemed impossible. The 42-second voucher call broke the stereotype, and the landlady agreed to rent to us for 0 ₸ commission.",
     result: "Overcame 90% refusal bias • 0 ₸ fee",
-    photo: "/cozy-student-living.jpg",
+    photo: "/story-students-group.jpg",
   },
 ];
 
@@ -1216,7 +1216,7 @@ export default function LandingSection() {
               <div className="mt-8 pt-6 border-t border-white/10 flex flex-wrap items-center gap-6">
                 <div className="flex -space-x-2.5">
                   <img
-                    src="/team-sua.jpg"
+                    src="/team-sua-founders.jpg"
                     alt="Team SUA Coordinator"
                     className="h-8 w-8 rounded-full border-2 border-black object-cover"
                   />
@@ -1666,7 +1666,7 @@ export default function LandingSection() {
           <div className="rounded-2xl border border-white/15 bg-[#141816]/90 p-8 sm:p-12 backdrop-blur-xl shadow-2xl relative overflow-hidden">
             <div className="flex flex-col sm:flex-row items-center gap-6 pb-8 border-b border-white/10">
               <img
-                src="/team-sua.jpg"
+                src="/team-sua-founders.jpg"
                 alt="Team SUA: Claudio, Yersultan Aldanazar, Yerkezhan"
                 className="h-20 w-20 rounded-full object-cover border-2 border-[#D9A64E]"
               />
