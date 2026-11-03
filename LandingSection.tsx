@@ -328,7 +328,7 @@ const PROJECT_CHAPTERS: ChapterItem[] = [
     textClass: "text-[#D8D4CC]",
     mutedClass: "text-zinc-400",
     lightBtn: true,
-    image: "/real-apartment-warm.jpg",
+    image: "/chapter2-viewing.jpg",
     badge: "VERIFIED APARTMENT TOUR • SECURED",
     aspectClass: "max-w-[380px] md:max-w-[440px] aspect-[4/3]",
     description:
@@ -344,7 +344,7 @@ const PROJECT_CHAPTERS: ChapterItem[] = [
     textClass: "text-[#141414]",
     mutedClass: "text-zinc-900/80",
     lightBtn: false,
-    image: "/chapter3-keys.jpg",
+    image: "/chapter3-contract-keys.jpg",
     badge: "SIGNED LEASE • KEYS IN HAND",
     aspectClass: "max-w-[380px] md:max-w-[440px] aspect-[3/4]",
     description:
@@ -359,7 +359,7 @@ const PROJECT_CHAPTERS: ChapterItem[] = [
     textClass: "text-[#141414]",
     mutedClass: "text-zinc-700",
     lightBtn: false,
-    image: "/cozy-student-living.jpg",
+    image: "/chapter4-sanctuary.jpg",
     badge: "WARM RESIDENCE • FOCUSED ON LIVING",
     aspectClass: "max-w-[360px] md:max-w-[420px] aspect-[3/4.2]",
     description:
@@ -419,7 +419,7 @@ const CUSTOMER_STORIES = [
     quote:
       "I was located in Shymkent, but needed an apartment in Almaty. Searching on Krisha drained hours every day, and landlords hung up because I couldn't view immediately. Local Guarantor called the owner on Zhandosov St, verified the renovation was real, and locked in my viewing for the day my train arrived.",
     result: "Housed upon arrival • 0 Kaspi wire risk",
-    photo: "/student-arrival-struggle.jpg",
+    photo: "/story-alina-shymkent.jpg",
   },
   {
     name: "Arman & Daria",
