@@ -1076,7 +1076,16 @@ export default function LandingSection() {
           </nav>
 
           {/* Header Action Button */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <button
+              onClick={() => setIsAdminModalOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-950/30 px-3 py-1.5 text-[11px] font-mono-tag text-emerald-300 hover:border-emerald-400 hover:bg-emerald-900/50 hover:text-white transition-all cursor-pointer"
+              title="Open Admin CRM & Analytics Console (PIN: 2026)"
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span>Admin / CRM</span>
+            </button>
+
             <button
               onClick={() => openVoucherModal("header", "Get a Voucher")}
               className="group relative hidden sm:inline-flex items-center gap-2 rounded-full border border-white/25 bg-[#B5472B] px-4 py-2 text-xs font-semibold text-white shadow-lg hover:bg-[#8F3620] transition-colors cursor-pointer"
@@ -1126,6 +1135,17 @@ export default function LandingSection() {
                 >
                   <span>Request a Voucher — 100% Free</span>
                   <ArrowRight className="h-3.5 w-3.5" />
+                </button>
+
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    setIsAdminModalOpen(true);
+                  }}
+                  className="flex items-center justify-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-950/20 py-2.5 text-xs font-mono-tag text-emerald-300 cursor-pointer hover:bg-emerald-900/40"
+                >
+                  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>Admin CRM &amp; GA4 Analytics (PIN: 2026)</span>
                 </button>
               </div>
             </motion.div>
@@ -1852,42 +1872,56 @@ export default function LandingSection() {
           </div>
         </div>
 
-        {/* Admin CRM Database & Analytics Trigger Pill — ONLY VISIBLE TO AUTHENTICATED ADMINS */}
-        {isAdminAuthenticated && (
-          <div className="mx-auto mt-6 mb-2 flex max-w-[1440px] flex-wrap items-center justify-center gap-3 px-6 text-xs md:px-12">
+        {/* Admin CRM Database & Analytics Trigger Pill */}
+        <div className="mx-auto mt-6 mb-2 flex max-w-[1440px] flex-wrap items-center justify-center gap-3 px-6 text-xs md:px-12">
+          {isAdminAuthenticated ? (
+            <>
+              <button
+                onClick={() => setIsAdminModalOpen(true)}
+                className="group flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-950/40 px-4 py-2 text-[11px] font-mono-tag text-emerald-300 backdrop-blur-sm transition-all hover:border-emerald-400 hover:bg-emerald-900/60 hover:text-white cursor-pointer"
+              >
+                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span>Admin CRM Database &amp; GA4 Analytics</span>
+                <span className="rounded bg-black/50 px-1.5 py-0.5 text-[9px] text-zinc-400 group-hover:text-zinc-200">
+                  Ctrl+Shift+A
+                </span>
+              </button>
+
+              <button
+                onClick={() => exportSubmissionsToCSV()}
+                className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3.5 py-2 text-[11px] font-mono-tag text-zinc-300 transition-all hover:border-white/25 hover:bg-white/10 hover:text-white cursor-pointer"
+                title="Download RFC 4180 CSV export of all database leads"
+              >
+                <span>📥 Export Submissions CSV</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  setIsAdminAuthenticated(false);
+                  if (typeof window !== "undefined") {
+                    sessionStorage.removeItem("lg_admin_auth");
+                  }
+                }}
+                className="flex items-center gap-1.5 rounded-full border border-rose-500/30 bg-rose-950/40 px-3.5 py-2 text-[11px] font-mono-tag text-rose-300 transition-all hover:border-rose-400 hover:bg-rose-900/60 hover:text-white cursor-pointer"
+                title="Lock Admin Mode"
+              >
+                <span>🔒 Lock Admin</span>
+              </button>
+            </>
+          ) : (
             <button
               onClick={() => setIsAdminModalOpen(true)}
-              className="group flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-950/40 px-4 py-2 text-[11px] font-mono-tag text-emerald-300 backdrop-blur-sm transition-all hover:border-emerald-400 hover:bg-emerald-900/60 hover:text-white cursor-pointer"
+              className="group flex items-center gap-2.5 rounded-full border border-white/15 bg-black/50 px-4 py-2 text-[11px] font-mono-tag text-zinc-300 backdrop-blur-md transition-all hover:border-emerald-400/60 hover:bg-emerald-950/40 hover:text-emerald-300 cursor-pointer shadow-lg"
+              title="Open Admin CRM & Analytics Dashboard (Protected by PIN: 2026)"
             >
               <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Admin CRM Database &amp; GA4 Analytics</span>
-              <span className="rounded bg-black/50 px-1.5 py-0.5 text-[9px] text-zinc-400 group-hover:text-zinc-200">
-                Ctrl+Shift+A
+              <span>Admin CRM &amp; GA4 Analytics</span>
+              <span className="rounded bg-white/10 px-2 py-0.5 text-[9px] text-zinc-400 group-hover:text-emerald-200">
+                🔒 PIN: 2026
               </span>
             </button>
-
-            <button
-              onClick={() => exportSubmissionsToCSV()}
-              className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3.5 py-2 text-[11px] font-mono-tag text-zinc-300 transition-all hover:border-white/25 hover:bg-white/10 hover:text-white cursor-pointer"
-              title="Download RFC 4180 CSV export of all database leads"
-            >
-              <span>📥 Export Submissions CSV</span>
-            </button>
-
-            <button
-              onClick={() => {
-                setIsAdminAuthenticated(false);
-                if (typeof window !== "undefined") {
-                  sessionStorage.removeItem("lg_admin_auth");
-                }
-              }}
-              className="flex items-center gap-1.5 rounded-full border border-rose-500/30 bg-rose-950/40 px-3.5 py-2 text-[11px] font-mono-tag text-rose-300 transition-all hover:border-rose-400 hover:bg-rose-900/60 hover:text-white cursor-pointer"
-              title="Lock Admin Mode"
-            >
-              <span>🔒 Lock Admin</span>
-            </button>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* MONUMENTAL FULL-WIDTH BRAND WORDMARK */}
         <div className="mt-2 w-full overflow-hidden text-center leading-none select-none">
