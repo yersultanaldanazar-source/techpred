@@ -21,6 +21,32 @@ export interface LeadSubmission {
 }
 
 const STORAGE_KEY = "local_guarantor_db_submissions_v1";
+const SHEETS_URL_KEY = "lg_google_sheets_url";
+
+/**
+ * Returns the configured Google Sheets Web App URL.
+ */
+export function getGoogleSheetsUrl(): string {
+  if (typeof window === "undefined") return "";
+  return (
+    import.meta.env.VITE_GOOGLE_SHEETS_URL ||
+    localStorage.getItem(SHEETS_URL_KEY) ||
+    ""
+  );
+}
+
+/**
+ * Persists the Google Sheets Web App URL.
+ */
+export function setGoogleSheetsUrl(url: string): void {
+  if (typeof window === "undefined") return;
+  const clean = url.trim();
+  if (clean) {
+    localStorage.setItem(SHEETS_URL_KEY, clean);
+  } else {
+    localStorage.removeItem(SHEETS_URL_KEY);
+  }
+}
 
 // Initial seed records so the database is never empty on first load and can be tested immediately
 const DEFAULT_SEED_SUBMISSIONS: LeadSubmission[] = [
@@ -59,6 +85,97 @@ const DEFAULT_SEED_SUBMISSIONS: LeadSubmission[] = [
   },
 ];
 
+export const GOOGLE_APPS_SCRIPT_TEMPLATE = `// Local Guarantor — Cloud Database Engine for Google Sheets
+// Paste into: Google Sheets -> Extensions -> Apps Script
+
+function doGet(e) {
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    var data = sheet.getDataRange().getValues();
+    if (data.length <= 1) {
+      return ContentService.createTextOutput(JSON.stringify([]))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    var rows = [];
+    for (var i = 1; i < data.length; i++) {
+      var r = data[i];
+      if (!r[0] && !r[3]) continue;
+      rows.push({
+        id: String(r[0] || ("lead-" + i)),
+        timestamp: String(r[1] || ""),
+        formattedDate: String(r[2] || ""),
+        name: String(r[3] || ""),
+        phone: String(r[4] || ""),
+        telegram: String(r[5] || ""),
+        comment: String(r[6] || ""),
+        trafficSource: String(r[7] || "Direct"),
+        status: String(r[8] || "new")
+      });
+    }
+    return ContentService.createTextOutput(JSON.stringify(rows))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ error: err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doPost(e) {
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow([
+        "ID",
+        "Timestamp (ISO)",
+        "Formatted Date (Almaty)",
+        "Applicant Name",
+        "Phone / WhatsApp",
+        "Telegram",
+        "Listing / Notes",
+        "Traffic Source",
+        "Status"
+      ]);
+    }
+    var body = {};
+    if (e.postData && e.postData.contents) {
+      try {
+        body = JSON.parse(e.postData.contents);
+      } catch (pErr) {
+        body = e.parameter || {};
+      }
+    } else if (e.parameter) {
+      body = e.parameter;
+    }
+    var id = body.id || ("lead-" + new Date().getTime());
+    var timestamp = body.timestamp || new Date().toISOString();
+    var formattedDate = body.formattedDate || new Date().toLocaleString();
+    var name = body.name || "Anonymous";
+    var phone = body.phone || "";
+    var telegram = body.telegram || "";
+    var comment = body.comment || "";
+    var trafficSource = body.trafficSource || "Direct";
+    var status = body.status || "new";
+
+    sheet.appendRow([
+      id,
+      timestamp,
+      formattedDate,
+      name,
+      phone,
+      telegram,
+      comment,
+      trafficSource,
+      status
+    ]);
+
+    return ContentService.createTextOutput(JSON.stringify({ result: "success", id: id }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ result: "error", error: err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}`;
+
 /**
  * Retrieve all persistent submissions from storage.
  */
@@ -79,7 +196,104 @@ export function getSubmissions(): LeadSubmission[] {
 }
 
 /**
- * Save a new submission into the persistent database.
+ * Fetch fresh submissions directly from Google Sheets cloud Web App.
+ * Automatically merges cloud data with local records to ensure zero data loss.
+ */
+export async function syncFromCloud(): Promise<{ leads: LeadSubmission[]; count: number; error?: string }> {
+  const url = getGoogleSheetsUrl();
+  const localLeads = getSubmissions();
+  if (!url) {
+    return { leads: localLeads, count: localLeads.length };
+  }
+
+  try {
+    const res = await fetch(url, { method: "GET" });
+    if (!res.ok) {
+      throw new Error(`Google Sheets responded with HTTP ${res.status}`);
+    }
+    const data = await res.json();
+    if (Array.isArray(data)) {
+      const map = new Map<string, LeadSubmission>();
+
+      // Index local leads first
+      localLeads.forEach((item) => map.set(item.id, item));
+
+      // Overwrite or append leads from Google Sheets
+      data.forEach((item: any) => {
+        if (item && (item.id || item.phone || item.name)) {
+          const key = item.id || `lead-${item.phone}-${item.timestamp}`;
+          map.set(key, {
+            id: String(item.id || key),
+            name: String(item.name || "Lead"),
+            phone: String(item.phone || ""),
+            telegram: String(item.telegram || ""),
+            comment: String(item.comment || ""),
+            timestamp: String(item.timestamp || new Date().toISOString()),
+            formattedDate: String(item.formattedDate || "Recent"),
+            trafficSource: String(item.trafficSource || "Direct"),
+            status:
+              item.status === "contacted" || item.status === "housed" || item.status === "archived"
+                ? item.status
+                : "new",
+          });
+        }
+      });
+
+      const merged = Array.from(map.values()).sort(
+        (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      );
+
+      if (typeof window !== "undefined") {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+      }
+      return { leads: merged, count: data.length };
+    }
+    return { leads: localLeads, count: localLeads.length };
+  } catch (err: any) {
+    console.warn("[Database] Cloud fetch warning:", err);
+    return {
+      leads: localLeads,
+      count: localLeads.length,
+      error: err?.message || "Failed to reach Google Sheets",
+    };
+  }
+}
+
+/**
+ * Validates a Google Sheets Web App URL by performing a test GET request.
+ */
+export async function testGoogleSheetsConnection(
+  url: string
+): Promise<{ ok: boolean; count?: number; error?: string }> {
+  try {
+    const clean = url.trim();
+    if (!clean.startsWith("https://script.google.com/macros/s/")) {
+      return {
+        ok: false,
+        error: "URL must start with https://script.google.com/macros/s/...",
+      };
+    }
+    const res = await fetch(clean, { method: "GET" });
+    if (!res.ok) {
+      return { ok: false, error: `Google Sheets responded with HTTP ${res.status}` };
+    }
+    const json = await res.json();
+    if (Array.isArray(json)) {
+      return { ok: true, count: json.length };
+    }
+    return { ok: true, count: 0 };
+  } catch (err: any) {
+    return {
+      ok: false,
+      error:
+        err?.message ||
+        "Could not connect to Google Apps Script. Ensure deployment is set to 'Anyone'.",
+    };
+  }
+}
+
+/**
+ * Save a new submission into the persistent database and automatically sync to Google Sheets.
  */
 export async function saveSubmission(
   lead: {
@@ -92,14 +306,15 @@ export async function saveSubmission(
 ): Promise<LeadSubmission> {
   const now = new Date();
   const id = `lead-${Date.now()}`;
-  const formattedDate = now.toLocaleString("en-US", {
-    timeZone: "Asia/Almaty",
-    month: "short",
-    day: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }) + " (Almaty)";
+  const formattedDate =
+    now.toLocaleString("en-US", {
+      timeZone: "Asia/Almaty",
+      month: "short",
+      day: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }) + " (Almaty)";
 
   const newRecord: LeadSubmission = {
     id,
@@ -121,6 +336,25 @@ export async function saveSubmission(
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
     } catch (err) {
       console.error("[Database] LocalStorage save error:", err);
+    }
+  }
+
+  // Real-Time Google Sheets Cloud Sync: Dispatches lead to Google Sheets Web App
+  const sheetsUrl = getGoogleSheetsUrl();
+  if (sheetsUrl) {
+    try {
+      // Using no-cors and text/plain ensures no CORS preflight blocks across mobile & desktop browsers
+      fetch(sheetsUrl, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(newRecord),
+      }).catch((e) => {
+        console.warn("[Database] Google Sheets background dispatch warning:", e);
+      });
+      console.log("[Database] Lead dispatched to Google Sheets cloud database:", id);
+    } catch (e) {
+      console.warn("[Database] Google Sheets dispatch error:", e);
     }
   }
 

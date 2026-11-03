@@ -26,6 +26,7 @@ import {
   Check,
   Lock,
   ShieldCheck,
+  Link2,
 } from "lucide-react";
 import {
   getSubmissions,
@@ -35,6 +36,11 @@ import {
   deleteLead,
   saveSubmission,
   resetDatabase,
+  getGoogleSheetsUrl,
+  setGoogleSheetsUrl,
+  syncFromCloud,
+  testGoogleSheetsConnection,
+  GOOGLE_APPS_SCRIPT_TEMPLATE,
 } from "../lib/database";
 import {
   getStoredMetrics,
@@ -83,6 +89,68 @@ export function AdminDashboardModal({
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
+  // Google Sheets Cloud Database Sync State
+  const [sheetsUrl, setSheetsUrlState] = useState<string>(() => getGoogleSheetsUrl());
+  const [isSyncing, setIsSyncing] = useState<boolean>(false);
+  const [syncStatusMsg, setSyncStatusMsg] = useState<string>("");
+  const [showSheetsSetup, setShowSheetsSetup] = useState<boolean>(false);
+  const [scriptCopied, setScriptCopied] = useState<boolean>(false);
+  const [testResult, setTestResult] = useState<{ ok: boolean; message: string } | null>(null);
+  const [isTesting, setIsTesting] = useState<boolean>(false);
+
+  const handleCloudSync = async () => {
+    setIsSyncing(true);
+    setSyncStatusMsg("Connecting to Google Sheets cloud...");
+    try {
+      const res = await syncFromCloud();
+      setSubmissions(res.leads);
+      if (res.error) {
+        setSyncStatusMsg(`⚠️ Sync warning: ${res.error}`);
+      } else {
+        const time = new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+        setSyncStatusMsg(`Synced ${res.leads.length} records (${res.count} from Google Sheets) at ${time}`);
+      }
+    } catch (err: any) {
+      setSyncStatusMsg("Sync failed. Check your Web App deployment.");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const handleSaveSheetsUrl = async () => {
+    const clean = sheetsUrl.trim();
+    if (!clean) {
+      setGoogleSheetsUrl("");
+      setSheetsUrlState("");
+      setTestResult({ ok: true, message: "Google Sheets connection cleared." });
+      return;
+    }
+    setIsTesting(true);
+    setTestResult(null);
+    const test = await testGoogleSheetsConnection(clean);
+    setIsTesting(false);
+    if (test.ok) {
+      setGoogleSheetsUrl(clean);
+      setSheetsUrlState(clean);
+      setTestResult({
+        ok: true,
+        message: `Connected successfully! (${test.count ?? 0} rows found in sheet)`,
+      });
+      handleCloudSync();
+    } else {
+      setTestResult({
+        ok: false,
+        message: test.error || "Connection test failed.",
+      });
+    }
+  };
+
+  const handleCopyScript = () => {
+    navigator.clipboard.writeText(GOOGLE_APPS_SCRIPT_TEMPLATE);
+    setScriptCopied(true);
+    setTimeout(() => setScriptCopied(false), 2500);
+  };
+
   useEffect(() => {
     const win = window as any;
     if (isOpen) {
@@ -92,6 +160,11 @@ export function AdminDashboardModal({
       setSubmissions(getSubmissions());
       setMetrics(getStoredMetrics());
       setClickMap(getClickMapData());
+
+      // Auto sync from cloud if configured
+      if (isAuth && getGoogleSheetsUrl()) {
+        handleCloudSync();
+      }
     } else {
       win.lenisInstance?.start();
       document.body.style.overflow = "";
@@ -102,7 +175,7 @@ export function AdminDashboardModal({
       win.lenisInstance?.start();
       document.body.style.overflow = "";
     };
-  }, [isOpen]);
+  }, [isOpen, isAuth]);
 
   if (!isOpen) return null;
 
@@ -407,53 +480,225 @@ export function AdminDashboardModal({
                       <span className="text-[10px] text-zinc-500">Lease signed &amp; keys handed</span>
                     </div>
                   </div>
-                {/* Actions Toolbar */}
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-black/40 p-4 rounded-xl border border-white/10">
-                  <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-                    {/* Search */}
-                    <div className="relative flex-1 sm:w-64">
-                      <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-zinc-400" />
-                      <input
-                        type="text"
-                        placeholder="Search name, phone, notes..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full rounded-lg border border-white/10 bg-white/5 pl-9 pr-3 py-1.5 text-xs text-white placeholder-zinc-500 outline-none focus:border-[#B5472B]"
-                      />
+
+                  {/* ============================================================== */}
+                  {/* GOOGLE SHEETS CLOUD DATABASE SYNC BANNER & CONTROLS */}
+                  {/* ============================================================== */}
+                  <div className="rounded-xl border border-white/10 bg-gradient-to-r from-[#17201C] via-[#121614] to-[#1F1713] p-4 text-xs">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border ${
+                            sheetsUrl
+                              ? "border-emerald-500/40 bg-emerald-950/40 text-emerald-400"
+                              : "border-amber-500/40 bg-amber-950/40 text-amber-300"
+                          }`}
+                        >
+                          <FileSpreadsheet className="h-4 w-4" />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-semibold text-white">Google Sheets Cloud Database</span>
+                            {sheetsUrl ? (
+                              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-2 py-0.5 text-[9px] font-mono-tag font-medium text-emerald-300 border border-emerald-500/30">
+                                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                CLOUD SYNC CONNECTED
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 px-2 py-0.5 text-[9px] font-mono-tag font-medium text-amber-300 border border-amber-500/30">
+                                SETUP REQUIRED (1 MIN)
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[11px] text-zinc-400 mt-0.5">
+                            {sheetsUrl
+                              ? syncStatusMsg || "Submissions from all friends and mobile devices stream directly to your Google Sheet in real time."
+                              : "Connect Google Sheets so submissions sent from your friends' phones appear here automatically."}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 w-full sm:w-auto justify-end flex-wrap">
+                        {sheetsUrl && (
+                          <button
+                            onClick={handleCloudSync}
+                            disabled={isSyncing}
+                            className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-[11px] font-mono-tag text-zinc-200 hover:bg-white/10 transition-colors cursor-pointer disabled:opacity-50"
+                          >
+                            <RefreshCw className={`h-3 w-3 ${isSyncing ? "animate-spin text-emerald-400" : "text-cyan-400"}`} />
+                            <span>{isSyncing ? "Syncing..." : "Sync Cloud"}</span>
+                          </button>
+                        )}
+                        <button
+                          onClick={() => setShowSheetsSetup(!showSheetsSetup)}
+                          className="inline-flex items-center gap-1.5 rounded-lg bg-[#B5472B] hover:bg-[#8F3620] text-white px-3 py-1.5 text-[11px] font-semibold transition-colors cursor-pointer"
+                        >
+                          <Link2 className="h-3 w-3" />
+                          <span>{showSheetsSetup ? "Hide Setup" : sheetsUrl ? "Manage Connection" : "Connect Google Sheets"}</span>
+                        </button>
+                      </div>
                     </div>
 
-                    {/* Filter Status */}
-                    <select
-                      value={statusFilter}
-                      onChange={(e) => setStatusFilter(e.target.value)}
-                      className="rounded-lg border border-white/10 bg-[#161a18] px-3 py-1.5 text-xs text-zinc-300 outline-none focus:border-[#B5472B] cursor-pointer"
-                    >
-                      <option value="all">All Statuses ({submissions.length})</option>
-                      <option value="new">New</option>
-                      <option value="contacted">Contacted</option>
-                      <option value="housed">Housed</option>
-                    </select>
+                    {/* EXPANDABLE GOOGLE SHEETS SETUP CARD */}
+                    {showSheetsSetup && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="mt-4 pt-4 border-t border-white/10 space-y-4"
+                      >
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-[11px]">
+                          {/* Step 1 */}
+                          <div className="rounded-lg border border-white/10 bg-black/40 p-3 space-y-1.5">
+                            <div className="flex items-center gap-1.5 font-bold text-amber-300">
+                              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-amber-400/20 text-[10px]">1</span>
+                              <span>Create Spreadsheet</span>
+                            </div>
+                            <p className="text-zinc-400 leading-relaxed">
+                              Open <a href="https://sheets.new" target="_blank" rel="noreferrer" className="text-emerald-400 underline font-mono">sheets.new</a> in your browser. Name the document <em>"Local Guarantor Leads"</em>.
+                            </p>
+                          </div>
+
+                          {/* Step 2 */}
+                          <div className="rounded-lg border border-white/10 bg-black/40 p-3 space-y-1.5">
+                            <div className="flex items-center gap-1.5 font-bold text-amber-300">
+                              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-amber-400/20 text-[10px]">2</span>
+                              <span>Paste Apps Script Code</span>
+                            </div>
+                            <p className="text-zinc-400 leading-relaxed">
+                              In menu, go to <strong>Extensions &rarr; Apps Script</strong>. Replace code with our cloud script and save.
+                            </p>
+                            <button
+                              onClick={handleCopyScript}
+                              className="inline-flex items-center gap-1 text-[10px] rounded bg-white/10 px-2 py-1 text-white hover:bg-white/20 transition-colors cursor-pointer"
+                            >
+                              {scriptCopied ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
+                              <span>{scriptCopied ? "Script Copied to Clipboard!" : "Copy Ready Apps Script"}</span>
+                            </button>
+                          </div>
+
+                          {/* Step 3 */}
+                          <div className="rounded-lg border border-white/10 bg-black/40 p-3 space-y-1.5">
+                            <div className="flex items-center gap-1.5 font-bold text-amber-300">
+                              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-amber-400/20 text-[10px]">3</span>
+                              <span>Deploy as Web App</span>
+                            </div>
+                            <p className="text-zinc-400 leading-relaxed">
+                              Click <strong>Deploy &rarr; New deployment</strong>. Choose <strong>Web app</strong>. Set <em>Who has access</em> to <strong>Anyone</strong>. Click Deploy and paste URL below:
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* URL Input Form */}
+                        <div className="rounded-lg border border-white/10 bg-black/50 p-3.5 space-y-2">
+                          <label className="block text-[10px] font-mono-tag uppercase text-zinc-300">
+                            Google Apps Script Web App Deployment URL:
+                          </label>
+                          <div className="flex flex-col sm:flex-row gap-2">
+                            <input
+                              type="url"
+                              placeholder="https://script.google.com/macros/s/AKfycb.../exec"
+                              value={sheetsUrl}
+                              onChange={(e) => {
+                                setSheetsUrlState(e.target.value);
+                                setTestResult(null);
+                              }}
+                              className="flex-1 rounded-lg border border-white/15 bg-black/60 px-3 py-2 text-xs text-white placeholder-zinc-600 outline-none focus:border-[#B5472B]"
+                            />
+                            <button
+                              onClick={handleSaveSheetsUrl}
+                              disabled={isTesting}
+                              className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 text-xs font-semibold transition-colors disabled:opacity-50 cursor-pointer"
+                            >
+                              {isTesting ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
+                              <span>{isTesting ? "Testing..." : "Save & Verify"}</span>
+                            </button>
+                          </div>
+
+                          {testResult && (
+                            <div
+                              className={`p-2 rounded text-[11px] flex items-center gap-1.5 ${
+                                testResult.ok
+                                  ? "bg-emerald-950/60 text-emerald-300 border border-emerald-500/30"
+                                  : "bg-rose-950/60 text-rose-300 border border-rose-500/30"
+                              }`}
+                            >
+                              <span>{testResult.ok ? "✅" : "⚠️"} {testResult.message}</span>
+                            </div>
+                          )}
+
+                          <div className="text-[10px] text-zinc-500 flex items-center justify-between pt-1 flex-wrap gap-2">
+                            <span>💡 To activate permanently across all visitors: also add <code>VITE_GOOGLE_SHEETS_URL</code> to <code>.env</code></span>
+                            <button
+                              onClick={handleCopyScript}
+                              className="text-zinc-400 hover:text-white underline cursor-pointer"
+                            >
+                              {scriptCopied ? "Script Copied!" : "Copy Full Apps Script Code"}
+                            </button>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
                   </div>
 
-                  <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-                    <button
-                      onClick={handleAddTestLead}
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-mono-tag text-zinc-200 hover:bg-white/10 transition-colors cursor-pointer"
-                    >
-                      <PlusCircle className="h-3.5 w-3.5 text-emerald-400" />
-                      <span>+ Add Test Lead</span>
-                    </button>
+                  {/* Actions Toolbar */}
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-black/40 p-4 rounded-xl border border-white/10">
+                    <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                      {/* Search */}
+                      <div className="relative flex-1 sm:w-64">
+                        <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-zinc-400" />
+                        <input
+                          type="text"
+                          placeholder="Search name, phone, notes..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="w-full rounded-lg border border-white/10 bg-white/5 pl-9 pr-3 py-1.5 text-xs text-white placeholder-zinc-500 outline-none focus:border-[#B5472B]"
+                        />
+                      </div>
 
-                    {/* Big CSV Export Button */}
-                    <button
-                      onClick={exportSubmissionsToCSV}
-                      className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-1.5 text-xs font-semibold text-white shadow hover:bg-emerald-500 transition-colors cursor-pointer"
-                    >
-                      <Download className="h-3.5 w-3.5" />
-                      <span>Export as CSV</span>
-                    </button>
+                      {/* Filter Status */}
+                      <select
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        className="rounded-lg border border-white/10 bg-[#161a18] px-3 py-1.5 text-xs text-zinc-300 outline-none focus:border-[#B5472B] cursor-pointer"
+                      >
+                        <option value="all">All Statuses ({submissions.length})</option>
+                        <option value="new">New</option>
+                        <option value="contacted">Contacted</option>
+                        <option value="housed">Housed</option>
+                      </select>
+                    </div>
+
+                    <div className="flex items-center gap-2 w-full sm:w-auto justify-end flex-wrap">
+                      {/* Sync from Google Sheets Cloud Button */}
+                      <button
+                        onClick={handleCloudSync}
+                        disabled={isSyncing}
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-mono-tag text-zinc-200 hover:bg-white/10 transition-colors cursor-pointer disabled:opacity-50"
+                        title="Pull fresh submissions from Google Sheets cloud database"
+                      >
+                        <RefreshCw className={`h-3.5 w-3.5 text-cyan-400 ${isSyncing ? "animate-spin" : ""}`} />
+                        <span>{isSyncing ? "Syncing..." : "Sync Cloud"}</span>
+                      </button>
+
+                      <button
+                        onClick={handleAddTestLead}
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-mono-tag text-zinc-200 hover:bg-white/10 transition-colors cursor-pointer"
+                      >
+                        <PlusCircle className="h-3.5 w-3.5 text-emerald-400" />
+                        <span>+ Add Test Lead</span>
+                      </button>
+
+                      {/* Big CSV Export Button */}
+                      <button
+                        onClick={exportSubmissionsToCSV}
+                        className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-1.5 text-xs font-semibold text-white shadow hover:bg-emerald-500 transition-colors cursor-pointer"
+                      >
+                        <Download className="h-3.5 w-3.5" />
+                        <span>Export as CSV</span>
+                      </button>
+                    </div>
                   </div>
-                </div>
 
                 {/* Submissions Table */}
                 <div className="rounded-xl border border-white/10 overflow-hidden bg-black/50">
@@ -544,8 +789,13 @@ export function AdminDashboardModal({
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between text-xs text-zinc-500 pt-2 font-mono-tag">
-                  <span>Total records: {submissions.length}</span>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between text-xs text-zinc-500 pt-2 font-mono-tag gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span>Total records: {submissions.length}</span>
+                    {syncStatusMsg && (
+                      <span className="text-[11px] text-zinc-400 font-sans">• {syncStatusMsg}</span>
+                    )}
+                  </div>
                   <button onClick={handleReset} className="hover:text-zinc-300 transition-colors flex items-center gap-1 cursor-pointer">
                     <RefreshCw className="h-3 w-3" />
                     <span>Reset to Seed Data</span>
