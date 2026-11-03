@@ -313,9 +313,9 @@ const PROJECT_CHAPTERS: ChapterItem[] = [
     textClass: "text-[#141414]",
     mutedClass: "text-zinc-600",
     lightBtn: false,
-    image: "/chapter1-building.jpg",
+    image: "/chapter1-arrival.jpg",
     badge: "ALMATY RESIDENTIAL DISTRICTS • 90% REFUSALS",
-    aspectClass: "max-w-[360px] md:max-w-[420px] aspect-[3/4.2]",
+    aspectClass: "max-w-[420px] md:max-w-[480px] aspect-[16/10]",
     description:
       "Almaty landlords routinely fear noise, missed rent, and property damage, rejecting 90% of incoming calls with an instant “no students, no guys” rule. Newcomers arrive at stations with heavy suitcases, facing predatory broker fees and 300,000 ₸ seasonal rental gouging while searching alone in panic.",
   },
@@ -1168,9 +1168,9 @@ export default function LandingSection() {
           className="pointer-events-none absolute inset-0 z-0"
         >
           <img
-            src="/hero-almaty-euronews.jpg"
-            alt="Almaty city panorama with Hotel Kazakhstan and Tian Shan mountain peaks"
-            className="h-full w-full object-cover object-center brightness-[0.55] contrast-[1.05]"
+            src="/hero-arrival-almaty.jpg"
+            alt="Young tenant arriving with heavy luggage searching for housing in Almaty"
+            className="h-full w-full object-cover object-center brightness-[0.52] contrast-[1.05]"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/45 to-[#0A0C0B]" />
         </motion.div>
