@@ -17,11 +17,9 @@ import {
   UserCheck,
   TrendingUp,
   Eye,
-  MousePointerClick,
   FileSpreadsheet,
   Layers,
   Globe,
-  Flame,
   Copy,
   Check,
   Lock,
@@ -46,8 +44,6 @@ import {
   getStoredMetrics,
   AnalyticsMetrics,
   detectTrafficSource,
-  getClickMapData,
-  ClickMapData,
 } from "../lib/analytics";
 
 interface AdminDashboardModalProps {
@@ -63,7 +59,7 @@ export function AdminDashboardModal({
   isAdminAuthenticated: parentIsAuth,
   setIsAdminAuthenticated: parentSetAuth,
 }: AdminDashboardModalProps) {
-  const [activeTab, setActiveTab] = useState<"database" | "analytics" | "clickmap">("database");
+  const [activeTab, setActiveTab] = useState<"database" | "analytics">("database");
   const [internalAuth, setInternalAuth] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
     return sessionStorage.getItem("lg_admin_auth") === "true";
@@ -84,8 +80,6 @@ export function AdminDashboardModal({
   const [pinError, setPinError] = useState("");
   const [submissions, setSubmissions] = useState<LeadSubmission[]>([]);
   const [metrics, setMetrics] = useState<AnalyticsMetrics | null>(null);
-  const [clickMap, setClickMap] = useState<ClickMapData | null>(null);
-  const [copiedSnippet, setCopiedSnippet] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
@@ -159,7 +153,6 @@ export function AdminDashboardModal({
       document.body.style.overflow = "hidden";
       setSubmissions(getSubmissions());
       setMetrics(getStoredMetrics());
-      setClickMap(getClickMapData());
 
       // Auto sync from cloud if configured
       if (isAuth && getGoogleSheetsUrl()) {
@@ -352,10 +345,8 @@ export function AdminDashboardModal({
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#B5472B]/20 border border-[#B5472B]/40 text-[#D9A64E]">
                   {activeTab === "database" ? (
                     <Database className="h-5 w-5" />
-                  ) : activeTab === "analytics" ? (
-                    <BarChart3 className="h-5 w-5" />
                   ) : (
-                    <Flame className="h-5 w-5 text-amber-400" />
+                    <BarChart3 className="h-5 w-5" />
                   )}
                 </div>
                 <div>
@@ -363,16 +354,14 @@ export function AdminDashboardModal({
                     <span>
                       {activeTab === "database"
                         ? "Submissions CRM"
-                        : activeTab === "analytics"
-                        ? "GA4 Funnel & Metrics"
-                        : "Click Map & Heatmap"}
+                        : "GA4 & Metrika Funnel"}
                     </span>
                     <span className="text-[10px] font-mono-tag px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                       ADMIN
                     </span>
                   </h2>
                   <p className="text-xs text-zinc-400 font-sans">
-                    Part 2: Real Persistent Database • Part 3: GA4 Funnel &amp; Heatmaps
+                    Part 2: Real Cloud Database (Google Sheets) • Part 3: GA4 &amp; Metrika Funnel
                   </p>
                 </div>
               </div>
@@ -400,21 +389,7 @@ export function AdminDashboardModal({
                     }`}
                   >
                     <BarChart3 className="h-3.5 w-3.5" />
-                    <span>GA4 Funnel</span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      setClickMap(getClickMapData());
-                      setActiveTab("clickmap");
-                    }}
-                    className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
-                      activeTab === "clickmap"
-                        ? "bg-[#B5472B] text-white font-semibold"
-                        : "text-zinc-400 hover:text-white"
-                    }`}
-                  >
-                    <Flame className="h-3.5 w-3.5 text-amber-400" />
-                    <span>Click Heatmap</span>
+                    <span>GA4 &amp; Metrika</span>
                   </button>
                 </div>
 
@@ -996,216 +971,36 @@ export function AdminDashboardModal({
                     <span>Download CSV Proof</span>
                   </button>
                 </div>
-              </div>
-            )}
 
-            {/* TAB 3: USER INTERACTION & CLICK HEATMAP */}
-            {activeTab === "clickmap" && (
-              <div className="space-y-6">
-                {/* Click Metrics Overview */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="rounded-xl border border-white/10 bg-black/40 p-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-mono-tag uppercase text-zinc-400">Total Tracked Clicks</span>
-                      <MousePointerClick className="h-4 w-4 text-amber-400" />
+                {/* REAL USER SESSION RECORDINGS & CLICK HEATMAP (YANDEX METRIKA) */}
+                <div className="rounded-xl border border-white/10 bg-black/40 p-5 space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/20 text-amber-300">
+                        <Eye className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <h4 className="text-xs font-semibold text-white font-mono-tag uppercase">
+                          Real Session Replays &amp; Click Heatmaps (Yandex Metrika)
+                        </h4>
+                        <span className="text-[10px] text-zinc-400">
+                          Active Tag ID: <strong className="text-emerald-400 font-mono">114019628</strong> • Webvisor 2.0 &amp; Click Map Enabled
+                        </span>
+                      </div>
                     </div>
-                    <div className="mt-2 text-2xl font-bold text-white font-mono">
-                      {clickMap?.totalClicks ?? 0}
-                    </div>
-                    <div className="text-[11px] text-zinc-500 font-sans mt-0.5">
-                      Live interaction events across buttons, links, cards &amp; tabs
-                    </div>
-                  </div>
-
-                  <div className="rounded-xl border border-white/10 bg-black/40 p-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-mono-tag uppercase text-zinc-400">Top Clicked Action</span>
-                      <Flame className="h-4 w-4 text-[#B5472B]" />
-                    </div>
-                    <div className="mt-2 text-lg font-semibold text-[#D9A64E] truncate">
-                      {clickMap?.topElements[0]?.label || "Get Your Free Local Voucher"}
-                    </div>
-                    <div className="text-[11px] text-zinc-500 font-sans mt-0.5">
-                      {clickMap?.topElements[0]?.count || 0} clicks ({clickMap?.topElements[0]?.percentage || 42}% of all interactions)
-                    </div>
-                  </div>
-
-                  <div className="rounded-xl border border-white/10 bg-black/40 p-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-mono-tag uppercase text-zinc-400">Most Active Section</span>
-                      <Layers className="h-4 w-4 text-emerald-400" />
-                    </div>
-                    <div className="mt-2 text-2xl font-bold text-white font-mono">
-                      Hero &amp; Value Prop
-                    </div>
-                    <div className="text-[11px] text-zinc-500 font-sans mt-0.5">
-                      Above the fold captures 58% of initial click intent
-                    </div>
-                  </div>
-                </div>
-
-                {/* Ranked Click Leaderboard */}
-                <div className="rounded-xl border border-white/10 bg-black/40 p-5 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-                        <Flame className="h-4 w-4 text-amber-400" />
-                        <span>Interactive Elements Clickmap Leaderboard</span>
-                      </h3>
-                      <p className="text-xs text-zinc-400 font-sans">
-                        Real-time tracking of which buttons, tabs, and content elements receive the most user clicks
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => setClickMap(getClickMapData())}
-                      className="flex items-center gap-1.5 text-xs font-mono-tag text-zinc-400 hover:text-white cursor-pointer"
+                    <a
+                      href="https://metrika.yandex.ru/"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 text-[11px] font-mono-tag text-zinc-300 hover:text-white bg-white/10 px-3 py-1.5 rounded-lg border border-white/10 transition-colors w-fit"
                     >
-                      <RefreshCw className="h-3 w-3" />
-                      <span>Refresh</span>
-                    </button>
+                      <span>Open Metrika Dashboard</span>
+                      <ExternalLink className="h-3 w-3" />
+                    </a>
                   </div>
-
-                  <div className="space-y-3 pt-2">
-                    {(clickMap?.topElements ?? []).map((el, i) => {
-                      const pct = el.percentage ?? Math.round((el.count / (clickMap?.totalClicks || 1)) * 100);
-                      return (
-                        <div key={el.id} className="space-y-1.5">
-                          <div className="flex items-center justify-between text-xs">
-                            <div className="flex items-center gap-2">
-                              <span className="font-mono text-zinc-500 font-bold w-5">#{i + 1}</span>
-                              <span className="font-medium text-white">{el.label}</span>
-                              <span className="text-[10px] font-mono-tag px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-zinc-400">
-                                {el.section}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2 font-mono">
-                              <span className="text-white font-bold">{el.count} clicks</span>
-                              <span className="text-[#D9A64E]">({pct}%)</span>
-                            </div>
-                          </div>
-                          <div className="h-2 w-full rounded-full bg-white/5 overflow-hidden">
-                            <motion.div
-                              initial={{ width: 0 }}
-                              animate={{ width: `${pct}%` }}
-                              transition={{ duration: 0.6, ease: "easeOut" }}
-                              className={`h-full rounded-full ${
-                                i === 0
-                                  ? "bg-gradient-to-r from-amber-500 to-[#B5472B]"
-                                  : i === 1
-                                  ? "bg-gradient-to-r from-amber-400 to-amber-600"
-                                  : "bg-zinc-600"
-                              }`}
-                            />
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Question Answer for the Professor: How Heatmaps and Clickmaps Work */}
-                <div className="rounded-xl border border-amber-500/20 bg-amber-950/20 p-5 space-y-4">
-                  <div className="flex items-start gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/20 text-amber-300 shrink-0">
-                      <Globe className="h-4 w-4" />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-semibold text-white">
-                        How to Track User Clicks &amp; Attention Heatmaps (Methodology &amp; Evaluation Guide)
-                      </h4>
-                      <p className="text-xs text-zinc-300 font-sans mt-1 leading-relaxed">
-                        In modern web analytics, two standard approaches are used to visualize user attention and click interactions:
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-sans">
-                    <div className="rounded-lg border border-white/10 bg-black/40 p-4 space-y-2">
-                      <div className="font-semibold text-emerald-400 flex items-center gap-1.5">
-                        <CheckCircle2 className="h-3.5 w-3.5" />
-                        <span>1. Microsoft Clarity (100% Free Forever)</span>
-                      </div>
-                      <p className="text-zinc-300 leading-relaxed text-[11px]">
-                        Official telemetry from Microsoft with zero traffic limits:
-                      </p>
-                      <ul className="list-disc pl-4 space-y-1 text-zinc-400 text-[11px]">
-                        <li><b>Click Heatmaps</b>: Thermal color mapping (red = high click density, blue = low).</li>
-                        <li><b>Session Replays</b>: Pixel-accurate video playback of cursor movements, gestures, and scrolling.</li>
-                        <li><b>Rage Clicks</b>: Pinpoints UX friction points where visitors click repeatedly in frustration.</li>
-                      </ul>
-                    </div>
-
-                    <div className="rounded-lg border border-white/10 bg-black/40 p-4 space-y-2">
-                      <div className="font-semibold text-amber-400 flex items-center gap-1.5">
-                        <CheckCircle2 className="h-3.5 w-3.5" />
-                        <span>2. Yandex Metrica (Click Map + Webvisor 2.0)</span>
-                      </div>
-                      <p className="text-zinc-300 leading-relaxed text-[11px]">
-                        Widely used regional analytics standard for Kazakhstan and CIS:
-                      </p>
-                      <ul className="list-disc pl-4 space-y-1 text-zinc-400 text-[11px]">
-                        <li><b>Click Map (Карта кликов)</b>: Thermal visual cluster overlays on top of interactive buttons.</li>
-                        <li><b>Webvisor 2.0 (Вебвизор)</b>: Frame-by-frame recordings of real visitor navigation sessions.</li>
-                        <li><b>Form Analytics</b>: Step-by-step conversion drop-off tracking across form fields.</li>
-                      </ul>
-                    </div>
-                  </div>
-
-                  {/* Yandex Metrica CMS / CRM Setup Clarification */}
-                  <div className="rounded-lg border border-blue-500/30 bg-blue-950/20 p-3.5 text-xs font-sans space-y-1.5">
-                    <div className="flex items-center gap-2 text-blue-300 font-semibold font-mono-tag text-[11px] uppercase">
-                      <span>💡 What to select for CMS &amp; CRM in Yandex Metrica?</span>
-                    </div>
-                    <p className="text-zinc-300 text-[11px] leading-relaxed">
-                      When creating your counter, Yandex Metrica asks for your <b>CMS</b> and <b>CRM</b>:
-                    </p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 font-mono-tag text-[10px]">
-                      <div className="rounded bg-black/50 p-2 border border-white/10">
-                        <span className="text-zinc-400 block font-sans">CMS / Site Platform:</span>
-                        <span className="text-emerald-300 font-bold">Select "Other" / "Custom" or "No CMS"</span>
-                        <span className="text-zinc-500 block font-sans mt-0.5">(Because this is a custom React Vite SPA)</span>
-                      </div>
-                      <div className="rounded bg-black/50 p-2 border border-white/10">
-                        <span className="text-zinc-400 block font-sans">CRM System:</span>
-                        <span className="text-amber-300 font-bold">Select "None" or "Custom / Other"</span>
-                        <span className="text-zinc-500 block font-sans mt-0.5">(We built a custom in-app CRM with SQLite &amp; Telegram)</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Code snippet to copy for Microsoft Clarity */}
-                  <div className="rounded-lg border border-white/10 bg-black/60 p-3 space-y-2">
-                    <div className="flex items-center justify-between text-[11px] font-mono-tag">
-                      <span className="text-zinc-400">Snippet for Microsoft Clarity (index.html):</span>
-                      <button
-                        onClick={() => {
-                          const code = `<script type="text/javascript">
-  (function(c,l,a,r,i,t,y){
-    c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-    t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-    y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-  })(window, document, "clarity", "script", "YOUR_CLARITY_ID");
-</script>`;
-                          navigator.clipboard.writeText(code);
-                          setCopiedSnippet(true);
-                          setTimeout(() => setCopiedSnippet(false), 2500);
-                        }}
-                        className="flex items-center gap-1 text-amber-400 hover:text-white transition-colors cursor-pointer"
-                      >
-                        {copiedSnippet ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
-                        <span>{copiedSnippet ? "Copied!" : "Copy Code"}</span>
-                      </button>
-                    </div>
-                    <pre className="text-[10px] font-mono text-zinc-300 bg-black/80 p-2.5 rounded overflow-x-auto">
-{`<script type="text/javascript">
-  (function(c,l,a,r,i,t,y){
-    c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-    t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-    y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-  })(window, document, "clarity", "script", "YOUR_CLARITY_ID");
-</script>`}
-                    </pre>
-                  </div>
+                  <p className="text-[11px] text-zinc-300 font-sans leading-relaxed">
+                    Rather than using simulated in-app mock clicks, 100% authentic multi-device heatmaps and screen session recordings are captured live by the official Yandex Metrika counter embedded across the entire site. To view real click density heatmaps and video replays of what users do, open <a href="https://metrika.yandex.ru/" target="_blank" rel="noreferrer" className="text-amber-400 underline font-mono">metrika.yandex.ru</a> &rarr; <em>Maps (Карты) &rarr; Click Map (Карта кликов)</em>.
+                  </p>
                 </div>
               </div>
             )}

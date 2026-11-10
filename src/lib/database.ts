@@ -23,15 +23,18 @@ export interface LeadSubmission {
 const STORAGE_KEY = "local_guarantor_db_submissions_v1";
 const SHEETS_URL_KEY = "lg_google_sheets_url";
 
+export const DEFAULT_GOOGLE_SHEETS_URL =
+  "https://script.google.com/macros/s/AKfycbxNZ7vG2L7dH8k66bIHIyniNguIQZvAdmJrWER0s060p6gabHACinDaqCFnBYNr9DLE/exec";
+
 /**
  * Returns the configured Google Sheets Web App URL.
  */
 export function getGoogleSheetsUrl(): string {
-  if (typeof window === "undefined") return "";
+  if (typeof window === "undefined") return DEFAULT_GOOGLE_SHEETS_URL;
   return (
     import.meta.env.VITE_GOOGLE_SHEETS_URL ||
     localStorage.getItem(SHEETS_URL_KEY) ||
-    ""
+    DEFAULT_GOOGLE_SHEETS_URL
   );
 }
 
@@ -211,8 +214,14 @@ export async function syncFromCloud(): Promise<{ leads: LeadSubmission[]; count:
     if (!res.ok) {
       throw new Error(`Google Sheets responded with HTTP ${res.status}`);
     }
-    const data = await res.json();
-    if (Array.isArray(data)) {
+    const rawData = await res.json();
+    const data = Array.isArray(rawData)
+      ? rawData
+      : rawData && Array.isArray((rawData as any).value)
+      ? (rawData as any).value
+      : null;
+
+    if (data) {
       const map = new Map<string, LeadSubmission>();
 
       // Index local leads first
@@ -343,15 +352,19 @@ export async function saveSubmission(
   const sheetsUrl = getGoogleSheetsUrl();
   if (sheetsUrl) {
     try {
+      const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+      const timeoutId = controller ? setTimeout(() => controller.abort(), 4000) : null;
       // Using no-cors and text/plain ensures no CORS preflight blocks across mobile & desktop browsers
-      fetch(sheetsUrl, {
+      await fetch(sheetsUrl, {
         method: "POST",
         mode: "no-cors",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify(newRecord),
+        signal: controller?.signal,
       }).catch((e) => {
         console.warn("[Database] Google Sheets background dispatch warning:", e);
       });
+      if (timeoutId) clearTimeout(timeoutId);
       console.log("[Database] Lead dispatched to Google Sheets cloud database:", id);
     } catch (e) {
       console.warn("[Database] Google Sheets dispatch error:", e);
